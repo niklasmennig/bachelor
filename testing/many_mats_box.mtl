@@ -1,0 +1,46 @@
+# Blender MTL File: 'many_mats_box.blend'
+# Material Count: 6
+
+newmtl Box1
+map_Kd acrylic_felt_green_rgb.bsdf
+Ns 10.0000
+Ni 1.0000
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+illum 11
+
+newmtl Box2
+map_Kd cc_blue_agat_rgb.bsdf
+Ns 10.0000
+Ni 1.0000
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+illum 11
+
+newmtl Box3
+map_Kd aniso_metallic_paper_copper_rgb.bsdf
+Ns 10.0000
+Ni 1.0000
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+illum 11
+
+newmtl Box4
+map_Kd colodur_kalahari_2a_rgb.bsdf
+Ns 10.0000
+Ni 1.0000
+Ka 1 1 1
+Ks 0 0 0
+Ke 0 0 0
+illum 11
+
+newmtl Light
+Ke 10 10 10
+illum 0
+
+newmtl Room
+Kd 0.800000 0.800000 0.800000
+illum 2

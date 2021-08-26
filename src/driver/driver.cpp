@@ -5,6 +5,7 @@
 #include <cstring>
 #include <chrono>
 #include <cmath>
+#include <fstream>
 
 #ifndef DISABLE_GUI
 #include <SDL.h>
@@ -135,6 +136,34 @@ static void update_texture(uint32_t* buf, SDL_Texture* texture, size_t width, si
 }
 #endif
 
+static void write_pfm_image(const float* data, int iterations, int width, int height, int numChannels, const char* filename) {
+    std::ofstream out(filename, std::ios_base::binary);
+
+    std::ostringstream str;
+    if (numChannels == 1)
+        str << "Pf\n";
+    else if (numChannels == 3)
+        str << "PF\n";
+    else {
+        std::cerr << "ERROR: .pfm format does not support " << numChannels << " channel images" << std::endl;
+        return;
+    }
+    str << width << " " << height << "\n";
+    str << "-1.0" << "\n";
+    auto header = str.str();
+
+    out << header;
+
+    for (int row = height - 1; row >= 0; --row) {
+        for (int col = 0; col < width; col++) {
+            for (int channel = 0; channel < numChannels; channel++) {
+                float val = data[row * width * numChannels + col * numChannels + channel] / iterations;
+                out.write((const char*)&val, sizeof(float));
+            }
+        }
+    }
+}
+
 static void save_image(const std::string& out_file, size_t width, size_t height, uint32_t iter) {
     ImageRgba32 img;
     img.width = width;
@@ -142,6 +171,14 @@ static void save_image(const std::string& out_file, size_t width, size_t height,
     img.pixels.reset(new uint8_t[width * height * 4]);
 
     auto film = get_pixels();
+
+    std::string pfm_ending = ".pfm";
+    if (out_file.compare(out_file.length() - pfm_ending.length(), pfm_ending.length(), pfm_ending) == 0) {
+        printf("saving as pfm file\n");
+        write_pfm_image(film, iter, width, height, 3, out_file.c_str());
+        return;
+    }
+
     auto inv_iter = 1.0f / iter;
     auto inv_gamma = 1.0f / 2.2f;
     for (size_t y = 0; y < height; ++y) {

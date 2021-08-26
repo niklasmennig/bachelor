@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/fbuf2png.dir/fbuf2png.cpp.o -o ../../bin/fbuf2png  -lpng -lz 

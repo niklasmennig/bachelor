@@ -1,0 +1,82 @@
+[
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I/usr/include/SDL2 -g -std=gnu++14 -o src/CMakeFiles/driver.dir/driver/driver.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/driver.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/driver.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I/usr/include/SDL2 -g -std=gnu++14 -o src/CMakeFiles/driver.dir/driver/interface.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/interface.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/interface.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I/usr/include/SDL2 -g -std=gnu++14 -o src/CMakeFiles/driver.dir/driver/obj.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/obj.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/obj.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I/usr/include/SDL2 -g -std=gnu++14 -o src/CMakeFiles/driver.dir/driver/image.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/image.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/image.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I/usr/include/SDL2 -g -std=gnu++14 -o src/CMakeFiles/driver.dir/driver/measured_sampler.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/measured_sampler.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/measured_sampler.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -DCPUINFO_PATH=\\\"/proc/cpuinfo\\\" -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -g -std=gnu++14 -o src/CMakeFiles/converter.dir/driver/measured_sampler.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/measured_sampler.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/measured_sampler.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -DCPUINFO_PATH=\\\"/proc/cpuinfo\\\" -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -g -std=gnu++14 -o src/CMakeFiles/converter.dir/driver/converter.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/converter.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/converter.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -DCOLORIZE -DCPUINFO_PATH=\\\"/proc/cpuinfo\\\" -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -g -std=gnu++14 -o src/CMakeFiles/converter.dir/driver/obj.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/obj.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/obj.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I../tools/bench_traversal/../common -g -std=gnu++14 -o tools/bench_traversal/CMakeFiles/bench_traversal.dir/bench_traversal.cpp.o -c /home/niklas/repos/anydsl/rodent/tools/bench_traversal/bench_traversal.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/tools/bench_traversal/bench_traversal.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I../tools/bench_shading/../common -I../tools/bench_shading/../../src/driver -g -std=gnu++14 -o tools/bench_shading/CMakeFiles/bench_shading.dir/bench_shading.cpp.o -c /home/niklas/repos/anydsl/rodent/tools/bench_shading/bench_shading.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/tools/bench_shading/bench_shading.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I../tools/bench_interface/../common -I../tools/bench_interface/../../src/driver -g -std=gnu++14 -o tools/bench_interface/CMakeFiles/bench_interface.dir/bench_interface.cpp.o -c /home/niklas/repos/anydsl/rodent/tools/bench_interface/bench_interface.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/tools/bench_interface/bench_interface.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I../tools/ray_gen/../common -I../tools/ray_gen/../../src -g -std=gnu++14 -o tools/ray_gen/CMakeFiles/ray_gen.dir/ray_gen.cpp.o -c /home/niklas/repos/anydsl/rodent/tools/ray_gen/ray_gen.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/tools/ray_gen/ray_gen.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -g -std=gnu++14 -o tools/fbuf2png/CMakeFiles/fbuf2png.dir/fbuf2png.cpp.o -c /home/niklas/repos/anydsl/rodent/tools/fbuf2png/fbuf2png.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/tools/fbuf2png/fbuf2png.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I../tools/bvh_extractor/../common -I../tools/bvh_extractor/../../src -g -std=gnu++14 -o tools/bvh_extractor/CMakeFiles/bvh_extractor.dir/bvh_extractor.cpp.o -c /home/niklas/repos/anydsl/rodent/tools/bvh_extractor/bvh_extractor.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/tools/bvh_extractor/bvh_extractor.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I../tools/bvh_extractor/../common -I../tools/bvh_extractor/../../src -g -std=gnu++14 -o tools/bvh_extractor/CMakeFiles/bvh_extractor.dir/extract_bvh2.cpp.o -c /home/niklas/repos/anydsl/rodent/tools/bvh_extractor/extract_bvh2.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/tools/bvh_extractor/extract_bvh2.cpp"
+},
+{
+  "directory": "/home/niklas/repos/anydsl/rodent/build",
+  "command": "/usr/bin/c++ -I/home/niklas/repos/anydsl/runtime/build/share/anydsl/cmake/../../../include -I/home/niklas/repos/anydsl/runtime/src -I../tools/bvh_extractor/../common -I../tools/bvh_extractor/../../src -g -std=gnu++14 -o tools/bvh_extractor/CMakeFiles/bvh_extractor.dir/__/__/src/driver/obj.cpp.o -c /home/niklas/repos/anydsl/rodent/src/driver/obj.cpp",
+  "file": "/home/niklas/repos/anydsl/rodent/src/driver/obj.cpp"
+}
+]

@@ -1,0 +1,114 @@
+//------------------------------------------------------------------------------------
+// Generated from 'cornell_box.obj' with the scene conversion tool
+//------------------------------------------------------------------------------------
+
+struct Settings {
+    eye: Vec3,
+    dir: Vec3,
+    up: Vec3,
+    right: Vec3,
+    width: f32,
+    height: f32
+};
+
+extern fn get_spp() -> i32 { 4 }
+
+extern fn render(settings: &Settings, iter: i32) -> () {
+    let device   = make_avx2_device(false);
+    let renderer = make_path_tracing_renderer(64 /*max_path_len*/, 4 /*spp*/);
+    let math     = device.intrinsics;
+
+    // Camera
+    let camera = make_perspective_camera(
+        math,
+        settings.eye,
+        make_mat3x3(settings.right, settings.up, settings.dir),
+        settings.width,
+        settings.height
+    );
+
+    // Triangle mesh
+    let vertices     = device.load_buffer("data/vertices.bin");
+    let normals      = device.load_buffer("data/normals.bin");
+    let face_normals = device.load_buffer("data/face_normals.bin");
+    let indices      = device.load_buffer("data/indices.bin");
+    let texcoords    = device.load_buffer("data/texcoords.bin");
+    let tri_mesh     = TriMesh {
+        vertices:     @ |i| vertices.load_vec3(i),
+        normals:      @ |i| normals.load_vec3(i),
+        face_normals: @ |i| face_normals.load_vec3(i),
+        triangles:    @ |i| { let (i, j, k, _) = indices.load_int4(i); (i, j, k) },
+        attrs:        @ |_| (false, @ |j| vec2_to_4(texcoords.load_vec2(j), 0.0f, 0.0f)),
+        num_attrs:    1,
+        num_tris:     36
+    };
+    let bvh = device.load_bvh("data/bvh.bin");
+
+    // Images
+    let dummy_image = make_image(@ |x, y| make_color(0.0f, 0.0f, 0.0f), 1, 1);
+    let image_aniso_metallic_paper_copper_rgb_bsdf = dummy_image; // Cannot determine image type for aniso_metallic_paper_copper_rgb.bsdf
+    let image_acrylic_felt_green_rgb_bsdf = dummy_image; // Cannot determine image type for acrylic_felt_green_rgb.bsdf
+
+    // Lights
+    let light_verts = device.load_buffer("data/light_verts.bin");
+    let light_areas = device.load_buffer("data/light_areas.bin");
+    let light_norms = device.load_buffer("data/light_norms.bin");
+    let light_colors = device.load_buffer("data/light_colors.bin");
+    let lights = @ |i| {
+        make_precomputed_triangle_light(
+            math,
+            light_verts.load_vec3(i * 3 + 0),
+            light_verts.load_vec3(i * 3 + 1),
+            light_verts.load_vec3(i * 3 + 2),
+            light_norms.load_vec3(i),
+            light_areas.load_f32(i),
+            vec3_to_color(light_colors.load_vec3(i))
+        )
+    };
+
+    // Mapping from primitive to light source
+    let light_ids = device.load_buffer("data/light_ids.bin");
+
+    // Shaders
+    let shader_light : Shader = @ |ray, hit, surf| {
+        let kd = make_color(0.78f, 0.78f, 0.78f);
+        let diffuse = make_diffuse_bsdf(math, surf, kd);
+        let bsdf = diffuse;
+        make_emissive_material(surf, bsdf, lights(light_ids.load_i32(hit.prim_id)))
+    };
+    let shader_test : Shader = @ |ray, hit, surf| {
+        let bsdf = make_measured_bsdf("acrylic_felt_green_rgb.bsdf", math, surf);
+        make_material(bsdf)
+    };
+    let shader_test2 : Shader = @ |ray, hit, surf| {
+        let bsdf = make_measured_bsdf("aniso_metallic_paper_copper_rgb.bsdf", math, surf);
+        make_material(bsdf)
+    };
+    let shader_floor : Shader = @ |ray, hit, surf| {
+        let kd = make_color(1f, 1f, 1f);
+        let diffuse = make_diffuse_bsdf(math, surf, kd);
+        let bsdf = diffuse;
+        make_material(bsdf)
+    };
+
+    // Geometries
+    let geometries = @ |i| match i {
+        0 => make_tri_mesh_geometry(math, tri_mesh, shader_light),
+        1 => make_tri_mesh_geometry(math, tri_mesh, shader_test),
+        2 => make_tri_mesh_geometry(math, tri_mesh, shader_test2),
+        _ => make_tri_mesh_geometry(math, tri_mesh, shader_floor),
+    };
+
+    // Scene
+    let scene = Scene {
+        num_geometries: 4,
+        num_lights:     2,
+        geometries:     @ |i| geometries(i),
+        lights:         @ |i| lights(i),
+        camera:         camera,
+        bvh:            bvh
+    };
+
+    renderer(scene, device, iter);
+    device.present();
+}

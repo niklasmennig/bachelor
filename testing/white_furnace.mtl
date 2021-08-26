@@ -1,0 +1,15 @@
+# Blender MTL File: 'rock.blend'
+# Material Count: 2
+
+newmtl Light
+Ns 9.0000
+Ni 1.0000
+illum 0
+Ka 1.00 0.78 0.78 # White
+Kd 0.78 0.78 0.78
+Ks 0 0 0
+Ke 1 1 1
+
+newmtl Sphere
+map_Kd white.bsdf
+illum 11

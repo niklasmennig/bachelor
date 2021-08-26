@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic rodent.o -o ../bin/rodent  -Wl,-rpath,/home/niklas/repos/anydsl/runtime/build/lib:/home/niklas/repos/anydsl/llvm_build/lib ../lib/libdriver.a /home/niklas/repos/anydsl/runtime/build/lib/libruntime.so -lpng -lz -ljpeg -ltbb -ltbbmalloc -llz4 -Wl,-Bstatic -lSDL2main -Wl,-Bdynamic -lSDL2 -lpthread -Wl,-rpath-link,/home/niklas/repos/anydsl/llvm_build/lib 

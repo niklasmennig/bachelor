@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/bvh_extractor.dir/bvh_extractor.cpp.o CMakeFiles/bvh_extractor.dir/extract_bvh2.cpp.o CMakeFiles/bvh_extractor.dir/__/__/src/driver/obj.cpp.o -o ../../bin/bvh_extractor 

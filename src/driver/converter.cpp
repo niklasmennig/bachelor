@@ -13,6 +13,8 @@
 #include "obj.h"
 #include "buffer.h"
 
+#include "measured_sampler.h"
+
 #ifdef WIN32
 #include <direct.h>
 #define create_directory(d) _mkdir(d)
@@ -648,6 +650,7 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
     }
 
     os << "    let renderer = make_path_tracing_renderer(" << max_path_len << " /*max_path_len*/, " << spp << " /*spp*/);\n"
+    //os << "    let renderer = make_white_furnace_renderer();\n"
        << "    let math     = device.intrinsics;\n";
 
     // Setup camera
@@ -859,6 +862,7 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
     info("Generating materials for '", file_name, "'");
     os << "\n    // Shaders\n";
     for (auto& mtl_name : obj_file.materials) {
+        info("Generating material " + mtl_name);
         auto it = mtl_lib.find(mtl_name);
         assert(it != mtl_lib.end());
 
@@ -867,55 +871,63 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
         if (has_simple && is_simple(mat))
             break;
 
+
         bool has_emission = mat.ke != rgb(0.0f) || mat.map_ke != "";
         os << "    let shader_" << make_id(mtl_name) << " : Shader = @ |ray, hit, surf| {\n";
-        if (mat.illum == 5) {
-            os << "        let bsdf = make_mirror_bsdf(math, surf, make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f));\n";
-        } else if (mat.illum == 7) {
-            os << "        let bsdf = make_glass_bsdf(math, surf, 1.0f, " << mat.ni << "f, " << "make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f), make_color(" << mat.tf.x << "f, " << mat.tf.y << "f, " << mat.tf.z << "f));\n";
-        } else {
-            bool has_diffuse  = mat.kd != rgb(0.0f) || mat.map_kd != "";
-            bool has_specular = mat.ks != rgb(0.0f) || mat.map_ks != "";
 
-            if (has_diffuse) {
-                if (mat.map_kd != "") {
-                    os << "        let diffuse_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_kd]]) << ");\n";
-                    os << "        let kd = diffuse_texture(vec4_to_2(surf.attr(0)));\n";
-                } else {
-                    os << "        let kd = make_color(" << mat.kd.x << "f, " << mat.kd.y << "f, " << mat.kd.z << "f);\n";
-                }
-                os << "        let diffuse = make_diffuse_bsdf(math, surf, kd);\n";
-            }
-            if (has_specular) {
-                if (mat.map_ks != "") {
-                    os << "        let specular_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_ks]]) << ");\n";
-                    os << "        let ks = specular_texture(vec4_to_2(surf.attr(0)));\n";
-                } else {
-                    os << "        let ks = make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f);\n";
-                }
-                os << "        let ns = " << mat.ns << "f;\n";
-                os << "        let specular = make_phong_bsdf(math, surf, ks, ns);\n";
-            }
-            os << "        let bsdf = ";
-            if (has_diffuse && has_specular) {
-                os << "{\n"
-                   << "            let lum_ks = color_luminance(ks);\n"
-                   << "            let lum_kd = color_luminance(kd);\n"
-                   << "            let k = select(lum_ks + lum_kd == 0.0f, 0.0f, lum_ks / (lum_ks + lum_kd));\n"
-                   << "            make_mix_bsdf(diffuse, specular, k)\n"
-                   << "        };\n";
-            } else if (has_diffuse || has_specular) {
-                if (has_specular) os << "specular;\n";
-                else              os << "diffuse;\n";
+        // intercept to introduce measured materials
+        if (mat.illum == 11) {
+            has_emission = false;
+            std::string brdf_name = mat.map_kd;
+            info("Generating measured material: " + mtl_name + " with BRDF: " + brdf_name);
+            os << "        let bsdf = make_measured_bsdf(\"" << brdf_name << "\", math, surf);\n";
+        } else if (mat.illum == 5) {
+                os << "        let bsdf = make_mirror_bsdf(math, surf, make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f));\n";
+            } else if (mat.illum == 7) {
+                os << "        let bsdf = make_glass_bsdf(math, surf, 1.0f, " << mat.ni << "f, " << "make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f), make_color(" << mat.tf.x << "f, " << mat.tf.y << "f, " << mat.tf.z << "f));\n";
             } else {
-                os << "make_black_bsdf();\n";
+                bool has_diffuse  = mat.kd != rgb(0.0f) || mat.map_kd != "";
+                bool has_specular = mat.ks != rgb(0.0f) || mat.map_ks != "";
+
+                if (has_diffuse) {
+                    if (mat.map_kd != "") {
+                        os << "        let diffuse_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_kd]]) << ");\n";
+                        os << "        let kd = diffuse_texture(vec4_to_2(surf.attr(0)));\n";
+                    } else {
+                        os << "        let kd = make_color(" << mat.kd.x << "f, " << mat.kd.y << "f, " << mat.kd.z << "f);\n";
+                    }
+                    os << "        let diffuse = make_diffuse_bsdf(math, surf, kd);\n";
+                }
+                if (has_specular) {
+                    if (mat.map_ks != "") {
+                        os << "        let specular_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_ks]]) << ");\n";
+                        os << "        let ks = specular_texture(vec4_to_2(surf.attr(0)));\n";
+                    } else {
+                        os << "        let ks = make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f);\n";
+                    }
+                    os << "        let ns = " << mat.ns << "f;\n";
+                    os << "        let specular = make_phong_bsdf(math, surf, ks, ns);\n";
+                }
+                os << "        let bsdf = ";
+                if (has_diffuse && has_specular) {
+                    os << "{\n"
+                    << "            let lum_ks = color_luminance(ks);\n"
+                    << "            let lum_kd = color_luminance(kd);\n"
+                    << "            let k = select(lum_ks + lum_kd == 0.0f, 0.0f, lum_ks / (lum_ks + lum_kd));\n"
+                    << "            make_mix_bsdf(diffuse, specular, k)\n"
+                    << "        };\n";
+                } else if (has_diffuse || has_specular) {
+                    if (has_specular) os << "specular;\n";
+                    else              os << "diffuse;\n";
+                } else {
+                    os << "make_black_bsdf();\n";
+                }
             }
-        }
-        if (has_emission) {
-            os << "        make_emissive_material(surf, bsdf, lights(light_ids.load_i32(hit.prim_id)))\n";
-        } else {
-            os << "        make_material(bsdf)\n";
-        }
+            if (has_emission) {
+                os << "        make_emissive_material(surf, bsdf, lights(light_ids.load_i32(hit.prim_id)))\n";
+            } else {
+                os << "        make_material(bsdf)\n";
+            }
         os << "    };\n";
     }
 

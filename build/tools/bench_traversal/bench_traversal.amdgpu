@@ -1,0 +1,1778 @@
+; ModuleID = '/home/niklas/repos/anydsl/rodent/build/tools/bench_traversal/./bench_traversal'
+source_filename = "/home/niklas/repos/anydsl/rodent/build/tools/bench_traversal/./bench_traversal"
+target datalayout = "e-p:64:64-p1:64:64-p2:32:32-p3:32:32-p4:64:64-p5:32:32-p6:32:32-i64:64-v16:16-v24:32-v32:32-v48:64-v96:128-v192:256-v256:256-v512:512-v1024:1024-v2048:2048-n32:64-S32-A5-ni:7"
+target triple = "amdgcn-amd-amdhsa"
+
+%0 = type { [3 x float], i32, [3 x float], i32, [3 x float], i32 }
+%1 = type { [3 x float], float, [3 x float], float }
+%2 = type { [12 x float], [2 x i32], [2 x i32] }
+%3 = type { i32, float, float, float }
+%4 = type { float, %5, i32, i32 }
+%5 = type { float, float }
+%6 = type { %7, %7, %7, %7, float, float }
+%7 = type { float, float, float }
+
+define amdgpu_kernel void @lambda_9420405([0 x %0]* %_9420408_9483664, [0 x %1]* %_9420409_9483665, [0 x %2]* %_9420410_9483666, i32 %_9420411_9483667, [0 x %3]* %_9420412_9483668) !dbg !4 !reqd_work_group_size !7 {
+lambda_9420405_start:
+  %mask_9483767 = alloca i32, align 4, addrspace(5)
+  %prim_id_9483929 = alloca i32, align 4, addrspace(5)
+  %mask_9483978 = alloca i1, align 1, addrspace(5)
+  %val_9484139 = alloca { i32, float }, align 4, addrspace(5)
+  %node_9483724 = alloca i32, align 4, addrspace(5)
+  %val_9484136 = alloca { i32, float }, align 4, addrspace(5)
+  %hit_9483743 = alloca %4, align 4, addrspace(5)
+  %ptr_9484098 = alloca i32, align 4, addrspace(5)
+  %nodes_9484101 = alloca [64 x i32], align 4, addrspace(5)
+  %ray_9483769 = alloca %6, align 4, addrspace(5)
+  br label %lambda_9420405, !dbg !8
+
+lambda_9420405:                                   ; preds = %lambda_9420405_start
+  %0 = call i32 @llvm.amdgcn.workitem.id.x(), !dbg !9
+  br label %_cont, !dbg !9
+
+_cont:                                            ; preds = %lambda_9420405
+  %1 = phi i32 [ %0, %lambda_9420405 ]
+  %2 = call i32 @llvm.amdgcn.workgroup.id.x(), !dbg !10
+  br label %_cont1, !dbg !10
+
+_cont1:                                           ; preds = %_cont
+  %3 = phi i32 [ %2, %_cont ]
+  %4 = call i32 @llvm.amdgcn.workitem.id.y(), !dbg !11
+  br label %_cont2, !dbg !11
+
+_cont2:                                           ; preds = %_cont1
+  %j = phi i32 [ %4, %_cont1 ]
+  %5 = mul nsw i32 64, %3, !dbg !10
+  %i = add nsw i32 %1, %5, !dbg !9
+  %6 = add nsw i32 %i, %j, !dbg !12
+  %7 = icmp sle i32 %_9420411_9483667, %6, !dbg !13
+  br i1 %7, label %expr_true73, label %expr_false, !dbg !14
+
+expr_false:                                       ; preds = %_cont2
+  %8 = getelementptr inbounds [0 x %1], [0 x %1]* %_9420409_9483665, i64 0, i32 %6, !dbg !15
+  %9 = bitcast %1* %8 to [0 x <4 x float>]*, !dbg !16
+  %10 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>]* %9, i64 0, i32 1, !dbg !17
+  %11 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>]* %9, i64 0, i32 0, !dbg !18
+  %12 = load <4 x float>, <4 x float>* %11, align 16, !dbg !18
+  %13 = load <4 x float>, <4 x float>* %10, align 16, !dbg !17
+  %14 = extractelement <4 x float> %13, i32 0, !dbg !19
+  %15 = fsub float -0.000000e+00, %14, !dbg !20
+  %16 = fcmp olt float 0.000000e+00, %14, !dbg !21
+  %17 = select i1 %16, float %14, float %15, !dbg !22
+  %18 = fcmp olt float %17, 0x3E45798EE0000000, !dbg !22
+  br i1 %18, label %expr_true, label %expr_false3, !dbg !23
+
+expr_false3:                                      ; preds = %expr_false
+  %19 = fdiv float 1.000000e+00, %14, !dbg !24
+  br label %safe_rcp_cont, !dbg !25
+
+expr_true:                                        ; preds = %expr_false
+  %20 = bitcast float %14 to i32, !dbg !26
+  %21 = and i32 -2147483648, %20, !dbg !26
+  %22 = xor i32 2139095039, %21, !dbg !27
+  %23 = bitcast i32 %22 to float, !dbg !28
+  br label %safe_rcp_cont, !dbg !29
+
+safe_rcp_cont:                                    ; preds = %expr_true, %expr_false3
+  %safe_rcp = phi float [ %23, %expr_true ], [ %19, %expr_false3 ]
+  %24 = extractelement <4 x float> %13, i32 1, !dbg !30
+  %25 = fcmp olt float 0.000000e+00, %24, !dbg !21
+  %26 = fsub float -0.000000e+00, %24, !dbg !20
+  %27 = select i1 %25, float %24, float %26, !dbg !22
+  %28 = fcmp olt float %27, 0x3E45798EE0000000, !dbg !22
+  br i1 %28, label %expr_true5, label %expr_false4, !dbg !23
+
+expr_false4:                                      ; preds = %safe_rcp_cont
+  %29 = fdiv float 1.000000e+00, %24, !dbg !24
+  br label %safe_rcp_cont6, !dbg !25
+
+expr_true5:                                       ; preds = %safe_rcp_cont
+  %30 = bitcast float %24 to i32, !dbg !26
+  %31 = and i32 -2147483648, %30, !dbg !26
+  %32 = xor i32 2139095039, %31, !dbg !27
+  %33 = bitcast i32 %32 to float, !dbg !28
+  br label %safe_rcp_cont6, !dbg !29
+
+safe_rcp_cont6:                                   ; preds = %expr_true5, %expr_false4
+  %safe_rcp7 = phi float [ %33, %expr_true5 ], [ %29, %expr_false4 ]
+  %34 = extractelement <4 x float> %13, i32 2, !dbg !31
+  %35 = fcmp olt float 0.000000e+00, %34, !dbg !21
+  %36 = fsub float -0.000000e+00, %34, !dbg !20
+  %37 = select i1 %35, float %34, float %36, !dbg !22
+  %38 = fcmp olt float %37, 0x3E45798EE0000000, !dbg !22
+  br i1 %38, label %expr_true9, label %expr_false8, !dbg !23
+
+expr_false8:                                      ; preds = %safe_rcp_cont6
+  %39 = fdiv float 1.000000e+00, %34, !dbg !24
+  br label %safe_rcp_cont10, !dbg !25
+
+expr_true9:                                       ; preds = %safe_rcp_cont6
+  %40 = bitcast float %34 to i32, !dbg !26
+  %41 = and i32 -2147483648, %40, !dbg !26
+  %42 = xor i32 2139095039, %41, !dbg !27
+  %43 = bitcast i32 %42 to float, !dbg !28
+  br label %safe_rcp_cont10, !dbg !29
+
+safe_rcp_cont10:                                  ; preds = %expr_true9, %expr_false8
+  %safe_rcp11 = phi float [ %43, %expr_true9 ], [ %39, %expr_false8 ]
+  %44 = extractelement <4 x float> %13, i32 3, !dbg !32
+  %45 = insertvalue %7 undef, float %14, 0, !dbg !33
+  %46 = insertvalue %7 %45, float %24, 1, !dbg !33
+  %47 = insertvalue %7 %46, float %34, 2, !dbg !33
+  %48 = insertvalue %7 undef, float %safe_rcp, 0, !dbg !33
+  %49 = insertvalue %7 %48, float %safe_rcp7, 1, !dbg !33
+  %50 = insertvalue %7 %49, float %safe_rcp11, 2, !dbg !33
+  %51 = insertvalue %4 undef, float %44, 0, !dbg !34
+  %52 = insertvalue %4 %51, %5 undef, 1, !dbg !34
+  %53 = insertvalue %4 %52, i32 -1, 2, !dbg !34
+  %54 = insertvalue %4 %53, i32 -1, 3, !dbg !34
+  %55 = extractelement <4 x float> %12, i32 3, !dbg !35
+  %56 = extractelement <4 x float> %12, i32 0, !dbg !36
+  %57 = extractelement <4 x float> %12, i32 1, !dbg !37
+  %58 = extractelement <4 x float> %12, i32 2, !dbg !38
+  %59 = insertvalue %7 undef, float %56, 0, !dbg !33
+  %60 = insertvalue %7 %59, float %57, 1, !dbg !33
+  %61 = insertvalue %7 %60, float %58, 2, !dbg !33
+  %62 = fmul float %56, %safe_rcp, !dbg !39
+  %63 = fmul float %57, %safe_rcp7, !dbg !39
+  %64 = fmul float %58, %safe_rcp11, !dbg !39
+  %65 = getelementptr inbounds %6, %6 addrspace(5)* %ray_9483769, i32 0, i32 5, !dbg !40
+  %66 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9484101, i64 0, i32 0, !dbg !41
+  %67 = fsub float -0.000000e+00, %62, !dbg !42
+  %68 = fsub float -0.000000e+00, %63, !dbg !42
+  %69 = fsub float -0.000000e+00, %64, !dbg !42
+  %70 = insertvalue %7 undef, float %67, 0, !dbg !33
+  %71 = insertvalue %7 %70, float %68, 1, !dbg !33
+  %72 = insertvalue %7 %71, float %69, 2, !dbg !33
+  %73 = insertvalue %6 undef, %7 %61, 0, !dbg !43
+  %74 = insertvalue %6 %73, %7 %47, 1, !dbg !43
+  %75 = insertvalue %6 %74, %7 %50, 2, !dbg !43
+  %76 = insertvalue %6 %75, %7 %72, 3, !dbg !43
+  %77 = insertvalue %6 %76, float %55, 4, !dbg !43
+  %78 = insertvalue %6 %77, float %44, 5, !dbg !43
+  store %6 %78, %6 addrspace(5)* %ray_9483769, align 4, !dbg !44
+  store %4 %54, %4 addrspace(5)* %hit_9483743, align 4, !dbg !45
+  store i32 0, i32 addrspace(5)* %node_9483724, align 4, !dbg !46
+  store i32 -1, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !47
+  store i32 0, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !48
+  store i32 0, i32 addrspace(5)* %66, align 4, !dbg !41
+  store i32 1, i32 addrspace(5)* %node_9483724, align 4, !dbg !49
+  br label %while_head, !dbg !50
+
+while_head:                                       ; preds = %expr_false53, %safe_rcp_cont10
+  %79 = load i32, i32 addrspace(5)* %node_9483724, align 4, !dbg !51
+  %80 = icmp eq i32 %79, 0, !dbg !51
+  br i1 %80, label %expr_false72, label %expr_true12, !dbg !50
+
+expr_true12:                                      ; preds = %while_head
+  %81 = load i32, i32 addrspace(5)* %node_9483724, align 4, !dbg !52
+  %82 = sub nsw i32 %81, 1, !dbg !53
+  %83 = getelementptr inbounds [0 x %2], [0 x %2]* %_9420410_9483666, i64 0, i32 %82, !dbg !54
+  %84 = addrspacecast %2* %83 to [0 x <4 x float>] addrspace(1)*, !dbg !55
+  %85 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %84, i64 0, i32 0, !dbg !56
+  %86 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %84, i64 0, i32 1, !dbg !56
+  %87 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %84, i64 0, i32 2, !dbg !56
+  %88 = bitcast [0 x <4 x float>] addrspace(1)* %84 to [0 x <4 x i32>] addrspace(1)*, !dbg !57
+  %89 = load <4 x float>, <4 x float> addrspace(1)* %85, align 16, !dbg !58
+  %90 = getelementptr inbounds [0 x <4 x i32>], [0 x <4 x i32>] addrspace(1)* %88, i64 0, i32 3, !dbg !59
+  %91 = extractelement <4 x float> %89, i32 0, !dbg !60
+  %92 = extractelement <4 x float> %89, i32 1, !dbg !61
+  %93 = load <4 x float>, <4 x float> addrspace(1)* %86, align 16, !dbg !58
+  %94 = load <4 x float>, <4 x float> addrspace(1)* %87, align 16, !dbg !58
+  %95 = load <4 x i32>, <4 x i32> addrspace(1)* %90, align 16, !dbg !62
+  store i32 0, i32 addrspace(5)* %mask_9483767, align 4, !dbg !63
+  %96 = load %6, %6 addrspace(5)* %ray_9483769, align 4, !dbg !64
+  %97 = extractvalue %6 %96, 3, !dbg !65
+  %98 = extractvalue %6 %96, 2, !dbg !66
+  %99 = extractvalue %7 %97, 0, !dbg !67
+  %100 = extractvalue %7 %98, 0, !dbg !68
+  %101 = fmul float %100, %91, !dbg !39
+  %102 = fmul float %100, %92, !dbg !39
+  %103 = fadd float %101, %99, !dbg !69
+  %104 = fadd float %102, %99, !dbg !69
+  %105 = call float @__ocml_fmin_f32(float %103, float %104), !dbg !70
+  br label %_cont13, !dbg !70
+
+_cont13:                                          ; preds = %expr_true12
+  %106 = phi float [ %105, %expr_true12 ]
+  %107 = extractvalue %7 %98, 1, !dbg !71
+  %108 = extractvalue %7 %97, 1, !dbg !72
+  %109 = extractelement <4 x float> %89, i32 2, !dbg !73
+  %110 = fmul float %107, %109, !dbg !39
+  %111 = extractelement <4 x float> %89, i32 3, !dbg !74
+  %112 = fmul float %107, %111, !dbg !39
+  %113 = fadd float %110, %108, !dbg !69
+  %114 = fadd float %112, %108, !dbg !69
+  %115 = call float @__ocml_fmin_f32(float %113, float %114), !dbg !75
+  br label %_cont14, !dbg !75
+
+_cont14:                                          ; preds = %_cont13
+  %116 = phi float [ %115, %_cont13 ]
+  %117 = extractvalue %7 %97, 2, !dbg !76
+  %118 = extractelement <4 x float> %93, i32 1, !dbg !77
+  %119 = extractelement <4 x float> %93, i32 0, !dbg !78
+  %120 = extractvalue %7 %98, 2, !dbg !79
+  %121 = fmul float %120, %118, !dbg !39
+  %122 = fmul float %120, %119, !dbg !39
+  %123 = fadd float %121, %117, !dbg !69
+  %124 = fadd float %122, %117, !dbg !69
+  %125 = call float @__ocml_fmin_f32(float %124, float %123), !dbg !80
+  br label %fminf_cont, !dbg !80
+
+fminf_cont:                                       ; preds = %_cont14
+  %fminf = phi float [ %125, %_cont14 ]
+  %126 = extractvalue %6 %96, 4, !dbg !81
+  %127 = call float @__ocml_fmax_f32(float %fminf, float %126), !dbg !82
+  br label %_cont15, !dbg !82
+
+_cont15:                                          ; preds = %fminf_cont
+  %128 = phi float [ %127, %fminf_cont ]
+  %129 = call float @__ocml_fmax_f32(float %106, float %116), !dbg !83
+  br label %fmaxf_cont, !dbg !83
+
+fmaxf_cont:                                       ; preds = %_cont15
+  %fmaxf = phi float [ %129, %_cont15 ]
+  %130 = call float @__ocml_fmax_f32(float %fmaxf, float %128), !dbg !84
+  br label %_cont16, !dbg !84
+
+_cont16:                                          ; preds = %fmaxf_cont
+  %131 = phi float [ %130, %fmaxf_cont ]
+  %132 = call float @__ocml_fmax_f32(float %103, float %104), !dbg !85
+  br label %_cont17, !dbg !85
+
+_cont17:                                          ; preds = %_cont16
+  %133 = phi float [ %132, %_cont16 ]
+  %134 = call float @__ocml_fmax_f32(float %113, float %114), !dbg !86
+  br label %_cont18, !dbg !86
+
+_cont18:                                          ; preds = %_cont17
+  %135 = phi float [ %134, %_cont17 ]
+  %136 = call float @__ocml_fmax_f32(float %124, float %123), !dbg !87
+  br label %fmaxf_cont19, !dbg !87
+
+fmaxf_cont19:                                     ; preds = %_cont18
+  %fmaxf20 = phi float [ %136, %_cont18 ]
+  %137 = extractvalue %6 %96, 5, !dbg !88
+  %138 = call float @__ocml_fmin_f32(float %fmaxf20, float %137), !dbg !89
+  br label %_cont21, !dbg !89
+
+_cont21:                                          ; preds = %fmaxf_cont19
+  %139 = phi float [ %138, %fmaxf_cont19 ]
+  %140 = call float @__ocml_fmin_f32(float %133, float %135), !dbg !90
+  br label %fminf_cont22, !dbg !90
+
+fminf_cont22:                                     ; preds = %_cont21
+  %fminf23 = phi float [ %140, %_cont21 ]
+  %141 = call float @__ocml_fmin_f32(float %fminf23, float %139), !dbg !91
+  br label %_cont24, !dbg !91
+
+_cont24:                                          ; preds = %fminf_cont22
+  %142 = phi float [ %141, %fminf_cont22 ]
+  %143 = fcmp ole float %131, %142, !dbg !92
+  br i1 %143, label %expr_true26, label %expr_false25, !dbg !93
+
+expr_false25:                                     ; preds = %_cont24
+  br label %_cont27, !dbg !94
+
+expr_true26:                                      ; preds = %_cont24
+  %144 = load i32, i32 addrspace(5)* %mask_9483767, align 4, !dbg !95
+  %145 = extractelement <4 x i32> %95, i32 0, !dbg !96
+  %146 = insertvalue { i32, float } undef, i32 %145, 0, !dbg !97
+  %147 = insertvalue { i32, float } %146, float %131, 1, !dbg !97
+  %148 = or i32 1, %144, !dbg !95
+  store i32 %148, i32 addrspace(5)* %mask_9483767, align 4, !dbg !95
+  store { i32, float } %147, { i32, float } addrspace(5)* %val_9484136, align 4, !dbg !98
+  br label %_cont27, !dbg !99
+
+_cont27:                                          ; preds = %expr_true26, %expr_false25
+  %149 = load %6, %6 addrspace(5)* %ray_9483769, align 4, !dbg !64
+  %150 = extractelement <4 x float> %93, i32 2, !dbg !100
+  %151 = extractelement <4 x float> %93, i32 3, !dbg !101
+  %152 = extractvalue %6 %149, 3, !dbg !65
+  %153 = extractvalue %6 %149, 2, !dbg !66
+  %154 = extractvalue %7 %152, 0, !dbg !67
+  %155 = extractvalue %7 %153, 0, !dbg !68
+  %156 = fmul float %155, %150, !dbg !39
+  %157 = fmul float %155, %151, !dbg !39
+  %158 = fadd float %156, %154, !dbg !69
+  %159 = fadd float %157, %154, !dbg !69
+  %160 = call float @__ocml_fmin_f32(float %158, float %159), !dbg !70
+  br label %_cont28, !dbg !70
+
+_cont28:                                          ; preds = %_cont27
+  %161 = phi float [ %160, %_cont27 ]
+  %162 = extractvalue %7 %152, 1, !dbg !72
+  %163 = extractvalue %7 %153, 1, !dbg !71
+  %164 = extractelement <4 x float> %94, i32 0, !dbg !102
+  %165 = fmul float %163, %164, !dbg !39
+  %166 = extractelement <4 x float> %94, i32 1, !dbg !103
+  %167 = fadd float %165, %162, !dbg !69
+  %168 = fmul float %163, %166, !dbg !39
+  %169 = fadd float %168, %162, !dbg !69
+  %170 = call float @__ocml_fmin_f32(float %167, float %169), !dbg !75
+  br label %_cont29, !dbg !75
+
+_cont29:                                          ; preds = %_cont28
+  %171 = phi float [ %170, %_cont28 ]
+  %172 = extractelement <4 x float> %94, i32 2, !dbg !104
+  %173 = extractvalue %7 %153, 2, !dbg !79
+  %174 = extractelement <4 x float> %94, i32 3, !dbg !105
+  %175 = extractvalue %7 %152, 2, !dbg !76
+  %176 = fmul float %173, %172, !dbg !39
+  %177 = fmul float %173, %174, !dbg !39
+  %178 = fadd float %176, %175, !dbg !69
+  %179 = fadd float %177, %175, !dbg !69
+  %180 = call float @__ocml_fmin_f32(float %178, float %179), !dbg !80
+  br label %fminf_cont30, !dbg !80
+
+fminf_cont30:                                     ; preds = %_cont29
+  %fminf31 = phi float [ %180, %_cont29 ]
+  %181 = extractvalue %6 %149, 4, !dbg !81
+  %182 = call float @__ocml_fmax_f32(float %fminf31, float %181), !dbg !82
+  br label %_cont32, !dbg !82
+
+_cont32:                                          ; preds = %fminf_cont30
+  %183 = phi float [ %182, %fminf_cont30 ]
+  %184 = call float @__ocml_fmax_f32(float %161, float %171), !dbg !83
+  br label %fmaxf_cont33, !dbg !83
+
+fmaxf_cont33:                                     ; preds = %_cont32
+  %fmaxf34 = phi float [ %184, %_cont32 ]
+  %185 = call float @__ocml_fmax_f32(float %fmaxf34, float %183), !dbg !84
+  br label %_cont35, !dbg !84
+
+_cont35:                                          ; preds = %fmaxf_cont33
+  %186 = phi float [ %185, %fmaxf_cont33 ]
+  %187 = call float @__ocml_fmax_f32(float %158, float %159), !dbg !85
+  br label %_cont36, !dbg !85
+
+_cont36:                                          ; preds = %_cont35
+  %188 = phi float [ %187, %_cont35 ]
+  %189 = call float @__ocml_fmax_f32(float %167, float %169), !dbg !86
+  br label %_cont37, !dbg !86
+
+_cont37:                                          ; preds = %_cont36
+  %190 = phi float [ %189, %_cont36 ]
+  %191 = call float @__ocml_fmax_f32(float %178, float %179), !dbg !87
+  br label %fmaxf_cont38, !dbg !87
+
+fmaxf_cont38:                                     ; preds = %_cont37
+  %fmaxf39 = phi float [ %191, %_cont37 ]
+  %192 = extractvalue %6 %149, 5, !dbg !88
+  %193 = call float @__ocml_fmin_f32(float %fmaxf39, float %192), !dbg !89
+  br label %_cont40, !dbg !89
+
+_cont40:                                          ; preds = %fmaxf_cont38
+  %194 = phi float [ %193, %fmaxf_cont38 ]
+  %195 = call float @__ocml_fmin_f32(float %188, float %190), !dbg !90
+  br label %fminf_cont41, !dbg !90
+
+fminf_cont41:                                     ; preds = %_cont40
+  %fminf42 = phi float [ %195, %_cont40 ]
+  %196 = call float @__ocml_fmin_f32(float %fminf42, float %194), !dbg !91
+  br label %_cont43, !dbg !91
+
+_cont43:                                          ; preds = %fminf_cont41
+  %197 = phi float [ %196, %fminf_cont41 ]
+  %198 = fcmp ole float %186, %197, !dbg !92
+  br i1 %198, label %expr_true45, label %expr_false44, !dbg !93
+
+expr_false44:                                     ; preds = %_cont43
+  br label %_cont46, !dbg !94
+
+expr_true45:                                      ; preds = %_cont43
+  %199 = extractelement <4 x i32> %95, i32 1, !dbg !96
+  %200 = load i32, i32 addrspace(5)* %mask_9483767, align 4, !dbg !95
+  %201 = insertvalue { i32, float } undef, i32 %199, 0, !dbg !97
+  %202 = insertvalue { i32, float } %201, float %186, 1, !dbg !97
+  %203 = or i32 2, %200, !dbg !95
+  store i32 %203, i32 addrspace(5)* %mask_9483767, align 4, !dbg !95
+  store { i32, float } %202, { i32, float } addrspace(5)* %val_9484139, align 4, !dbg !98
+  br label %_cont46, !dbg !99
+
+_cont46:                                          ; preds = %expr_true45, %expr_false44
+  %204 = load i32, i32 addrspace(5)* %mask_9483767, align 4, !dbg !106
+  %205 = icmp eq i32 %204, 0, !dbg !106
+  br i1 %205, label %expr_true50, label %expr_false47, !dbg !107
+
+expr_false47:                                     ; preds = %_cont46
+  %206 = load { i32, float }, { i32, float } addrspace(5)* %val_9484136, align 4, !dbg !108
+  %207 = extractvalue { i32, float } %206, 0, !dbg !94
+  %208 = load { i32, float }, { i32, float } addrspace(5)* %val_9484139, align 4, !dbg !108
+  %209 = load i32, i32 addrspace(5)* %mask_9483767, align 4, !dbg !109
+  %210 = extractvalue { i32, float } %208, 0, !dbg !94
+  %211 = icmp eq i32 %209, 3, !dbg !109
+  br i1 %211, label %expr_true49, label %expr_false48, !dbg !110
+
+expr_false48:                                     ; preds = %expr_false47
+  %212 = load i32, i32 addrspace(5)* %mask_9483767, align 4, !dbg !111
+  %213 = icmp eq i32 %212, 1, !dbg !111
+  %214 = select i1 %213, i32 %207, i32 %210, !dbg !112
+  store i32 %214, i32 addrspace(5)* %node_9483724, align 4, !dbg !113
+  br label %if_join, !dbg !114
+
+expr_true49:                                      ; preds = %expr_false47
+  %215 = extractvalue { i32, float } %206, 1, !dbg !94
+  %216 = extractvalue { i32, float } %208, 1, !dbg !94
+  %217 = fcmp olt float %215, %216, !dbg !115
+  %218 = select i1 %217, i32 %210, i32 %207, !dbg !116
+  %219 = select i1 %217, i32 %207, i32 %210, !dbg !117
+  store i32 %219, i32 addrspace(5)* %node_9483724, align 4, !dbg !113
+  %220 = load i32, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !118
+  %221 = add nsw i32 1, %220, !dbg !118
+  store i32 %221, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !118
+  %222 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9484101, i64 0, i32 %221, !dbg !119
+  store i32 %218, i32 addrspace(5)* %222, align 4, !dbg !119
+  br label %if_join, !dbg !114
+
+if_join:                                          ; preds = %expr_true49, %expr_false48
+  br label %if_join51, !dbg !120
+
+expr_true50:                                      ; preds = %_cont46
+  %223 = load i32, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !121
+  %224 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9484101, i64 0, i32 %223, !dbg !122
+  %225 = load i32, i32 addrspace(5)* %224, align 4, !dbg !122
+  store i32 %225, i32 addrspace(5)* %node_9483724, align 4, !dbg !123
+  %226 = load i32, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !124
+  %227 = load i32, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !125
+  %228 = sub nsw i32 %227, 1, !dbg !125
+  store i32 %228, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !125
+  br label %if_join51, !dbg !120
+
+if_join51:                                        ; preds = %expr_true50, %if_join
+  br label %while_head52, !dbg !126
+
+while_head52:                                     ; preds = %expr_true71, %if_join51
+  %229 = load i32, i32 addrspace(5)* %node_9483724, align 4, !dbg !52
+  %230 = icmp slt i32 %229, 0, !dbg !127
+  br i1 %230, label %expr_true54, label %expr_false53, !dbg !126
+
+expr_false53:                                     ; preds = %while_head52
+  br label %while_head, !dbg !128
+
+expr_true54:                                      ; preds = %while_head52
+  %231 = load i32, i32 addrspace(5)* %node_9483724, align 4, !dbg !129
+  %prim_id = xor i32 -1, %231, !dbg !130
+  %232 = load i32, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !121
+  %233 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9484101, i64 0, i32 %232, !dbg !122
+  %234 = load i32, i32 addrspace(5)* %233, align 4, !dbg !122
+  store i32 %234, i32 addrspace(5)* %node_9483724, align 4, !dbg !123
+  %235 = load i32, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !124
+  %236 = load i32, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !125
+  %237 = sub nsw i32 %236, 1, !dbg !125
+  store i32 %237, i32 addrspace(5)* %ptr_9484098, align 4, !dbg !125
+  store i32 %prim_id, i32 addrspace(5)* %prim_id_9483929, align 4, !dbg !131
+  br label %while_head55, !dbg !132
+
+while_head55:                                     ; preds = %expr_false70, %expr_true54
+  %238 = load i32, i32 addrspace(5)* %prim_id_9483929, align 4, !dbg !133
+  %239 = getelementptr inbounds [0 x %0], [0 x %0]* %_9420408_9483664, i64 0, i32 %238, !dbg !134
+  %240 = add nsw i32 1, %238, !dbg !133
+  %241 = addrspacecast %0* %239 to [0 x <4 x float>] addrspace(1)*, !dbg !135
+  store i32 %240, i32 addrspace(5)* %prim_id_9483929, align 4, !dbg !133
+  %242 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %241, i64 0, i32 2, !dbg !56
+  %243 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %241, i64 0, i32 1, !dbg !56
+  %244 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %241, i64 0, i32 0, !dbg !56
+  %245 = load <4 x float>, <4 x float> addrspace(1)* %244, align 16, !dbg !58
+  %246 = load <4 x float>, <4 x float> addrspace(1)* %243, align 16, !dbg !58
+  %247 = extractelement <4 x float> %246, i32 0, !dbg !136
+  %248 = extractelement <4 x float> %246, i32 1, !dbg !137
+  %249 = extractelement <4 x float> %246, i32 2, !dbg !138
+  %250 = load <4 x float>, <4 x float> addrspace(1)* %242, align 16, !dbg !58
+  %251 = load %6, %6 addrspace(5)* %ray_9483769, align 4, !dbg !139
+  %252 = extractelement <4 x float> %250, i32 1, !dbg !140
+  %253 = extractelement <4 x float> %250, i32 0, !dbg !141
+  %254 = extractelement <4 x float> %250, i32 2, !dbg !142
+  %255 = fmul float %247, %252, !dbg !143
+  %256 = fmul float %249, %252, !dbg !144
+  %257 = fmul float %248, %253, !dbg !145
+  %258 = fmul float %249, %253, !dbg !146
+  %259 = fmul float %248, %254, !dbg !147
+  %260 = fmul float %247, %254, !dbg !148
+  %261 = extractvalue %6 %251, 1, !dbg !149
+  %262 = fsub float %255, %257, !dbg !143
+  %263 = fsub float %259, %256, !dbg !147
+  %264 = fsub float %258, %260, !dbg !146
+  %265 = extractvalue %7 %261, 2, !dbg !144
+  %266 = extractvalue %7 %261, 0, !dbg !148
+  %267 = extractvalue %7 %261, 1, !dbg !147
+  %268 = fmul float %262, %265, !dbg !150
+  %269 = fmul float %263, %266, !dbg !151
+  %270 = fmul float %264, %267, !dbg !152
+  %271 = fadd float %269, %270, !dbg !151
+  %272 = fadd float %271, %268, !dbg !151
+  %273 = call float @__ocml_fabs_f32(float %272), !dbg !153
+  br label %_cont56, !dbg !153
+
+_cont56:                                          ; preds = %while_head55
+  %abs_det = phi float [ %273, %while_head55 ]
+  %274 = extractelement <4 x float> %245, i32 1, !dbg !154
+  %275 = bitcast float %272 to i32, !dbg !26
+  %276 = extractelement <4 x float> %245, i32 2, !dbg !155
+  %277 = extractvalue %6 %251, 0, !dbg !156
+  %278 = and i32 -2147483648, %275, !dbg !26
+  %279 = extractvalue %7 %277, 0, !dbg !67
+  %280 = extractelement <4 x float> %245, i32 0, !dbg !157
+  %281 = extractvalue %7 %277, 2, !dbg !76
+  %282 = extractvalue %7 %277, 1, !dbg !72
+  %283 = fsub float %280, %279, !dbg !158
+  %284 = fsub float %276, %281, !dbg !158
+  %285 = fsub float %274, %282, !dbg !158
+  %286 = fmul float %267, %283, !dbg !145
+  %287 = fmul float %265, %283, !dbg !146
+  %288 = fmul float %267, %284, !dbg !147
+  %289 = fmul float %266, %284, !dbg !148
+  %290 = fmul float %266, %285, !dbg !143
+  %291 = fmul float %265, %285, !dbg !144
+  %292 = fsub float %290, %286, !dbg !143
+  %293 = fsub float %287, %289, !dbg !146
+  %294 = fsub float %288, %291, !dbg !147
+  %295 = fmul float %292, %254, !dbg !150
+  %296 = fmul float %292, %249, !dbg !150
+  %297 = fmul float %293, %252, !dbg !152
+  %298 = fmul float %293, %248, !dbg !152
+  %299 = fmul float %294, %253, !dbg !151
+  %300 = fmul float %294, %247, !dbg !151
+  %301 = fadd float %299, %297, !dbg !151
+  %302 = fadd float %300, %298, !dbg !151
+  %303 = fadd float %301, %295, !dbg !151
+  %304 = fadd float %302, %296, !dbg !151
+  %305 = bitcast float %303 to i32, !dbg !27
+  %306 = bitcast float %304 to i32, !dbg !27
+  %307 = xor i32 %305, %278, !dbg !27
+  %308 = xor i32 %306, %278, !dbg !27
+  %309 = bitcast i32 %307 to float, !dbg !28
+  %310 = bitcast i32 %308 to float, !dbg !28
+  %mask = fcmp ole float 0.000000e+00, %309, !dbg !159
+  %311 = fadd float %309, %310, !dbg !160
+  %312 = fcmp ole float 0.000000e+00, %310, !dbg !161
+  store i1 %mask, i1 addrspace(5)* %mask_9483978, align 1, !dbg !162
+  %313 = and i1 %mask, %312, !dbg !163
+  %314 = fcmp ole float %311, %abs_det, !dbg !160
+  store i1 %313, i1 addrspace(5)* %mask_9483978, align 1, !dbg !163
+  %315 = and i1 %313, %314, !dbg !128
+  store i1 %315, i1 addrspace(5)* %mask_9483978, align 1, !dbg !128
+  %316 = xor i1 true, %315, !dbg !164
+  br label %rv_all_cont, !dbg !165
+
+rv_all_cont:                                      ; preds = %_cont56
+  %rv_all = phi i1 [ %316, %_cont56 ]
+  %317 = call i1 @llvm.expect.i1(i1 %rv_all, i1 true), !dbg !166
+  br label %likely_cont, !dbg !166
+
+likely_cont:                                      ; preds = %rv_all_cont
+  %likely = phi i1 [ %317, %rv_all_cont ]
+  %318 = extractelement <4 x float> %250, i32 3, !dbg !167
+  %319 = bitcast float %318 to i32, !dbg !168
+  br i1 %likely, label %expr_true68, label %expr_false57, !dbg !169
+
+expr_false57:                                     ; preds = %likely_cont
+  %320 = fmul float %284, %262, !dbg !150
+  %321 = extractvalue %6 %251, 5, !dbg !170
+  %322 = fmul float %285, %264, !dbg !152
+  %323 = extractvalue %6 %251, 4, !dbg !171
+  %324 = load i1, i1 addrspace(5)* %mask_9483978, align 1, !dbg !172
+  %325 = fmul float %283, %263, !dbg !151
+  %326 = fmul float %abs_det, %323, !dbg !173
+  %327 = fcmp une float %abs_det, 0.000000e+00, !dbg !174
+  %328 = fmul float %abs_det, %321, !dbg !175
+  %329 = fadd float %325, %322, !dbg !151
+  %330 = and i1 %324, %327, !dbg !172
+  store i1 %330, i1 addrspace(5)* %mask_9483978, align 1, !dbg !172
+  %331 = fadd float %329, %320, !dbg !151
+  %332 = bitcast float %331 to i32, !dbg !27
+  %333 = xor i32 %332, %278, !dbg !27
+  %334 = bitcast i32 %333 to float, !dbg !28
+  %335 = fcmp ole float %334, %328, !dbg !176
+  %336 = fcmp ole float %326, %334, !dbg !177
+  %337 = and i1 %330, %336, !dbg !178
+  store i1 %337, i1 addrspace(5)* %mask_9483978, align 1, !dbg !178
+  %338 = and i1 %337, %335, !dbg !179
+  store i1 %338, i1 addrspace(5)* %mask_9483978, align 1, !dbg !179
+  %339 = xor i1 true, %338, !dbg !180
+  br label %rv_all_cont58, !dbg !181
+
+rv_all_cont58:                                    ; preds = %expr_false57
+  %rv_all59 = phi i1 [ %339, %expr_false57 ]
+  %340 = call i1 @llvm.expect.i1(i1 %rv_all59, i1 true), !dbg !166
+  br label %likely_cont60, !dbg !166
+
+likely_cont60:                                    ; preds = %rv_all_cont58
+  %likely61 = phi i1 [ %340, %rv_all_cont58 ]
+  br i1 %likely61, label %expr_true67, label %expr_false62, !dbg !182
+
+expr_false62:                                     ; preds = %likely_cont60
+  %341 = load i1, i1 addrspace(5)* %mask_9483978, align 1, !dbg !183
+  br i1 %341, label %expr_true64, label %expr_false63, !dbg !184
+
+expr_false63:                                     ; preds = %expr_false62
+  br label %_cont69, !dbg !185
+
+expr_true64:                                      ; preds = %expr_false62
+  %inv_det = fdiv float 1.000000e+00, %abs_det, !dbg !186
+  %342 = extractelement <4 x float> %246, i32 3, !dbg !187
+  %343 = fmul float %309, %inv_det, !dbg !188
+  %344 = and i32 2147483647, %319, !dbg !189
+  %345 = fmul float %334, %inv_det, !dbg !190
+  %346 = fmul float %310, %inv_det, !dbg !191
+  %347 = bitcast float %342 to i32, !dbg !192
+  %348 = insertvalue %5 undef, float %343, 0, !dbg !193
+  %349 = insertvalue %5 %348, float %346, 1, !dbg !193
+  %350 = icmp sle i32 0, %344, !dbg !194
+  %351 = insertvalue %4 undef, float %345, 0, !dbg !34
+  %352 = insertvalue %4 %351, %5 %349, 1, !dbg !34
+  %353 = insertvalue %4 %352, i32 %344, 2, !dbg !34
+  %354 = insertvalue %4 %353, i32 %347, 3, !dbg !34
+  store %4 %354, %4 addrspace(5)* %hit_9483743, align 4, !dbg !195
+  store float %345, float addrspace(5)* %65, align 4, !dbg !196
+  br i1 %350, label %expr_true66, label %expr_false65, !dbg !197
+
+expr_false65:                                     ; preds = %expr_true64
+  br label %_cont69, !dbg !94
+
+expr_true66:                                      ; preds = %expr_true64
+  br label %gpu_traverse_single_helper_cont, !dbg !198
+
+expr_true67:                                      ; preds = %likely_cont60
+  br label %_cont69, !dbg !199
+
+expr_true68:                                      ; preds = %likely_cont
+  br label %_cont69, !dbg !200
+
+_cont69:                                          ; preds = %expr_true68, %expr_true67, %expr_false65, %expr_false63
+  %355 = icmp slt i32 %319, 0, !dbg !201
+  br i1 %355, label %expr_true71, label %expr_false70, !dbg !202
+
+expr_false70:                                     ; preds = %_cont69
+  br label %while_head55, !dbg !203
+
+expr_true71:                                      ; preds = %_cont69
+  br label %while_head52, !dbg !204
+
+expr_false72:                                     ; preds = %while_head
+  %356 = load %4, %4 addrspace(5)* %hit_9483743, align 4, !dbg !205
+  br label %gpu_traverse_single_helper_cont, !dbg !206
+
+gpu_traverse_single_helper_cont:                  ; preds = %expr_false72, %expr_true66
+  %gpu_traverse_single_helper = phi %4 [ %356, %expr_false72 ], [ %354, %expr_true66 ]
+  %357 = extractvalue %4 %gpu_traverse_single_helper, 1, !dbg !207
+  %358 = extractvalue %4 %gpu_traverse_single_helper, 2, !dbg !208
+  %359 = extractvalue %4 %gpu_traverse_single_helper, 0, !dbg !209
+  %360 = extractvalue %5 %357, 1, !dbg !210
+  %361 = getelementptr inbounds [0 x %3], [0 x %3]* %_9420412_9483668, i64 0, i32 %6, !dbg !211
+  %362 = extractvalue %5 %357, 0, !dbg !207
+  %363 = bitcast i32 %358 to float, !dbg !212
+  %364 = insertelement <4 x float> undef, float %363, i32 0, !dbg !213
+  %365 = insertelement <4 x float> %364, float %359, i32 1, !dbg !213
+  %366 = insertelement <4 x float> %365, float %362, i32 2, !dbg !213
+  %367 = insertelement <4 x float> %366, float %360, i32 3, !dbg !213
+  %368 = bitcast %3* %361 to <4 x float>*, !dbg !214
+  store <4 x float> %367, <4 x float>* %368, align 16, !dbg !215
+  ret void, !dbg !216
+
+expr_true73:                                      ; preds = %_cont2
+  ret void, !dbg !217
+}
+
+; Function Attrs: nounwind readnone speculatable
+declare i32 @llvm.amdgcn.workitem.id.x() #0
+
+; Function Attrs: nounwind readnone speculatable
+declare i32 @llvm.amdgcn.workgroup.id.x() #0
+
+; Function Attrs: nounwind readnone speculatable
+declare i32 @llvm.amdgcn.workitem.id.y() #0
+
+declare float @__ocml_fmin_f32(float, float)
+
+declare float @__ocml_fmax_f32(float, float)
+
+declare float @__ocml_fabs_f32(float)
+
+declare i1 @rv_all(i1)
+
+; Function Attrs: nounwind readnone willreturn
+declare i1 @llvm.expect.i1(i1, i1) #1
+
+define amdgpu_kernel void @lambda_9387557([0 x %1]* %_9387560_9483041, [0 x %3]* %_9387561_9483042, i32 %_9387562_9483043, [0 x %2]* %_9387563_9483044, [0 x %0]* %_9387564_9483045) !dbg !218 !reqd_work_group_size !7 {
+lambda_9387557_start:
+  %val_9483558 = alloca { i32, float }, align 4, addrspace(5)
+  %ray_9483168 = alloca %6, align 4, addrspace(5)
+  %nodes_9483522 = alloca [64 x i32], align 4, addrspace(5)
+  %mask_9483166 = alloca i32, align 4, addrspace(5)
+  %prim_id_9483340 = alloca i32, align 4, addrspace(5)
+  %node_9483119 = alloca i32, align 4, addrspace(5)
+  %mask_9483393 = alloca i1, align 1, addrspace(5)
+  %hit_9483125 = alloca %4, align 4, addrspace(5)
+  %ptr_9483519 = alloca i32, align 4, addrspace(5)
+  %val_9483561 = alloca { i32, float }, align 4, addrspace(5)
+  br label %lambda_9387557, !dbg !219
+
+lambda_9387557:                                   ; preds = %lambda_9387557_start
+  %0 = call i32 @llvm.amdgcn.workitem.id.x(), !dbg !220
+  br label %_cont, !dbg !220
+
+_cont:                                            ; preds = %lambda_9387557
+  %1 = phi i32 [ %0, %lambda_9387557 ]
+  %2 = call i32 @llvm.amdgcn.workgroup.id.x(), !dbg !221
+  br label %_cont1, !dbg !221
+
+_cont1:                                           ; preds = %_cont
+  %3 = phi i32 [ %2, %_cont ]
+  %4 = call i32 @llvm.amdgcn.workitem.id.y(), !dbg !222
+  br label %_cont2, !dbg !222
+
+_cont2:                                           ; preds = %_cont1
+  %j = phi i32 [ %4, %_cont1 ]
+  %5 = mul nsw i32 64, %3, !dbg !221
+  %i = add nsw i32 %1, %5, !dbg !220
+  %6 = add nsw i32 %i, %j, !dbg !223
+  %7 = icmp sle i32 %_9387562_9483043, %6, !dbg !224
+  br i1 %7, label %expr_true71, label %expr_false, !dbg !225
+
+expr_false:                                       ; preds = %_cont2
+  %8 = getelementptr inbounds [0 x %1], [0 x %1]* %_9387560_9483041, i64 0, i32 %6, !dbg !226
+  %9 = bitcast %1* %8 to [0 x <4 x float>]*, !dbg !227
+  %10 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>]* %9, i64 0, i32 1, !dbg !228
+  %11 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>]* %9, i64 0, i32 0, !dbg !229
+  %12 = load <4 x float>, <4 x float>* %11, align 16, !dbg !229
+  %13 = load <4 x float>, <4 x float>* %10, align 16, !dbg !228
+  %14 = extractelement <4 x float> %13, i32 0, !dbg !230
+  %15 = fsub float -0.000000e+00, %14, !dbg !231
+  %16 = fcmp olt float 0.000000e+00, %14, !dbg !232
+  %17 = select i1 %16, float %14, float %15, !dbg !233
+  %18 = fcmp olt float %17, 0x3E45798EE0000000, !dbg !233
+  br i1 %18, label %expr_true, label %expr_false3, !dbg !234
+
+expr_false3:                                      ; preds = %expr_false
+  %19 = fdiv float 1.000000e+00, %14, !dbg !235
+  br label %safe_rcp_cont, !dbg !236
+
+expr_true:                                        ; preds = %expr_false
+  %20 = bitcast float %14 to i32, !dbg !237
+  %21 = and i32 -2147483648, %20, !dbg !237
+  %22 = xor i32 2139095039, %21, !dbg !238
+  %23 = bitcast i32 %22 to float, !dbg !239
+  br label %safe_rcp_cont, !dbg !240
+
+safe_rcp_cont:                                    ; preds = %expr_true, %expr_false3
+  %safe_rcp = phi float [ %23, %expr_true ], [ %19, %expr_false3 ]
+  %24 = extractelement <4 x float> %13, i32 1, !dbg !241
+  %25 = fcmp olt float 0.000000e+00, %24, !dbg !232
+  %26 = fsub float -0.000000e+00, %24, !dbg !231
+  %27 = select i1 %25, float %24, float %26, !dbg !233
+  %28 = fcmp olt float %27, 0x3E45798EE0000000, !dbg !233
+  br i1 %28, label %expr_true5, label %expr_false4, !dbg !234
+
+expr_false4:                                      ; preds = %safe_rcp_cont
+  %29 = fdiv float 1.000000e+00, %24, !dbg !235
+  br label %safe_rcp_cont6, !dbg !236
+
+expr_true5:                                       ; preds = %safe_rcp_cont
+  %30 = bitcast float %24 to i32, !dbg !237
+  %31 = and i32 -2147483648, %30, !dbg !237
+  %32 = xor i32 2139095039, %31, !dbg !238
+  %33 = bitcast i32 %32 to float, !dbg !239
+  br label %safe_rcp_cont6, !dbg !240
+
+safe_rcp_cont6:                                   ; preds = %expr_true5, %expr_false4
+  %safe_rcp7 = phi float [ %33, %expr_true5 ], [ %29, %expr_false4 ]
+  %34 = extractelement <4 x float> %13, i32 2, !dbg !242
+  %35 = fcmp olt float 0.000000e+00, %34, !dbg !232
+  %36 = fsub float -0.000000e+00, %34, !dbg !231
+  %37 = select i1 %35, float %34, float %36, !dbg !233
+  %38 = fcmp olt float %37, 0x3E45798EE0000000, !dbg !233
+  br i1 %38, label %expr_true9, label %expr_false8, !dbg !234
+
+expr_false8:                                      ; preds = %safe_rcp_cont6
+  %39 = fdiv float 1.000000e+00, %34, !dbg !235
+  br label %safe_rcp_cont10, !dbg !236
+
+expr_true9:                                       ; preds = %safe_rcp_cont6
+  %40 = bitcast float %34 to i32, !dbg !237
+  %41 = and i32 -2147483648, %40, !dbg !237
+  %42 = xor i32 2139095039, %41, !dbg !238
+  %43 = bitcast i32 %42 to float, !dbg !239
+  br label %safe_rcp_cont10, !dbg !240
+
+safe_rcp_cont10:                                  ; preds = %expr_true9, %expr_false8
+  %safe_rcp11 = phi float [ %43, %expr_true9 ], [ %39, %expr_false8 ]
+  %44 = insertvalue %7 undef, float %14, 0, !dbg !243
+  %45 = insertvalue %7 %44, float %24, 1, !dbg !243
+  %46 = insertvalue %7 %45, float %34, 2, !dbg !243
+  %47 = insertvalue %7 undef, float %safe_rcp, 0, !dbg !243
+  %48 = insertvalue %7 %47, float %safe_rcp7, 1, !dbg !243
+  %49 = insertvalue %7 %48, float %safe_rcp11, 2, !dbg !243
+  %50 = extractelement <4 x float> %12, i32 2, !dbg !244
+  %51 = extractelement <4 x float> %13, i32 3, !dbg !245
+  %52 = fmul float %50, %safe_rcp11, !dbg !246
+  %53 = fsub float -0.000000e+00, %52, !dbg !247
+  %54 = extractelement <4 x float> %12, i32 0, !dbg !248
+  %55 = extractelement <4 x float> %12, i32 3, !dbg !249
+  %56 = extractelement <4 x float> %12, i32 1, !dbg !250
+  %57 = insertvalue %7 undef, float %54, 0, !dbg !243
+  %58 = insertvalue %7 %57, float %56, 1, !dbg !243
+  %59 = insertvalue %7 %58, float %50, 2, !dbg !243
+  %60 = insertvalue %4 undef, float %51, 0, !dbg !251
+  %61 = insertvalue %4 %60, %5 undef, 1, !dbg !251
+  %62 = insertvalue %4 %61, i32 -1, 2, !dbg !251
+  %63 = insertvalue %4 %62, i32 -1, 3, !dbg !251
+  %64 = fmul float %54, %safe_rcp, !dbg !246
+  %65 = fmul float %56, %safe_rcp7, !dbg !246
+  %66 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9483522, i64 0, i32 0, !dbg !252
+  %67 = getelementptr inbounds %6, %6 addrspace(5)* %ray_9483168, i32 0, i32 5, !dbg !253
+  %68 = fsub float -0.000000e+00, %64, !dbg !247
+  %69 = fsub float -0.000000e+00, %65, !dbg !247
+  %70 = insertvalue %7 undef, float %68, 0, !dbg !243
+  %71 = insertvalue %7 %70, float %69, 1, !dbg !243
+  %72 = insertvalue %7 %71, float %53, 2, !dbg !243
+  %73 = insertvalue %6 undef, %7 %59, 0, !dbg !254
+  %74 = insertvalue %6 %73, %7 %46, 1, !dbg !254
+  %75 = insertvalue %6 %74, %7 %49, 2, !dbg !254
+  %76 = insertvalue %6 %75, %7 %72, 3, !dbg !254
+  %77 = insertvalue %6 %76, float %55, 4, !dbg !254
+  %78 = insertvalue %6 %77, float %51, 5, !dbg !254
+  store %6 %78, %6 addrspace(5)* %ray_9483168, align 4, !dbg !255
+  store %4 %63, %4 addrspace(5)* %hit_9483125, align 4, !dbg !256
+  store i32 0, i32 addrspace(5)* %node_9483119, align 4, !dbg !257
+  store i32 -1, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !258
+  store i32 0, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !259
+  store i32 0, i32 addrspace(5)* %66, align 4, !dbg !252
+  store i32 1, i32 addrspace(5)* %node_9483119, align 4, !dbg !260
+  br label %while_head, !dbg !261
+
+while_head:                                       ; preds = %expr_false53, %safe_rcp_cont10
+  %79 = load i32, i32 addrspace(5)* %node_9483119, align 4, !dbg !262
+  %80 = icmp eq i32 %79, 0, !dbg !262
+  br i1 %80, label %expr_false70, label %expr_true12, !dbg !261
+
+expr_true12:                                      ; preds = %while_head
+  %81 = load i32, i32 addrspace(5)* %node_9483119, align 4, !dbg !263
+  %82 = sub nsw i32 %81, 1, !dbg !264
+  %83 = getelementptr inbounds [0 x %2], [0 x %2]* %_9387563_9483044, i64 0, i32 %82, !dbg !265
+  %84 = addrspacecast %2* %83 to [0 x <4 x float>] addrspace(1)*, !dbg !266
+  %85 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %84, i64 0, i32 0, !dbg !267
+  %86 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %84, i64 0, i32 1, !dbg !267
+  %87 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %84, i64 0, i32 2, !dbg !267
+  %88 = bitcast [0 x <4 x float>] addrspace(1)* %84 to [0 x <4 x i32>] addrspace(1)*, !dbg !268
+  %89 = load <4 x float>, <4 x float> addrspace(1)* %85, align 16, !dbg !269
+  %90 = getelementptr inbounds [0 x <4 x i32>], [0 x <4 x i32>] addrspace(1)* %88, i64 0, i32 3, !dbg !270
+  %91 = extractelement <4 x float> %89, i32 0, !dbg !271
+  %92 = extractelement <4 x float> %89, i32 1, !dbg !272
+  %93 = load <4 x float>, <4 x float> addrspace(1)* %86, align 16, !dbg !269
+  %94 = load <4 x float>, <4 x float> addrspace(1)* %87, align 16, !dbg !269
+  %95 = load <4 x i32>, <4 x i32> addrspace(1)* %90, align 16, !dbg !273
+  store i32 0, i32 addrspace(5)* %mask_9483166, align 4, !dbg !274
+  %96 = load %6, %6 addrspace(5)* %ray_9483168, align 4, !dbg !275
+  %97 = extractvalue %6 %96, 3, !dbg !276
+  %98 = extractvalue %6 %96, 2, !dbg !277
+  %99 = extractvalue %7 %97, 0, !dbg !278
+  %100 = extractvalue %7 %98, 0, !dbg !279
+  %101 = fmul float %100, %91, !dbg !246
+  %102 = fmul float %100, %92, !dbg !246
+  %103 = fadd float %101, %99, !dbg !280
+  %104 = fadd float %102, %99, !dbg !280
+  %105 = call float @__ocml_fmin_f32(float %103, float %104), !dbg !281
+  br label %_cont13, !dbg !281
+
+_cont13:                                          ; preds = %expr_true12
+  %106 = phi float [ %105, %expr_true12 ]
+  %107 = extractelement <4 x float> %89, i32 2, !dbg !282
+  %108 = extractvalue %7 %98, 1, !dbg !283
+  %109 = fmul float %108, %107, !dbg !246
+  %110 = extractelement <4 x float> %89, i32 3, !dbg !284
+  %111 = extractvalue %7 %97, 1, !dbg !285
+  %112 = fmul float %108, %110, !dbg !246
+  %113 = fadd float %109, %111, !dbg !280
+  %114 = fadd float %112, %111, !dbg !280
+  %115 = call float @__ocml_fmin_f32(float %113, float %114), !dbg !286
+  br label %_cont14, !dbg !286
+
+_cont14:                                          ; preds = %_cont13
+  %116 = phi float [ %115, %_cont13 ]
+  %117 = extractvalue %7 %97, 2, !dbg !287
+  %118 = extractvalue %7 %98, 2, !dbg !288
+  %119 = extractelement <4 x float> %93, i32 0, !dbg !289
+  %120 = extractelement <4 x float> %93, i32 1, !dbg !290
+  %121 = fmul float %118, %119, !dbg !246
+  %122 = fmul float %118, %120, !dbg !246
+  %123 = fadd float %121, %117, !dbg !280
+  %124 = fadd float %122, %117, !dbg !280
+  %125 = call float @__ocml_fmin_f32(float %123, float %124), !dbg !291
+  br label %fminf_cont, !dbg !291
+
+fminf_cont:                                       ; preds = %_cont14
+  %fminf = phi float [ %125, %_cont14 ]
+  %126 = extractvalue %6 %96, 4, !dbg !292
+  %127 = call float @__ocml_fmax_f32(float %fminf, float %126), !dbg !293
+  br label %_cont15, !dbg !293
+
+_cont15:                                          ; preds = %fminf_cont
+  %128 = phi float [ %127, %fminf_cont ]
+  %129 = call float @__ocml_fmax_f32(float %106, float %116), !dbg !294
+  br label %fmaxf_cont, !dbg !294
+
+fmaxf_cont:                                       ; preds = %_cont15
+  %fmaxf = phi float [ %129, %_cont15 ]
+  %130 = call float @__ocml_fmax_f32(float %fmaxf, float %128), !dbg !295
+  br label %_cont16, !dbg !295
+
+_cont16:                                          ; preds = %fmaxf_cont
+  %131 = phi float [ %130, %fmaxf_cont ]
+  %132 = call float @__ocml_fmax_f32(float %103, float %104), !dbg !296
+  br label %_cont17, !dbg !296
+
+_cont17:                                          ; preds = %_cont16
+  %133 = phi float [ %132, %_cont16 ]
+  %134 = call float @__ocml_fmax_f32(float %113, float %114), !dbg !297
+  br label %_cont18, !dbg !297
+
+_cont18:                                          ; preds = %_cont17
+  %135 = phi float [ %134, %_cont17 ]
+  %136 = call float @__ocml_fmax_f32(float %123, float %124), !dbg !298
+  br label %fmaxf_cont19, !dbg !298
+
+fmaxf_cont19:                                     ; preds = %_cont18
+  %fmaxf20 = phi float [ %136, %_cont18 ]
+  %137 = extractvalue %6 %96, 5, !dbg !299
+  %138 = call float @__ocml_fmin_f32(float %fmaxf20, float %137), !dbg !300
+  br label %_cont21, !dbg !300
+
+_cont21:                                          ; preds = %fmaxf_cont19
+  %139 = phi float [ %138, %fmaxf_cont19 ]
+  %140 = call float @__ocml_fmin_f32(float %133, float %135), !dbg !301
+  br label %fminf_cont22, !dbg !301
+
+fminf_cont22:                                     ; preds = %_cont21
+  %fminf23 = phi float [ %140, %_cont21 ]
+  %141 = call float @__ocml_fmin_f32(float %fminf23, float %139), !dbg !302
+  br label %_cont24, !dbg !302
+
+_cont24:                                          ; preds = %fminf_cont22
+  %142 = phi float [ %141, %fminf_cont22 ]
+  %143 = fcmp ole float %131, %142, !dbg !303
+  br i1 %143, label %expr_true26, label %expr_false25, !dbg !304
+
+expr_false25:                                     ; preds = %_cont24
+  br label %_cont27, !dbg !305
+
+expr_true26:                                      ; preds = %_cont24
+  %144 = load i32, i32 addrspace(5)* %mask_9483166, align 4, !dbg !306
+  %145 = extractelement <4 x i32> %95, i32 0, !dbg !307
+  %146 = insertvalue { i32, float } undef, i32 %145, 0, !dbg !308
+  %147 = insertvalue { i32, float } %146, float %131, 1, !dbg !308
+  %148 = or i32 1, %144, !dbg !306
+  store i32 %148, i32 addrspace(5)* %mask_9483166, align 4, !dbg !306
+  store { i32, float } %147, { i32, float } addrspace(5)* %val_9483558, align 4, !dbg !309
+  br label %_cont27, !dbg !310
+
+_cont27:                                          ; preds = %expr_true26, %expr_false25
+  %149 = extractelement <4 x float> %93, i32 2, !dbg !311
+  %150 = extractelement <4 x float> %93, i32 3, !dbg !312
+  %151 = load %6, %6 addrspace(5)* %ray_9483168, align 4, !dbg !275
+  %152 = extractvalue %6 %151, 3, !dbg !276
+  %153 = extractvalue %6 %151, 2, !dbg !277
+  %154 = extractvalue %7 %152, 0, !dbg !278
+  %155 = extractvalue %7 %153, 0, !dbg !279
+  %156 = fmul float %155, %149, !dbg !246
+  %157 = fmul float %155, %150, !dbg !246
+  %158 = fadd float %156, %154, !dbg !280
+  %159 = fadd float %157, %154, !dbg !280
+  %160 = call float @__ocml_fmin_f32(float %158, float %159), !dbg !281
+  br label %_cont28, !dbg !281
+
+_cont28:                                          ; preds = %_cont27
+  %161 = phi float [ %160, %_cont27 ]
+  %162 = extractvalue %7 %152, 1, !dbg !285
+  %163 = extractvalue %7 %153, 1, !dbg !283
+  %164 = extractelement <4 x float> %94, i32 0, !dbg !313
+  %165 = extractelement <4 x float> %94, i32 1, !dbg !314
+  %166 = fmul float %163, %164, !dbg !246
+  %167 = fmul float %163, %165, !dbg !246
+  %168 = fadd float %166, %162, !dbg !280
+  %169 = fadd float %167, %162, !dbg !280
+  %170 = call float @__ocml_fmin_f32(float %168, float %169), !dbg !286
+  br label %_cont29, !dbg !286
+
+_cont29:                                          ; preds = %_cont28
+  %171 = phi float [ %170, %_cont28 ]
+  %172 = extractvalue %7 %153, 2, !dbg !288
+  %173 = extractelement <4 x float> %94, i32 3, !dbg !315
+  %174 = extractelement <4 x float> %94, i32 2, !dbg !316
+  %175 = extractvalue %7 %152, 2, !dbg !287
+  %176 = fmul float %172, %174, !dbg !246
+  %177 = fmul float %172, %173, !dbg !246
+  %178 = fadd float %176, %175, !dbg !280
+  %179 = fadd float %177, %175, !dbg !280
+  %180 = call float @__ocml_fmin_f32(float %178, float %179), !dbg !291
+  br label %fminf_cont30, !dbg !291
+
+fminf_cont30:                                     ; preds = %_cont29
+  %fminf31 = phi float [ %180, %_cont29 ]
+  %181 = extractvalue %6 %151, 4, !dbg !292
+  %182 = call float @__ocml_fmax_f32(float %fminf31, float %181), !dbg !293
+  br label %_cont32, !dbg !293
+
+_cont32:                                          ; preds = %fminf_cont30
+  %183 = phi float [ %182, %fminf_cont30 ]
+  %184 = call float @__ocml_fmax_f32(float %161, float %171), !dbg !294
+  br label %fmaxf_cont33, !dbg !294
+
+fmaxf_cont33:                                     ; preds = %_cont32
+  %fmaxf34 = phi float [ %184, %_cont32 ]
+  %185 = call float @__ocml_fmax_f32(float %fmaxf34, float %183), !dbg !295
+  br label %_cont35, !dbg !295
+
+_cont35:                                          ; preds = %fmaxf_cont33
+  %186 = phi float [ %185, %fmaxf_cont33 ]
+  %187 = call float @__ocml_fmax_f32(float %158, float %159), !dbg !296
+  br label %_cont36, !dbg !296
+
+_cont36:                                          ; preds = %_cont35
+  %188 = phi float [ %187, %_cont35 ]
+  %189 = call float @__ocml_fmax_f32(float %168, float %169), !dbg !297
+  br label %_cont37, !dbg !297
+
+_cont37:                                          ; preds = %_cont36
+  %190 = phi float [ %189, %_cont36 ]
+  %191 = call float @__ocml_fmax_f32(float %178, float %179), !dbg !298
+  br label %fmaxf_cont38, !dbg !298
+
+fmaxf_cont38:                                     ; preds = %_cont37
+  %fmaxf39 = phi float [ %191, %_cont37 ]
+  %192 = extractvalue %6 %151, 5, !dbg !299
+  %193 = call float @__ocml_fmin_f32(float %fmaxf39, float %192), !dbg !300
+  br label %_cont40, !dbg !300
+
+_cont40:                                          ; preds = %fmaxf_cont38
+  %194 = phi float [ %193, %fmaxf_cont38 ]
+  %195 = call float @__ocml_fmin_f32(float %188, float %190), !dbg !301
+  br label %fminf_cont41, !dbg !301
+
+fminf_cont41:                                     ; preds = %_cont40
+  %fminf42 = phi float [ %195, %_cont40 ]
+  %196 = call float @__ocml_fmin_f32(float %fminf42, float %194), !dbg !302
+  br label %_cont43, !dbg !302
+
+_cont43:                                          ; preds = %fminf_cont41
+  %197 = phi float [ %196, %fminf_cont41 ]
+  %198 = fcmp ole float %186, %197, !dbg !303
+  br i1 %198, label %expr_true45, label %expr_false44, !dbg !304
+
+expr_false44:                                     ; preds = %_cont43
+  br label %_cont46, !dbg !305
+
+expr_true45:                                      ; preds = %_cont43
+  %199 = extractelement <4 x i32> %95, i32 1, !dbg !307
+  %200 = load i32, i32 addrspace(5)* %mask_9483166, align 4, !dbg !306
+  %201 = insertvalue { i32, float } undef, i32 %199, 0, !dbg !308
+  %202 = insertvalue { i32, float } %201, float %186, 1, !dbg !308
+  %203 = or i32 2, %200, !dbg !306
+  store i32 %203, i32 addrspace(5)* %mask_9483166, align 4, !dbg !306
+  store { i32, float } %202, { i32, float } addrspace(5)* %val_9483561, align 4, !dbg !309
+  br label %_cont46, !dbg !310
+
+_cont46:                                          ; preds = %expr_true45, %expr_false44
+  %204 = load i32, i32 addrspace(5)* %mask_9483166, align 4, !dbg !317
+  %205 = icmp eq i32 %204, 0, !dbg !317
+  br i1 %205, label %expr_true50, label %expr_false47, !dbg !318
+
+expr_false47:                                     ; preds = %_cont46
+  %206 = load { i32, float }, { i32, float } addrspace(5)* %val_9483558, align 4, !dbg !319
+  %207 = extractvalue { i32, float } %206, 0, !dbg !305
+  %208 = load { i32, float }, { i32, float } addrspace(5)* %val_9483561, align 4, !dbg !319
+  %209 = load i32, i32 addrspace(5)* %mask_9483166, align 4, !dbg !320
+  %210 = extractvalue { i32, float } %208, 0, !dbg !305
+  %211 = icmp eq i32 %209, 3, !dbg !320
+  br i1 %211, label %expr_true49, label %expr_false48, !dbg !321
+
+expr_false48:                                     ; preds = %expr_false47
+  %212 = load i32, i32 addrspace(5)* %mask_9483166, align 4, !dbg !322
+  %213 = icmp eq i32 %212, 1, !dbg !322
+  %214 = select i1 %213, i32 %207, i32 %210, !dbg !323
+  store i32 %214, i32 addrspace(5)* %node_9483119, align 4, !dbg !324
+  br label %if_join, !dbg !325
+
+expr_true49:                                      ; preds = %expr_false47
+  %215 = extractvalue { i32, float } %208, 1, !dbg !305
+  %216 = extractvalue { i32, float } %206, 1, !dbg !305
+  %217 = fcmp olt float %216, %215, !dbg !326
+  %218 = select i1 %217, i32 %210, i32 %207, !dbg !327
+  %219 = select i1 %217, i32 %207, i32 %210, !dbg !328
+  store i32 %219, i32 addrspace(5)* %node_9483119, align 4, !dbg !324
+  %220 = load i32, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !329
+  %221 = add nsw i32 1, %220, !dbg !329
+  store i32 %221, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !329
+  %222 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9483522, i64 0, i32 %221, !dbg !330
+  store i32 %218, i32 addrspace(5)* %222, align 4, !dbg !330
+  br label %if_join, !dbg !325
+
+if_join:                                          ; preds = %expr_true49, %expr_false48
+  br label %if_join51, !dbg !331
+
+expr_true50:                                      ; preds = %_cont46
+  %223 = load i32, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !332
+  %224 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9483522, i64 0, i32 %223, !dbg !333
+  %225 = load i32, i32 addrspace(5)* %224, align 4, !dbg !333
+  store i32 %225, i32 addrspace(5)* %node_9483119, align 4, !dbg !334
+  %226 = load i32, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !335
+  %227 = load i32, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !336
+  %228 = sub nsw i32 %227, 1, !dbg !336
+  store i32 %228, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !336
+  br label %if_join51, !dbg !331
+
+if_join51:                                        ; preds = %expr_true50, %if_join
+  br label %while_head52, !dbg !337
+
+while_head52:                                     ; preds = %expr_true69, %if_join51
+  %229 = load i32, i32 addrspace(5)* %node_9483119, align 4, !dbg !263
+  %230 = icmp slt i32 %229, 0, !dbg !338
+  br i1 %230, label %expr_true54, label %expr_false53, !dbg !337
+
+expr_false53:                                     ; preds = %while_head52
+  br label %while_head, !dbg !339
+
+expr_true54:                                      ; preds = %while_head52
+  %231 = load i32, i32 addrspace(5)* %node_9483119, align 4, !dbg !340
+  %prim_id = xor i32 -1, %231, !dbg !341
+  %232 = load i32, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !332
+  %233 = getelementptr inbounds [64 x i32], [64 x i32] addrspace(5)* %nodes_9483522, i64 0, i32 %232, !dbg !333
+  %234 = load i32, i32 addrspace(5)* %233, align 4, !dbg !333
+  store i32 %234, i32 addrspace(5)* %node_9483119, align 4, !dbg !334
+  %235 = load i32, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !335
+  %236 = load i32, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !336
+  %237 = sub nsw i32 %236, 1, !dbg !336
+  store i32 %237, i32 addrspace(5)* %ptr_9483519, align 4, !dbg !336
+  store i32 %prim_id, i32 addrspace(5)* %prim_id_9483340, align 4, !dbg !342
+  br label %while_head55, !dbg !343
+
+while_head55:                                     ; preds = %expr_false68, %expr_true54
+  %238 = load i32, i32 addrspace(5)* %prim_id_9483340, align 4, !dbg !344
+  %239 = getelementptr inbounds [0 x %0], [0 x %0]* %_9387564_9483045, i64 0, i32 %238, !dbg !345
+  %240 = add nsw i32 1, %238, !dbg !344
+  %241 = addrspacecast %0* %239 to [0 x <4 x float>] addrspace(1)*, !dbg !346
+  store i32 %240, i32 addrspace(5)* %prim_id_9483340, align 4, !dbg !344
+  %242 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %241, i64 0, i32 2, !dbg !267
+  %243 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %241, i64 0, i32 1, !dbg !267
+  %244 = getelementptr inbounds [0 x <4 x float>], [0 x <4 x float>] addrspace(1)* %241, i64 0, i32 0, !dbg !267
+  %245 = load <4 x float>, <4 x float> addrspace(1)* %244, align 16, !dbg !269
+  %246 = load <4 x float>, <4 x float> addrspace(1)* %243, align 16, !dbg !269
+  %247 = load <4 x float>, <4 x float> addrspace(1)* %242, align 16, !dbg !269
+  %248 = extractelement <4 x float> %246, i32 0, !dbg !347
+  %249 = extractelement <4 x float> %246, i32 1, !dbg !348
+  %250 = extractelement <4 x float> %246, i32 2, !dbg !349
+  %251 = load %6, %6 addrspace(5)* %ray_9483168, align 4, !dbg !350
+  %252 = extractelement <4 x float> %247, i32 1, !dbg !351
+  %253 = extractelement <4 x float> %247, i32 0, !dbg !352
+  %254 = extractelement <4 x float> %247, i32 2, !dbg !353
+  %255 = fmul float %248, %252, !dbg !354
+  %256 = fmul float %250, %252, !dbg !355
+  %257 = fmul float %249, %253, !dbg !356
+  %258 = fmul float %250, %253, !dbg !357
+  %259 = fmul float %249, %254, !dbg !358
+  %260 = fmul float %248, %254, !dbg !359
+  %261 = extractvalue %6 %251, 1, !dbg !360
+  %262 = fsub float %255, %257, !dbg !354
+  %263 = fsub float %259, %256, !dbg !358
+  %264 = fsub float %258, %260, !dbg !357
+  %265 = extractvalue %7 %261, 2, !dbg !355
+  %266 = extractvalue %7 %261, 0, !dbg !359
+  %267 = extractvalue %7 %261, 1, !dbg !358
+  %268 = fmul float %262, %265, !dbg !361
+  %269 = fmul float %263, %266, !dbg !362
+  %270 = fmul float %264, %267, !dbg !363
+  %271 = fadd float %269, %270, !dbg !362
+  %272 = fadd float %271, %268, !dbg !362
+  %273 = call float @__ocml_fabs_f32(float %272), !dbg !364
+  br label %_cont56, !dbg !364
+
+_cont56:                                          ; preds = %while_head55
+  %abs_det = phi float [ %273, %while_head55 ]
+  %274 = bitcast float %272 to i32, !dbg !237
+  %275 = extractelement <4 x float> %245, i32 1, !dbg !365
+  %276 = extractelement <4 x float> %245, i32 2, !dbg !366
+  %277 = extractvalue %6 %251, 0, !dbg !367
+  %278 = and i32 -2147483648, %274, !dbg !237
+  %279 = extractelement <4 x float> %245, i32 0, !dbg !368
+  %280 = extractvalue %7 %277, 2, !dbg !287
+  %281 = extractvalue %7 %277, 0, !dbg !278
+  %282 = extractvalue %7 %277, 1, !dbg !285
+  %283 = fsub float %279, %281, !dbg !369
+  %284 = fsub float %276, %280, !dbg !369
+  %285 = fsub float %275, %282, !dbg !369
+  %286 = fmul float %267, %283, !dbg !356
+  %287 = fmul float %265, %283, !dbg !357
+  %288 = fmul float %267, %284, !dbg !358
+  %289 = fmul float %266, %284, !dbg !359
+  %290 = fmul float %266, %285, !dbg !354
+  %291 = fmul float %265, %285, !dbg !355
+  %292 = fsub float %290, %286, !dbg !354
+  %293 = fsub float %287, %289, !dbg !357
+  %294 = fsub float %288, %291, !dbg !358
+  %295 = fmul float %292, %254, !dbg !361
+  %296 = fmul float %292, %250, !dbg !361
+  %297 = fmul float %293, %252, !dbg !363
+  %298 = fmul float %293, %249, !dbg !363
+  %299 = fmul float %294, %253, !dbg !362
+  %300 = fmul float %294, %248, !dbg !362
+  %301 = fadd float %299, %297, !dbg !362
+  %302 = fadd float %300, %298, !dbg !362
+  %303 = fadd float %301, %295, !dbg !362
+  %304 = fadd float %302, %296, !dbg !362
+  %305 = bitcast float %303 to i32, !dbg !238
+  %306 = bitcast float %304 to i32, !dbg !238
+  %307 = xor i32 %305, %278, !dbg !238
+  %308 = xor i32 %306, %278, !dbg !238
+  %309 = bitcast i32 %307 to float, !dbg !239
+  %310 = bitcast i32 %308 to float, !dbg !239
+  %mask = fcmp ole float 0.000000e+00, %309, !dbg !370
+  %311 = fadd float %309, %310, !dbg !371
+  %312 = fcmp ole float 0.000000e+00, %310, !dbg !372
+  store i1 %mask, i1 addrspace(5)* %mask_9483393, align 1, !dbg !373
+  %313 = and i1 %mask, %312, !dbg !374
+  %314 = fcmp ole float %311, %abs_det, !dbg !371
+  store i1 %313, i1 addrspace(5)* %mask_9483393, align 1, !dbg !374
+  %315 = and i1 %313, %314, !dbg !339
+  store i1 %315, i1 addrspace(5)* %mask_9483393, align 1, !dbg !339
+  %316 = xor i1 true, %315, !dbg !375
+  br label %rv_all_cont, !dbg !376
+
+rv_all_cont:                                      ; preds = %_cont56
+  %rv_all = phi i1 [ %316, %_cont56 ]
+  %317 = call i1 @llvm.expect.i1(i1 %rv_all, i1 true), !dbg !377
+  br label %likely_cont, !dbg !377
+
+likely_cont:                                      ; preds = %rv_all_cont
+  %likely = phi i1 [ %317, %rv_all_cont ]
+  %318 = extractelement <4 x float> %247, i32 3, !dbg !378
+  %319 = bitcast float %318 to i32, !dbg !379
+  br i1 %likely, label %expr_true66, label %expr_false57, !dbg !380
+
+expr_false57:                                     ; preds = %likely_cont
+  %320 = extractvalue %6 %251, 5, !dbg !381
+  %321 = fmul float %abs_det, %320, !dbg !382
+  %322 = fmul float %283, %263, !dbg !362
+  %323 = fmul float %285, %264, !dbg !363
+  %324 = fadd float %322, %323, !dbg !362
+  %325 = fmul float %284, %262, !dbg !361
+  %326 = load i1, i1 addrspace(5)* %mask_9483393, align 1, !dbg !383
+  %327 = fadd float %324, %325, !dbg !362
+  %328 = extractvalue %6 %251, 4, !dbg !384
+  %329 = fcmp une float %abs_det, 0.000000e+00, !dbg !385
+  %330 = bitcast float %327 to i32, !dbg !238
+  %331 = fmul float %abs_det, %328, !dbg !386
+  %332 = and i1 %326, %329, !dbg !383
+  store i1 %332, i1 addrspace(5)* %mask_9483393, align 1, !dbg !383
+  %333 = xor i32 %330, %278, !dbg !238
+  %334 = bitcast i32 %333 to float, !dbg !239
+  %335 = fcmp ole float %334, %321, !dbg !387
+  %336 = fcmp ole float %331, %334, !dbg !388
+  %337 = and i1 %332, %336, !dbg !389
+  store i1 %337, i1 addrspace(5)* %mask_9483393, align 1, !dbg !389
+  %338 = and i1 %337, %335, !dbg !390
+  store i1 %338, i1 addrspace(5)* %mask_9483393, align 1, !dbg !390
+  %339 = xor i1 true, %338, !dbg !391
+  br label %rv_all_cont58, !dbg !392
+
+rv_all_cont58:                                    ; preds = %expr_false57
+  %rv_all59 = phi i1 [ %339, %expr_false57 ]
+  %340 = call i1 @llvm.expect.i1(i1 %rv_all59, i1 true), !dbg !377
+  br label %likely_cont60, !dbg !377
+
+likely_cont60:                                    ; preds = %rv_all_cont58
+  %likely61 = phi i1 [ %340, %rv_all_cont58 ]
+  br i1 %likely61, label %expr_true65, label %expr_false62, !dbg !393
+
+expr_false62:                                     ; preds = %likely_cont60
+  %341 = load i1, i1 addrspace(5)* %mask_9483393, align 1, !dbg !394
+  br i1 %341, label %expr_true64, label %expr_false63, !dbg !395
+
+expr_false63:                                     ; preds = %expr_false62
+  br label %_cont67, !dbg !396
+
+expr_true64:                                      ; preds = %expr_false62
+  %342 = and i32 2147483647, %319, !dbg !397
+  %inv_det = fdiv float 1.000000e+00, %abs_det, !dbg !398
+  %343 = fmul float %309, %inv_det, !dbg !399
+  %344 = fmul float %334, %inv_det, !dbg !400
+  %345 = extractelement <4 x float> %246, i32 3, !dbg !401
+  %346 = fmul float %310, %inv_det, !dbg !402
+  %347 = insertvalue %5 undef, float %343, 0, !dbg !403
+  %348 = insertvalue %5 %347, float %346, 1, !dbg !403
+  %349 = bitcast float %345 to i32, !dbg !404
+  %350 = insertvalue %4 undef, float %344, 0, !dbg !251
+  %351 = insertvalue %4 %350, %5 %348, 1, !dbg !251
+  %352 = insertvalue %4 %351, i32 %342, 2, !dbg !251
+  %353 = insertvalue %4 %352, i32 %349, 3, !dbg !251
+  store %4 %353, %4 addrspace(5)* %hit_9483125, align 4, !dbg !405
+  store float %344, float addrspace(5)* %67, align 4, !dbg !406
+  br label %_cont67, !dbg !305
+
+expr_true65:                                      ; preds = %likely_cont60
+  br label %_cont67, !dbg !407
+
+expr_true66:                                      ; preds = %likely_cont
+  br label %_cont67, !dbg !408
+
+_cont67:                                          ; preds = %expr_true66, %expr_true65, %expr_true64, %expr_false63
+  %354 = icmp slt i32 %319, 0, !dbg !409
+  br i1 %354, label %expr_true69, label %expr_false68, !dbg !410
+
+expr_false68:                                     ; preds = %_cont67
+  br label %while_head55, !dbg !411
+
+expr_true69:                                      ; preds = %_cont67
+  br label %while_head52, !dbg !412
+
+expr_false70:                                     ; preds = %while_head
+  %355 = getelementptr inbounds [0 x %3], [0 x %3]* %_9387561_9483042, i64 0, i32 %6, !dbg !413
+  %356 = load %4, %4 addrspace(5)* %hit_9483125, align 4, !dbg !414
+  %357 = bitcast %3* %355 to <4 x float>*, !dbg !415
+  %358 = extractvalue %4 %356, 0, !dbg !416
+  %359 = extractvalue %4 %356, 2, !dbg !417
+  %360 = extractvalue %4 %356, 1, !dbg !418
+  %361 = bitcast i32 %359 to float, !dbg !419
+  %362 = extractvalue %5 %360, 0, !dbg !418
+  %363 = extractvalue %5 %360, 1, !dbg !420
+  %364 = insertelement <4 x float> undef, float %361, i32 0, !dbg !421
+  %365 = insertelement <4 x float> %364, float %358, i32 1, !dbg !421
+  %366 = insertelement <4 x float> %365, float %362, i32 2, !dbg !421
+  %367 = insertelement <4 x float> %366, float %363, i32 3, !dbg !421
+  store <4 x float> %367, <4 x float>* %357, align 16, !dbg !422
+  ret void, !dbg !423
+
+expr_true71:                                      ; preds = %_cont2
+  ret void, !dbg !424
+}
+
+attributes #0 = { nounwind readnone speculatable }
+attributes #1 = { nounwind readnone willreturn }
+
+!llvm.module.flags = !{!0}
+!llvm.dbg.cu = !{!1}
+
+!0 = !{i32 2, !"Debug Info Version", i32 3}
+!1 = distinct !DICompileUnit(language: DW_LANG_C, file: !2, producer: "Impala", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug, enums: !3)
+!2 = !DIFile(filename: "/home/niklas/repos/anydsl/rodent/build/tools/bench_traversal/./bench_traversal", directory: "")
+!3 = !{}
+!4 = distinct !DISubprogram(name: "lambda_9420405", linkageName: "lambda_9420405", scope: null, file: !5, line: 352, type: !6, scopeLine: 352, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition, unit: !1, retainedNodes: !3)
+!5 = !DIFile(filename: "intrinsics_amdgpu.impala", directory: "/home/niklas/repos/anydsl/runtime/platforms/impala")
+!6 = !DISubroutineType(types: !3)
+!7 = !{i32 64, i32 1, i32 1}
+!8 = !DILocation(line: 352, column: 38, scope: !4)
+!9 = !DILocation(line: 198, column: 23, scope: !4)
+!10 = !DILocation(line: 198, column: 42, scope: !4)
+!11 = !DILocation(line: 198, column: 73, scope: !4)
+!12 = !DILocation(line: 199, column: 13, scope: !4)
+!13 = !DILocation(line: 199, column: 12, scope: !4)
+!14 = !DILocation(line: 199, column: 31, scope: !4)
+!15 = !DILocation(line: 69, column: 24, scope: !4)
+!16 = !DILocation(line: 69, column: 23, scope: !4)
+!17 = !DILocation(line: 71, column: 20, scope: !4)
+!18 = !DILocation(line: 70, column: 20, scope: !4)
+!19 = !DILocation(line: 73, column: 28, scope: !4)
+!20 = !DILocation(line: 84, column: 28, scope: !4)
+!21 = !DILocation(line: 84, column: 15, scope: !4)
+!22 = !DILocation(line: 84, column: 8, scope: !4)
+!23 = !DILocation(line: 84, column: 40, scope: !4)
+!24 = !DILocation(line: 84, column: 74, scope: !4)
+!25 = !DILocation(line: 84, column: 83, scope: !4)
+!26 = !DILocation(line: 79, column: 37, scope: !4)
+!27 = !DILocation(line: 79, column: 18, scope: !4)
+!28 = !DILocation(line: 79, column: 5, scope: !4)
+!29 = !DILocation(line: 80, column: 1, scope: !4)
+!30 = !DILocation(line: 73, column: 37, scope: !4)
+!31 = !DILocation(line: 73, column: 46, scope: !4)
+!32 = !DILocation(line: 74, column: 27, scope: !4)
+!33 = !DILocation(line: 20, column: 49, scope: !4)
+!34 = !DILocation(line: 102, column: 5, scope: !4)
+!35 = !DILocation(line: 74, column: 18, scope: !4)
+!36 = !DILocation(line: 72, column: 28, scope: !4)
+!37 = !DILocation(line: 72, column: 37, scope: !4)
+!38 = !DILocation(line: 72, column: 46, scope: !4)
+!39 = !DILocation(line: 45, column: 64, scope: !4)
+!40 = !DILocation(line: 101, column: 29, scope: !4)
+!41 = !DILocation(line: 65, column: 13, scope: !4)
+!42 = !DILocation(line: 52, column: 49, scope: !4)
+!43 = !DILocation(line: 91, column: 5, scope: !4)
+!44 = !DILocation(line: 96, column: 33, scope: !4)
+!45 = !DILocation(line: 101, column: 9, scope: !4)
+!46 = !DILocation(line: 55, column: 9, scope: !4)
+!47 = !DILocation(line: 57, column: 9, scope: !4)
+!48 = !DILocation(line: 64, column: 13, scope: !4)
+!49 = !DILocation(line: 67, column: 13, scope: !4)
+!50 = !DILocation(line: 106, column: 27, scope: !4)
+!51 = !DILocation(line: 120, column: 24, scope: !4)
+!52 = !DILocation(line: 119, column: 35, scope: !4)
+!53 = !DILocation(line: 108, column: 29, scope: !4)
+!54 = !DILocation(line: 25, column: 29, scope: !4)
+!55 = !DILocation(line: 25, column: 28, scope: !4)
+!56 = !DILocation(line: 20, column: 58, scope: !4)
+!57 = !DILocation(line: 29, column: 38, scope: !4)
+!58 = !DILocation(line: 20, column: 73, scope: !4)
+!59 = !DILocation(line: 21, column: 58, scope: !4)
+!60 = !DILocation(line: 34, column: 45, scope: !4)
+!61 = !DILocation(line: 35, column: 45, scope: !4)
+!62 = !DILocation(line: 21, column: 73, scope: !4)
+!63 = !DILocation(line: 110, column: 13, scope: !4)
+!64 = !DILocation(line: 113, column: 62, scope: !4)
+!65 = !DILocation(line: 195, column: 56, scope: !4)
+!66 = !DILocation(line: 195, column: 32, scope: !4)
+!67 = !DILocation(line: 35, column: 86, scope: !4)
+!68 = !DILocation(line: 35, column: 81, scope: !4)
+!69 = !DILocation(line: 39, column: 64, scope: !4)
+!70 = !DILocation(line: 203, column: 31, scope: !4)
+!71 = !DILocation(line: 35, column: 96, scope: !4)
+!72 = !DILocation(line: 35, column: 101, scope: !4)
+!73 = !DILocation(line: 34, column: 53, scope: !4)
+!74 = !DILocation(line: 35, column: 53, scope: !4)
+!75 = !DILocation(line: 203, column: 58, scope: !4)
+!76 = !DILocation(line: 35, column: 116, scope: !4)
+!77 = !DILocation(line: 35, column: 61, scope: !4)
+!78 = !DILocation(line: 34, column: 61, scope: !4)
+!79 = !DILocation(line: 35, column: 111, scope: !4)
+!80 = !DILocation(line: 73, column: 39, scope: !4)
+!81 = !DILocation(line: 200, column: 63, scope: !4)
+!82 = !DILocation(line: 73, column: 33, scope: !4)
+!83 = !DILocation(line: 72, column: 39, scope: !4)
+!84 = !DILocation(line: 72, column: 33, scope: !4)
+!85 = !DILocation(line: 204, column: 31, scope: !4)
+!86 = !DILocation(line: 204, column: 58, scope: !4)
+!87 = !DILocation(line: 74, column: 39, scope: !4)
+!88 = !DILocation(line: 201, column: 63, scope: !4)
+!89 = !DILocation(line: 74, column: 33, scope: !4)
+!90 = !DILocation(line: 71, column: 39, scope: !4)
+!91 = !DILocation(line: 71, column: 33, scope: !4)
+!92 = !DILocation(line: 114, column: 16, scope: !4)
+!93 = !DILocation(line: 114, column: 23, scope: !4)
+!94 = !DILocation(line: 1, column: 1, scope: !4)
+!95 = !DILocation(line: 115, column: 17, scope: !4)
+!96 = !DILocation(line: 42, column: 30, scope: !4)
+!97 = !DILocation(line: 116, column: 38, scope: !4)
+!98 = !DILocation(line: 35, column: 33, scope: !4)
+!99 = !DILocation(line: 35, column: 39, scope: !4)
+!100 = !DILocation(line: 37, column: 45, scope: !4)
+!101 = !DILocation(line: 38, column: 45, scope: !4)
+!102 = !DILocation(line: 37, column: 53, scope: !4)
+!103 = !DILocation(line: 38, column: 53, scope: !4)
+!104 = !DILocation(line: 37, column: 61, scope: !4)
+!105 = !DILocation(line: 38, column: 61, scope: !4)
+!106 = !DILocation(line: 122, column: 16, scope: !4)
+!107 = !DILocation(line: 122, column: 24, scope: !4)
+!108 = !DILocation(line: 36, column: 30, scope: !4)
+!109 = !DILocation(line: 127, column: 20, scope: !4)
+!110 = !DILocation(line: 127, column: 28, scope: !4)
+!111 = !DILocation(line: 133, column: 42, scope: !4)
+!112 = !DILocation(line: 133, column: 35, scope: !4)
+!113 = !DILocation(line: 76, column: 13, scope: !4)
+!114 = !DILocation(line: 134, column: 17, scope: !4)
+!115 = !DILocation(line: 128, column: 41, scope: !4)
+!116 = !DILocation(line: 129, column: 34, scope: !4)
+!117 = !DILocation(line: 128, column: 34, scope: !4)
+!118 = !DILocation(line: 71, column: 13, scope: !4)
+!119 = !DILocation(line: 72, column: 13, scope: !4)
+!120 = !DILocation(line: 135, column: 13, scope: !4)
+!121 = !DILocation(line: 114, column: 26, scope: !4)
+!122 = !DILocation(line: 114, column: 20, scope: !4)
+!123 = !DILocation(line: 114, column: 13, scope: !4)
+!124 = !DILocation(line: 115, column: 26, scope: !4)
+!125 = !DILocation(line: 116, column: 13, scope: !4)
+!126 = !DILocation(line: 156, column: 34, scope: !4)
+!127 = !DILocation(line: 22, column: 38, scope: !4)
+!128 = !DILocation(line: 175, column: 5, scope: !4)
+!129 = !DILocation(line: 113, column: 39, scope: !4)
+!130 = !DILocation(line: 158, column: 31, scope: !4)
+!131 = !DILocation(line: 158, column: 17, scope: !4)
+!132 = !DILocation(line: 159, column: 22, scope: !4)
+!133 = !DILocation(line: 160, column: 37, scope: !4)
+!134 = !DILocation(line: 46, column: 29, scope: !4)
+!135 = !DILocation(line: 46, column: 28, scope: !4)
+!136 = !DILocation(line: 55, column: 41, scope: !4)
+!137 = !DILocation(line: 55, column: 50, scope: !4)
+!138 = !DILocation(line: 55, column: 59, scope: !4)
+!139 = !DILocation(line: 165, column: 70, scope: !4)
+!140 = !DILocation(line: 56, column: 50, scope: !4)
+!141 = !DILocation(line: 56, column: 41, scope: !4)
+!142 = !DILocation(line: 56, column: 59, scope: !4)
+!143 = !DILocation(line: 66, column: 15, scope: !4)
+!144 = !DILocation(line: 64, column: 27, scope: !4)
+!145 = !DILocation(line: 66, column: 27, scope: !4)
+!146 = !DILocation(line: 65, column: 15, scope: !4)
+!147 = !DILocation(line: 64, column: 15, scope: !4)
+!148 = !DILocation(line: 65, column: 27, scope: !4)
+!149 = !DILocation(line: 166, column: 24, scope: !4)
+!150 = !DILocation(line: 60, column: 65, scope: !4)
+!151 = !DILocation(line: 60, column: 41, scope: !4)
+!152 = !DILocation(line: 60, column: 53, scope: !4)
+!153 = !DILocation(line: 168, column: 19, scope: !4)
+!154 = !DILocation(line: 54, column: 50, scope: !4)
+!155 = !DILocation(line: 54, column: 59, scope: !4)
+!156 = !DILocation(line: 165, column: 30, scope: !4)
+!157 = !DILocation(line: 54, column: 41, scope: !4)
+!158 = !DILocation(line: 42, column: 64, scope: !4)
+!159 = !DILocation(line: 171, column: 20, scope: !4)
+!160 = !DILocation(line: 175, column: 13, scope: !4)
+!161 = !DILocation(line: 174, column: 13, scope: !4)
+!162 = !DILocation(line: 171, column: 9, scope: !4)
+!163 = !DILocation(line: 174, column: 5, scope: !4)
+!164 = !DILocation(line: 177, column: 22, scope: !4)
+!165 = !DILocation(line: 177, column: 15, scope: !4)
+!166 = !DILocation(line: 69, column: 36, scope: !4)
+!167 = !DILocation(line: 50, column: 40, scope: !4)
+!168 = !DILocation(line: 50, column: 27, scope: !4)
+!169 = !DILocation(line: 177, column: 28, scope: !4)
+!170 = !DILocation(line: 182, column: 28, scope: !4)
+!171 = !DILocation(line: 181, column: 28, scope: !4)
+!172 = !DILocation(line: 180, column: 5, scope: !4)
+!173 = !DILocation(line: 181, column: 18, scope: !4)
+!174 = !DILocation(line: 180, column: 55, scope: !4)
+!175 = !DILocation(line: 182, column: 18, scope: !4)
+!176 = !DILocation(line: 182, column: 13, scope: !4)
+!177 = !DILocation(line: 181, column: 13, scope: !4)
+!178 = !DILocation(line: 181, column: 5, scope: !4)
+!179 = !DILocation(line: 182, column: 5, scope: !4)
+!180 = !DILocation(line: 184, column: 22, scope: !4)
+!181 = !DILocation(line: 184, column: 15, scope: !4)
+!182 = !DILocation(line: 184, column: 28, scope: !4)
+!183 = !DILocation(line: 186, column: 8, scope: !4)
+!184 = !DILocation(line: 186, column: 11, scope: !4)
+!185 = !DILocation(line: 190, column: 9, scope: !4)
+!186 = !DILocation(line: 187, column: 23, scope: !4)
+!187 = !DILocation(line: 51, column: 40, scope: !4)
+!188 = !DILocation(line: 188, column: 23, scope: !4)
+!189 = !DILocation(line: 60, column: 39, scope: !4)
+!190 = !DILocation(line: 188, column: 10, scope: !4)
+!191 = !DILocation(line: 188, column: 36, scope: !4)
+!192 = !DILocation(line: 51, column: 27, scope: !4)
+!193 = !DILocation(line: 19, column: 41, scope: !4)
+!194 = !DILocation(line: 169, column: 35, scope: !4)
+!195 = !DILocation(line: 166, column: 21, scope: !4)
+!196 = !DILocation(line: 167, column: 21, scope: !4)
+!197 = !DILocation(line: 169, column: 50, scope: !4)
+!198 = !DILocation(line: 102, column: 30, scope: !4)
+!199 = !DILocation(line: 184, column: 32, scope: !4)
+!200 = !DILocation(line: 177, column: 32, scope: !4)
+!201 = !DILocation(line: 63, column: 26, scope: !4)
+!202 = !DILocation(line: 172, column: 31, scope: !4)
+!203 = !DILocation(line: 173, column: 13, scope: !4)
+!204 = !DILocation(line: 174, column: 9, scope: !4)
+!205 = !DILocation(line: 177, column: 5, scope: !4)
+!206 = !DILocation(line: 178, column: 1, scope: !4)
+!207 = !DILocation(line: 81, column: 66, scope: !4)
+!208 = !DILocation(line: 81, column: 38, scope: !4)
+!209 = !DILocation(line: 81, column: 52, scope: !4)
+!210 = !DILocation(line: 81, column: 83, scope: !4)
+!211 = !DILocation(line: 80, column: 24, scope: !4)
+!212 = !DILocation(line: 81, column: 25, scope: !4)
+!213 = !DILocation(line: 81, column: 20, scope: !4)
+!214 = !DILocation(line: 80, column: 23, scope: !4)
+!215 = !DILocation(line: 81, column: 9, scope: !4)
+!216 = !DILocation(line: 82, column: 5, scope: !4)
+!217 = !DILocation(line: 199, column: 35, scope: !4)
+!218 = distinct !DISubprogram(name: "lambda_9387557", linkageName: "lambda_9387557", scope: null, file: !5, line: 352, type: !6, scopeLine: 352, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition, unit: !1, retainedNodes: !3)
+!219 = !DILocation(line: 352, column: 38, scope: !218)
+!220 = !DILocation(line: 198, column: 23, scope: !218)
+!221 = !DILocation(line: 198, column: 42, scope: !218)
+!222 = !DILocation(line: 198, column: 73, scope: !218)
+!223 = !DILocation(line: 199, column: 13, scope: !218)
+!224 = !DILocation(line: 199, column: 12, scope: !218)
+!225 = !DILocation(line: 199, column: 31, scope: !218)
+!226 = !DILocation(line: 69, column: 24, scope: !218)
+!227 = !DILocation(line: 69, column: 23, scope: !218)
+!228 = !DILocation(line: 71, column: 20, scope: !218)
+!229 = !DILocation(line: 70, column: 20, scope: !218)
+!230 = !DILocation(line: 73, column: 28, scope: !218)
+!231 = !DILocation(line: 84, column: 28, scope: !218)
+!232 = !DILocation(line: 84, column: 15, scope: !218)
+!233 = !DILocation(line: 84, column: 8, scope: !218)
+!234 = !DILocation(line: 84, column: 40, scope: !218)
+!235 = !DILocation(line: 84, column: 74, scope: !218)
+!236 = !DILocation(line: 84, column: 83, scope: !218)
+!237 = !DILocation(line: 79, column: 37, scope: !218)
+!238 = !DILocation(line: 79, column: 18, scope: !218)
+!239 = !DILocation(line: 79, column: 5, scope: !218)
+!240 = !DILocation(line: 80, column: 1, scope: !218)
+!241 = !DILocation(line: 73, column: 37, scope: !218)
+!242 = !DILocation(line: 73, column: 46, scope: !218)
+!243 = !DILocation(line: 20, column: 49, scope: !218)
+!244 = !DILocation(line: 72, column: 46, scope: !218)
+!245 = !DILocation(line: 74, column: 27, scope: !218)
+!246 = !DILocation(line: 45, column: 64, scope: !218)
+!247 = !DILocation(line: 52, column: 49, scope: !218)
+!248 = !DILocation(line: 72, column: 28, scope: !218)
+!249 = !DILocation(line: 74, column: 18, scope: !218)
+!250 = !DILocation(line: 72, column: 37, scope: !218)
+!251 = !DILocation(line: 102, column: 5, scope: !218)
+!252 = !DILocation(line: 65, column: 13, scope: !218)
+!253 = !DILocation(line: 101, column: 29, scope: !218)
+!254 = !DILocation(line: 91, column: 5, scope: !218)
+!255 = !DILocation(line: 96, column: 33, scope: !218)
+!256 = !DILocation(line: 101, column: 9, scope: !218)
+!257 = !DILocation(line: 55, column: 9, scope: !218)
+!258 = !DILocation(line: 57, column: 9, scope: !218)
+!259 = !DILocation(line: 64, column: 13, scope: !218)
+!260 = !DILocation(line: 67, column: 13, scope: !218)
+!261 = !DILocation(line: 106, column: 27, scope: !218)
+!262 = !DILocation(line: 120, column: 24, scope: !218)
+!263 = !DILocation(line: 119, column: 35, scope: !218)
+!264 = !DILocation(line: 108, column: 29, scope: !218)
+!265 = !DILocation(line: 25, column: 29, scope: !218)
+!266 = !DILocation(line: 25, column: 28, scope: !218)
+!267 = !DILocation(line: 20, column: 58, scope: !218)
+!268 = !DILocation(line: 29, column: 38, scope: !218)
+!269 = !DILocation(line: 20, column: 73, scope: !218)
+!270 = !DILocation(line: 21, column: 58, scope: !218)
+!271 = !DILocation(line: 34, column: 45, scope: !218)
+!272 = !DILocation(line: 35, column: 45, scope: !218)
+!273 = !DILocation(line: 21, column: 73, scope: !218)
+!274 = !DILocation(line: 110, column: 13, scope: !218)
+!275 = !DILocation(line: 113, column: 62, scope: !218)
+!276 = !DILocation(line: 195, column: 56, scope: !218)
+!277 = !DILocation(line: 195, column: 32, scope: !218)
+!278 = !DILocation(line: 35, column: 86, scope: !218)
+!279 = !DILocation(line: 35, column: 81, scope: !218)
+!280 = !DILocation(line: 39, column: 64, scope: !218)
+!281 = !DILocation(line: 203, column: 31, scope: !218)
+!282 = !DILocation(line: 34, column: 53, scope: !218)
+!283 = !DILocation(line: 35, column: 96, scope: !218)
+!284 = !DILocation(line: 35, column: 53, scope: !218)
+!285 = !DILocation(line: 35, column: 101, scope: !218)
+!286 = !DILocation(line: 203, column: 58, scope: !218)
+!287 = !DILocation(line: 35, column: 116, scope: !218)
+!288 = !DILocation(line: 35, column: 111, scope: !218)
+!289 = !DILocation(line: 34, column: 61, scope: !218)
+!290 = !DILocation(line: 35, column: 61, scope: !218)
+!291 = !DILocation(line: 73, column: 39, scope: !218)
+!292 = !DILocation(line: 200, column: 63, scope: !218)
+!293 = !DILocation(line: 73, column: 33, scope: !218)
+!294 = !DILocation(line: 72, column: 39, scope: !218)
+!295 = !DILocation(line: 72, column: 33, scope: !218)
+!296 = !DILocation(line: 204, column: 31, scope: !218)
+!297 = !DILocation(line: 204, column: 58, scope: !218)
+!298 = !DILocation(line: 74, column: 39, scope: !218)
+!299 = !DILocation(line: 201, column: 63, scope: !218)
+!300 = !DILocation(line: 74, column: 33, scope: !218)
+!301 = !DILocation(line: 71, column: 39, scope: !218)
+!302 = !DILocation(line: 71, column: 33, scope: !218)
+!303 = !DILocation(line: 114, column: 16, scope: !218)
+!304 = !DILocation(line: 114, column: 23, scope: !218)
+!305 = !DILocation(line: 1, column: 1, scope: !218)
+!306 = !DILocation(line: 115, column: 17, scope: !218)
+!307 = !DILocation(line: 42, column: 30, scope: !218)
+!308 = !DILocation(line: 116, column: 38, scope: !218)
+!309 = !DILocation(line: 35, column: 33, scope: !218)
+!310 = !DILocation(line: 35, column: 39, scope: !218)
+!311 = !DILocation(line: 37, column: 45, scope: !218)
+!312 = !DILocation(line: 38, column: 45, scope: !218)
+!313 = !DILocation(line: 37, column: 53, scope: !218)
+!314 = !DILocation(line: 38, column: 53, scope: !218)
+!315 = !DILocation(line: 38, column: 61, scope: !218)
+!316 = !DILocation(line: 37, column: 61, scope: !218)
+!317 = !DILocation(line: 122, column: 16, scope: !218)
+!318 = !DILocation(line: 122, column: 24, scope: !218)
+!319 = !DILocation(line: 36, column: 30, scope: !218)
+!320 = !DILocation(line: 127, column: 20, scope: !218)
+!321 = !DILocation(line: 127, column: 28, scope: !218)
+!322 = !DILocation(line: 133, column: 42, scope: !218)
+!323 = !DILocation(line: 133, column: 35, scope: !218)
+!324 = !DILocation(line: 76, column: 13, scope: !218)
+!325 = !DILocation(line: 134, column: 17, scope: !218)
+!326 = !DILocation(line: 128, column: 41, scope: !218)
+!327 = !DILocation(line: 129, column: 34, scope: !218)
+!328 = !DILocation(line: 128, column: 34, scope: !218)
+!329 = !DILocation(line: 71, column: 13, scope: !218)
+!330 = !DILocation(line: 72, column: 13, scope: !218)
+!331 = !DILocation(line: 135, column: 13, scope: !218)
+!332 = !DILocation(line: 114, column: 26, scope: !218)
+!333 = !DILocation(line: 114, column: 20, scope: !218)
+!334 = !DILocation(line: 114, column: 13, scope: !218)
+!335 = !DILocation(line: 115, column: 26, scope: !218)
+!336 = !DILocation(line: 116, column: 13, scope: !218)
+!337 = !DILocation(line: 156, column: 34, scope: !218)
+!338 = !DILocation(line: 22, column: 38, scope: !218)
+!339 = !DILocation(line: 175, column: 5, scope: !218)
+!340 = !DILocation(line: 113, column: 39, scope: !218)
+!341 = !DILocation(line: 158, column: 31, scope: !218)
+!342 = !DILocation(line: 158, column: 17, scope: !218)
+!343 = !DILocation(line: 159, column: 22, scope: !218)
+!344 = !DILocation(line: 160, column: 37, scope: !218)
+!345 = !DILocation(line: 46, column: 29, scope: !218)
+!346 = !DILocation(line: 46, column: 28, scope: !218)
+!347 = !DILocation(line: 55, column: 41, scope: !218)
+!348 = !DILocation(line: 55, column: 50, scope: !218)
+!349 = !DILocation(line: 55, column: 59, scope: !218)
+!350 = !DILocation(line: 165, column: 70, scope: !218)
+!351 = !DILocation(line: 56, column: 50, scope: !218)
+!352 = !DILocation(line: 56, column: 41, scope: !218)
+!353 = !DILocation(line: 56, column: 59, scope: !218)
+!354 = !DILocation(line: 66, column: 15, scope: !218)
+!355 = !DILocation(line: 64, column: 27, scope: !218)
+!356 = !DILocation(line: 66, column: 27, scope: !218)
+!357 = !DILocation(line: 65, column: 15, scope: !218)
+!358 = !DILocation(line: 64, column: 15, scope: !218)
+!359 = !DILocation(line: 65, column: 27, scope: !218)
+!360 = !DILocation(line: 166, column: 24, scope: !218)
+!361 = !DILocation(line: 60, column: 65, scope: !218)
+!362 = !DILocation(line: 60, column: 41, scope: !218)
+!363 = !DILocation(line: 60, column: 53, scope: !218)
+!364 = !DILocation(line: 168, column: 19, scope: !218)
+!365 = !DILocation(line: 54, column: 50, scope: !218)
+!366 = !DILocation(line: 54, column: 59, scope: !218)
+!367 = !DILocation(line: 165, column: 30, scope: !218)
+!368 = !DILocation(line: 54, column: 41, scope: !218)
+!369 = !DILocation(line: 42, column: 64, scope: !218)
+!370 = !DILocation(line: 171, column: 20, scope: !218)
+!371 = !DILocation(line: 175, column: 13, scope: !218)
+!372 = !DILocation(line: 174, column: 13, scope: !218)
+!373 = !DILocation(line: 171, column: 9, scope: !218)
+!374 = !DILocation(line: 174, column: 5, scope: !218)
+!375 = !DILocation(line: 177, column: 22, scope: !218)
+!376 = !DILocation(line: 177, column: 15, scope: !218)
+!377 = !DILocation(line: 69, column: 36, scope: !218)
+!378 = !DILocation(line: 50, column: 40, scope: !218)
+!379 = !DILocation(line: 50, column: 27, scope: !218)
+!380 = !DILocation(line: 177, column: 28, scope: !218)
+!381 = !DILocation(line: 182, column: 28, scope: !218)
+!382 = !DILocation(line: 182, column: 18, scope: !218)
+!383 = !DILocation(line: 180, column: 5, scope: !218)
+!384 = !DILocation(line: 181, column: 28, scope: !218)
+!385 = !DILocation(line: 180, column: 55, scope: !218)
+!386 = !DILocation(line: 181, column: 18, scope: !218)
+!387 = !DILocation(line: 182, column: 13, scope: !218)
+!388 = !DILocation(line: 181, column: 13, scope: !218)
+!389 = !DILocation(line: 181, column: 5, scope: !218)
+!390 = !DILocation(line: 182, column: 5, scope: !218)
+!391 = !DILocation(line: 184, column: 22, scope: !218)
+!392 = !DILocation(line: 184, column: 15, scope: !218)
+!393 = !DILocation(line: 184, column: 28, scope: !218)
+!394 = !DILocation(line: 186, column: 8, scope: !218)
+!395 = !DILocation(line: 186, column: 11, scope: !218)
+!396 = !DILocation(line: 190, column: 9, scope: !218)
+!397 = !DILocation(line: 60, column: 39, scope: !218)
+!398 = !DILocation(line: 187, column: 23, scope: !218)
+!399 = !DILocation(line: 188, column: 23, scope: !218)
+!400 = !DILocation(line: 188, column: 10, scope: !218)
+!401 = !DILocation(line: 51, column: 40, scope: !218)
+!402 = !DILocation(line: 188, column: 36, scope: !218)
+!403 = !DILocation(line: 19, column: 41, scope: !218)
+!404 = !DILocation(line: 51, column: 27, scope: !218)
+!405 = !DILocation(line: 166, column: 21, scope: !218)
+!406 = !DILocation(line: 167, column: 21, scope: !218)
+!407 = !DILocation(line: 184, column: 32, scope: !218)
+!408 = !DILocation(line: 177, column: 32, scope: !218)
+!409 = !DILocation(line: 63, column: 26, scope: !218)
+!410 = !DILocation(line: 172, column: 31, scope: !218)
+!411 = !DILocation(line: 173, column: 13, scope: !218)
+!412 = !DILocation(line: 174, column: 9, scope: !218)
+!413 = !DILocation(line: 80, column: 24, scope: !218)
+!414 = !DILocation(line: 177, column: 5, scope: !218)
+!415 = !DILocation(line: 80, column: 23, scope: !218)
+!416 = !DILocation(line: 81, column: 52, scope: !218)
+!417 = !DILocation(line: 81, column: 38, scope: !218)
+!418 = !DILocation(line: 81, column: 66, scope: !218)
+!419 = !DILocation(line: 81, column: 25, scope: !218)
+!420 = !DILocation(line: 81, column: 83, scope: !218)
+!421 = !DILocation(line: 81, column: 20, scope: !218)
+!422 = !DILocation(line: 81, column: 9, scope: !218)
+!423 = !DILocation(line: 82, column: 5, scope: !218)
+!424 = !DILocation(line: 199, column: 35, scope: !218)

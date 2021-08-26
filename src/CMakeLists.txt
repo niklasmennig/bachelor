@@ -57,9 +57,11 @@ set(DRIVER_SRCS
     driver/float4.h
     driver/file_path.h
     driver/common.h
-    driver/color.h)
+    driver/color.h
+    driver/measured_sampler.cpp)
 
 set(CONVERTER_SRCS
+    driver/measured_sampler.cpp
     driver/converter.cpp
     driver/obj.cpp
     driver/obj.h
