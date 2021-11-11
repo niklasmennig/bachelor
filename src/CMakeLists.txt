@@ -28,6 +28,7 @@ set(RODENT_SRCS
     core/random.impala
     core/sort.impala
     core/vector.impala
+    render/brdf_sampler.impala
     render/image.impala
     render/camera.impala
     render/geometry.impala
@@ -44,6 +45,7 @@ set(RODENT_SRCS
     traversal/mapping_gpu.impala)
 
 set(DRIVER_SRCS
+    driver/measured.cpp
     driver/driver.cpp
     driver/interface.cpp
     driver/interface.h
@@ -60,6 +62,7 @@ set(DRIVER_SRCS
     driver/color.h)
 
 set(CONVERTER_SRCS
+    driver/measured.cpp
     driver/converter.cpp
     driver/obj.cpp
     driver/obj.h

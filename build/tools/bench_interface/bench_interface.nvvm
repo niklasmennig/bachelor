@@ -1,0 +1,542 @@
+; ModuleID = '/home/niklas/repos/anydsl/rodent/build/tools/bench_interface/./bench_interface'
+source_filename = "/home/niklas/repos/anydsl/rodent/build/tools/bench_interface/./bench_interface"
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v16:16:16-v32:32:32-v64:64:64-v128:128:128-n16:32:64"
+target triple = "nvptx64-nvidia-cuda"
+
+%0 = type { [0 x %4]*, [0 x i32]*, [0 x %4]*, [0 x %1]*, %2, %2, %2 }
+%1 = type { float, float }
+%2 = type { [0 x %3]*, %3, i32, i32, i32, i32 }
+%3 = type { float, float, float }
+%4 = type { float, float, float }
+%5 = type { i32, %1 }
+%6 = type { %4, %4, %4, %1, %7, %3, %3, float }
+%7 = type { [3 x %4] }
+
+define ptx_kernel void @lambda_552205([0 x %4]* %_564905, %0 %_564906, [0 x %4]* %_564907, [0 x %5]* %_564908, [0 x %3]* %_564909) local_unnamed_addr !dbg !11 {
+lambda_552205:
+  %0 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.x(), !dbg !14
+  %1 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.ntid.x(), !dbg !15
+  %2 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.ctaid.x(), !dbg !16
+  %3 = mul nsw i32 %1, %2, !dbg !17
+  %4 = add nsw i32 %0, %3, !dbg !17
+  %5 = sext i32 %4 to i64, !dbg !17
+  %.elt = getelementptr inbounds [0 x %5], [0 x %5]* %_564908, i64 0, i64 %5, i32 0, !dbg !17
+  %.unpack = load i32, i32* %.elt, align 4, !dbg !17
+  %6 = insertvalue %5 undef, i32 %.unpack, 0, !dbg !17
+  %.unpack6.elt = getelementptr inbounds [0 x %5], [0 x %5]* %_564908, i64 0, i64 %5, i32 1, i32 0, !dbg !17
+  %.unpack6.unpack = load float, float* %.unpack6.elt, align 4, !dbg !17
+  %7 = insertvalue %1 undef, float %.unpack6.unpack, 0, !dbg !17
+  %.unpack6.elt7 = getelementptr inbounds [0 x %5], [0 x %5]* %_564908, i64 0, i64 %5, i32 1, i32 1, !dbg !17
+  %.unpack6.unpack8 = load float, float* %.unpack6.elt7, align 4, !dbg !17
+  %.unpack69 = insertvalue %1 %7, float %.unpack6.unpack8, 1, !dbg !17
+  %8 = insertvalue %5 %6, %1 %.unpack69, 1, !dbg !17
+  %9 = call ptx_kernel %6 @compute_shader_input(i1 false, %0 %_564906, %5 %8), !dbg !17
+  %10 = sext i32 %4 to i64, !dbg !18
+  %11 = extractvalue %6 %9, 5, !dbg !18
+  %12 = extractvalue %3 %11, 0, !dbg !18
+  %13 = fmul float %12, 0x3FD45F3060000000, !dbg !18
+  %14 = extractvalue %3 %11, 1, !dbg !18
+  %15 = fmul float %14, 0x3FD45F3060000000, !dbg !18
+  %16 = extractvalue %3 %11, 2, !dbg !18
+  %17 = fmul float %16, 0x3FD45F3060000000, !dbg !18
+  %.repack = getelementptr inbounds [0 x %3], [0 x %3]* %_564909, i64 0, i64 %10, i32 0, !dbg !18
+  store float %13, float* %.repack, align 4, !dbg !18
+  %.repack11 = getelementptr inbounds [0 x %3], [0 x %3]* %_564909, i64 0, i64 %10, i32 1, !dbg !18
+  store float %15, float* %.repack11, align 4, !dbg !18
+  %.repack13 = getelementptr inbounds [0 x %3], [0 x %3]* %_564909, i64 0, i64 %10, i32 2, !dbg !18
+  store float %17, float* %.repack13, align 4, !dbg !18
+  ret void, !dbg !18
+}
+
+; Function Attrs: nounwind readnone
+declare ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.x() #0
+
+; Function Attrs: nounwind readnone
+declare ptx_device i32 @llvm.nvvm.read.ptx.sreg.ntid.x() #0
+
+; Function Attrs: nounwind readnone
+declare ptx_device i32 @llvm.nvvm.read.ptx.sreg.ctaid.x() #0
+
+define ptx_kernel %6 @compute_shader_input(i1 %opt_564930, %0 %mesh_564931, %5 %tri_hit_564932) local_unnamed_addr !dbg !19 {
+compute_shader_input:
+  %0 = alloca [3 x %4], align 8
+  %1 = extractvalue %5 %tri_hit_564932, 0, !dbg !21
+  %2 = shl nsw i32 %1, 2, !dbg !21
+  %3 = extractvalue %0 %mesh_564931, 1, !dbg !21
+  %4 = sext i32 %2 to i64, !dbg !21
+  %5 = getelementptr inbounds [0 x i32], [0 x i32]* %3, i64 0, i64 %4, !dbg !21
+  %6 = load i32, i32* %5, align 4, !dbg !21
+  %7 = or i32 %2, 1, !dbg !21
+  %8 = sext i32 %7 to i64, !dbg !21
+  %9 = getelementptr inbounds [0 x i32], [0 x i32]* %3, i64 0, i64 %8, !dbg !21
+  %10 = load i32, i32* %9, align 4, !dbg !21
+  %11 = or i32 %2, 2, !dbg !21
+  %12 = sext i32 %11 to i64, !dbg !21
+  %13 = getelementptr inbounds [0 x i32], [0 x i32]* %3, i64 0, i64 %12, !dbg !21
+  %14 = load i32, i32* %13, align 4, !dbg !21
+  %15 = extractvalue %0 %mesh_564931, 0, !dbg !21
+  %16 = sext i32 %6 to i64, !dbg !21
+  %.elt = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %16, i32 0, !dbg !21
+  %.unpack = load float, float* %.elt, align 4, !dbg !21
+  %.elt9 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %16, i32 1, !dbg !21
+  %.unpack10 = load float, float* %.elt9, align 4, !dbg !21
+  %.elt11 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %16, i32 2, !dbg !21
+  %.unpack12 = load float, float* %.elt11, align 4, !dbg !21
+  %17 = sext i32 %10 to i64, !dbg !21
+  %.elt13 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %17, i32 0, !dbg !21
+  %.unpack14 = load float, float* %.elt13, align 4, !dbg !21
+  %.elt15 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %17, i32 1, !dbg !21
+  %.unpack16 = load float, float* %.elt15, align 4, !dbg !21
+  %.elt17 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %17, i32 2, !dbg !21
+  %.unpack18 = load float, float* %.elt17, align 4, !dbg !21
+  %18 = sext i32 %14 to i64, !dbg !21
+  %.elt19 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %18, i32 0, !dbg !21
+  %.unpack20 = load float, float* %.elt19, align 4, !dbg !21
+  %.elt21 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %18, i32 1, !dbg !21
+  %.unpack22 = load float, float* %.elt21, align 4, !dbg !21
+  %.elt23 = getelementptr inbounds [0 x %4], [0 x %4]* %15, i64 0, i64 %18, i32 2, !dbg !21
+  %.unpack24 = load float, float* %.elt23, align 4, !dbg !21
+  %19 = fsub float %.unpack16, %.unpack10, !dbg !21
+  %20 = fsub float %.unpack24, %.unpack12, !dbg !21
+  %21 = fmul float %19, %20, !dbg !21
+  %22 = fsub float %.unpack18, %.unpack12, !dbg !21
+  %23 = fsub float %.unpack22, %.unpack10, !dbg !21
+  %24 = fmul float %22, %23, !dbg !21
+  %25 = fsub float %21, %24, !dbg !21
+  %26 = fmul float %25, %25, !dbg !21
+  %27 = fsub float %.unpack20, %.unpack, !dbg !21
+  %28 = fmul float %22, %27, !dbg !21
+  %29 = fsub float %.unpack14, %.unpack, !dbg !21
+  %30 = fmul float %29, %20, !dbg !21
+  %31 = fsub float %28, %30, !dbg !21
+  %32 = fmul float %31, %31, !dbg !21
+  %33 = fadd float %26, %32, !dbg !21
+  %34 = fmul float %29, %23, !dbg !21
+  %35 = fmul float %19, %27, !dbg !21
+  %36 = fsub float %34, %35, !dbg !21
+  %37 = fmul float %36, %36, !dbg !21
+  %38 = fadd float %33, %37, !dbg !21
+  %39 = call float @__nv_sqrtf(float %38), !dbg !21
+  %40 = extractvalue %0 %mesh_564931, 2, !dbg !22
+  %41 = sext i32 %6 to i64, !dbg !22
+  %.elt25 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %41, i32 0, !dbg !22
+  %.unpack26 = load float, float* %.elt25, align 4, !dbg !22
+  %.elt27 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %41, i32 1, !dbg !22
+  %.unpack28 = load float, float* %.elt27, align 4, !dbg !22
+  %.elt29 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %41, i32 2, !dbg !22
+  %.unpack30 = load float, float* %.elt29, align 4, !dbg !22
+  %42 = sext i32 %10 to i64, !dbg !22
+  %.elt31 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %42, i32 0, !dbg !22
+  %.unpack32 = load float, float* %.elt31, align 4, !dbg !22
+  %.elt33 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %42, i32 1, !dbg !22
+  %.unpack34 = load float, float* %.elt33, align 4, !dbg !22
+  %.elt35 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %42, i32 2, !dbg !22
+  %.unpack36 = load float, float* %.elt35, align 4, !dbg !22
+  %43 = sext i32 %14 to i64, !dbg !22
+  %.elt37 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %43, i32 0, !dbg !22
+  %.unpack38 = load float, float* %.elt37, align 4, !dbg !22
+  %.elt39 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %43, i32 1, !dbg !22
+  %.unpack40 = load float, float* %.elt39, align 4, !dbg !22
+  %.elt41 = getelementptr inbounds [0 x %4], [0 x %4]* %40, i64 0, i64 %43, i32 2, !dbg !22
+  %.unpack42 = load float, float* %.elt41, align 4, !dbg !22
+  %44 = extractvalue %5 %tri_hit_564932, 1, !dbg !22
+  %45 = extractvalue %1 %44, 0, !dbg !22
+  %46 = fsub float 1.000000e+00, %45, !dbg !22
+  %47 = extractvalue %1 %44, 1, !dbg !22
+  %48 = fsub float %46, %47, !dbg !22
+  %49 = fmul float %48, %.unpack26, !dbg !22
+  %50 = fmul float %45, %.unpack32, !dbg !22
+  %51 = fadd float %49, %50, !dbg !22
+  %52 = fmul float %47, %.unpack38, !dbg !22
+  %53 = fadd float %51, %52, !dbg !22
+  %54 = fmul float %53, %53, !dbg !22
+  %55 = fmul float %48, %.unpack28, !dbg !22
+  %56 = fmul float %45, %.unpack34, !dbg !22
+  %57 = fadd float %55, %56, !dbg !22
+  %58 = fmul float %47, %.unpack40, !dbg !22
+  %59 = fadd float %57, %58, !dbg !22
+  %60 = fmul float %59, %59, !dbg !22
+  %61 = fadd float %54, %60, !dbg !22
+  %62 = fmul float %48, %.unpack30, !dbg !22
+  %63 = fmul float %45, %.unpack36, !dbg !22
+  %64 = fadd float %62, %63, !dbg !22
+  %65 = fmul float %47, %.unpack42, !dbg !22
+  %66 = fadd float %64, %65, !dbg !22
+  %67 = fmul float %66, %66, !dbg !22
+  %68 = fadd float %61, %67, !dbg !22
+  %69 = call float @__nv_sqrtf(float %68), !dbg !22
+  %70 = extractvalue %0 %mesh_564931, 3, !dbg !22
+  %71 = sext i32 %6 to i64, !dbg !22
+  %.elt43 = getelementptr inbounds [0 x %1], [0 x %1]* %70, i64 0, i64 %71, i32 0, !dbg !22
+  %.unpack44 = load float, float* %.elt43, align 4, !dbg !22
+  %.elt45 = getelementptr inbounds [0 x %1], [0 x %1]* %70, i64 0, i64 %71, i32 1, !dbg !22
+  %.unpack46 = load float, float* %.elt45, align 4, !dbg !22
+  %72 = sext i32 %10 to i64, !dbg !22
+  %.elt47 = getelementptr inbounds [0 x %1], [0 x %1]* %70, i64 0, i64 %72, i32 0, !dbg !22
+  %.unpack48 = load float, float* %.elt47, align 4, !dbg !22
+  %.elt49 = getelementptr inbounds [0 x %1], [0 x %1]* %70, i64 0, i64 %72, i32 1, !dbg !22
+  %.unpack50 = load float, float* %.elt49, align 4, !dbg !22
+  %73 = sext i32 %14 to i64, !dbg !22
+  %.elt51 = getelementptr inbounds [0 x %1], [0 x %1]* %70, i64 0, i64 %73, i32 0, !dbg !22
+  %.unpack52 = load float, float* %.elt51, align 4, !dbg !22
+  %.elt53 = getelementptr inbounds [0 x %1], [0 x %1]* %70, i64 0, i64 %73, i32 1, !dbg !22
+  %.unpack54 = load float, float* %.elt53, align 4, !dbg !22
+  %74 = extractvalue %0 %mesh_564931, 4, !dbg !22
+  %75 = fmul float %48, %.unpack44, !dbg !22
+  %76 = fmul float %45, %.unpack48, !dbg !22
+  %77 = fadd float %75, %76, !dbg !22
+  %78 = fmul float %47, %.unpack52, !dbg !22
+  %79 = fadd float %77, %78, !dbg !22
+  %80 = insertvalue %1 undef, float %79, 0, !dbg !22
+  %81 = fmul float %48, %.unpack46, !dbg !22
+  %82 = fmul float %45, %.unpack50, !dbg !22
+  %83 = fadd float %81, %82, !dbg !22
+  %84 = fmul float %47, %.unpack54, !dbg !22
+  %85 = fadd float %83, %84, !dbg !22
+  %86 = insertvalue %1 %80, float %85, 1, !dbg !22
+  %87 = call ptx_kernel %3 @lookup_tex(i1 false, %2 %74, %1 %86), !dbg !22
+  %88 = extractvalue %0 %mesh_564931, 5, !dbg !23
+  %89 = call ptx_kernel %3 @lookup_tex(i1 false, %2 %88, %1 %86), !dbg !23
+  %90 = extractvalue %0 %mesh_564931, 6, !dbg !24
+  %91 = call ptx_kernel %3 @lookup_tex(i1 false, %2 %90, %1 %86), !dbg !24
+  %92 = fmul float %48, %.unpack, !dbg !25
+  %93 = fmul float %45, %.unpack14, !dbg !25
+  %94 = fadd float %92, %93, !dbg !25
+  %95 = fmul float %47, %.unpack20, !dbg !25
+  %96 = fadd float %94, %95, !dbg !25
+  %97 = insertvalue %4 undef, float %96, 0, !dbg !25
+  %98 = fmul float %48, %.unpack10, !dbg !25
+  %99 = fmul float %45, %.unpack16, !dbg !25
+  %100 = fadd float %98, %99, !dbg !25
+  %101 = fmul float %47, %.unpack22, !dbg !25
+  %102 = fadd float %100, %101, !dbg !25
+  %103 = insertvalue %4 %97, float %102, 1, !dbg !25
+  %104 = fmul float %48, %.unpack12, !dbg !25
+  %105 = fmul float %45, %.unpack18, !dbg !25
+  %106 = fadd float %104, %105, !dbg !25
+  %107 = fmul float %47, %.unpack24, !dbg !25
+  %108 = fadd float %106, %107, !dbg !25
+  %109 = insertvalue %4 %103, float %108, 2, !dbg !25
+  %110 = insertvalue %6 undef, %4 %109, 0, !dbg !25
+  %111 = fdiv float 1.000000e+00, %39, !dbg !25
+  %112 = fmul float %25, %111, !dbg !25
+  %113 = insertvalue %4 undef, float %112, 0, !dbg !25
+  %114 = fmul float %31, %111, !dbg !25
+  %115 = insertvalue %4 %113, float %114, 1, !dbg !25
+  %116 = fmul float %36, %111, !dbg !25
+  %117 = insertvalue %4 %115, float %116, 2, !dbg !25
+  %118 = insertvalue %6 %110, %4 %117, 1, !dbg !25
+  %119 = fdiv float 1.000000e+00, %69, !dbg !25
+  %120 = fmul float %53, %119, !dbg !25
+  %121 = insertvalue %4 undef, float %120, 0, !dbg !25
+  %122 = fmul float %59, %119, !dbg !25
+  %123 = insertvalue %4 %121, float %122, 1, !dbg !25
+  %124 = fmul float %66, %119, !dbg !25
+  %125 = insertvalue %4 %123, float %124, 2, !dbg !25
+  %126 = insertvalue %6 %118, %4 %125, 2, !dbg !25
+  %127 = insertvalue %6 %126, %1 %44, 3, !dbg !25
+  %128 = fcmp oge float %124, 0.000000e+00, !dbg !25
+  %129 = select i1 %128, float 1.000000e+00, float -1.000000e+00, !dbg !25
+  %130 = fmul float %129, %120, !dbg !25
+  %131 = fmul float %130, %120, !dbg !25
+  %132 = fadd float %129, %124, !dbg !25
+  %a = fdiv float -1.000000e+00, %132, !dbg !25
+  %133 = fmul float %131, %a, !dbg !25
+  %134 = fadd float %133, 1.000000e+00, !dbg !25
+  %135 = fmul float %120, %122, !dbg !25
+  %b = fmul float %135, %a, !dbg !25
+  %136 = fmul float %129, %b, !dbg !25
+  %137 = fneg float %129, !dbg !25
+  %138 = fmul float %120, %137, !dbg !25
+  %.repack = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 0, i32 0, !dbg !25
+  store float %134, float* %.repack, align 8, !dbg !25
+  %.repack56 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 0, i32 1, !dbg !25
+  store float %136, float* %.repack56, align 4, !dbg !25
+  %.repack58 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 0, i32 2, !dbg !25
+  store float %138, float* %.repack58, align 8, !dbg !25
+  %139 = fmul float %122, %122, !dbg !25
+  %140 = fmul float %139, %a, !dbg !25
+  %141 = fadd float %129, %140, !dbg !25
+  %142 = fneg float %122, !dbg !25
+  %.repack60 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 1, i32 0, !dbg !25
+  store float %b, float* %.repack60, align 4, !dbg !25
+  %.repack62 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 1, i32 1, !dbg !25
+  store float %141, float* %.repack62, align 8, !dbg !25
+  %.repack64 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 1, i32 2, !dbg !25
+  store float %142, float* %.repack64, align 4, !dbg !25
+  %.repack66 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 2, i32 0, !dbg !25
+  store float %120, float* %.repack66, align 8, !dbg !25
+  %.repack68 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 2, i32 1, !dbg !25
+  store float %122, float* %.repack68, align 4, !dbg !25
+  %.repack70 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 2, i32 2, !dbg !25
+  store float %124, float* %.repack70, align 8, !dbg !25
+  %.unpack73.elt = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 0, i32 0, !dbg !25
+  %.unpack73.unpack = load float, float* %.unpack73.elt, align 8, !dbg !25
+  %143 = insertvalue %4 undef, float %.unpack73.unpack, 0, !dbg !25
+  %.unpack73.elt78 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 0, i32 1, !dbg !25
+  %.unpack73.unpack79 = load float, float* %.unpack73.elt78, align 4, !dbg !25
+  %144 = insertvalue %4 %143, float %.unpack73.unpack79, 1, !dbg !25
+  %.unpack73.elt80 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 0, i32 2, !dbg !25
+  %.unpack73.unpack81 = load float, float* %.unpack73.elt80, align 8, !dbg !25
+  %.unpack7382 = insertvalue %4 %144, float %.unpack73.unpack81, 2, !dbg !25
+  %145 = insertvalue [3 x %4] undef, %4 %.unpack7382, 0, !dbg !25
+  %.unpack75.elt = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 1, i32 0, !dbg !25
+  %.unpack75.unpack = load float, float* %.unpack75.elt, align 4, !dbg !25
+  %146 = insertvalue %4 undef, float %.unpack75.unpack, 0, !dbg !25
+  %.unpack75.elt83 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 1, i32 1, !dbg !25
+  %.unpack75.unpack84 = load float, float* %.unpack75.elt83, align 8, !dbg !25
+  %147 = insertvalue %4 %146, float %.unpack75.unpack84, 1, !dbg !25
+  %.unpack75.elt85 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 1, i32 2, !dbg !25
+  %.unpack75.unpack86 = load float, float* %.unpack75.elt85, align 4, !dbg !25
+  %.unpack7587 = insertvalue %4 %147, float %.unpack75.unpack86, 2, !dbg !25
+  %148 = insertvalue [3 x %4] %145, %4 %.unpack7587, 1, !dbg !25
+  %.unpack77.elt = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 2, i32 0, !dbg !25
+  %.unpack77.unpack = load float, float* %.unpack77.elt, align 8, !dbg !25
+  %149 = insertvalue %4 undef, float %.unpack77.unpack, 0, !dbg !25
+  %.unpack77.elt88 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 2, i32 1, !dbg !25
+  %.unpack77.unpack89 = load float, float* %.unpack77.elt88, align 4, !dbg !25
+  %150 = insertvalue %4 %149, float %.unpack77.unpack89, 1, !dbg !25
+  %.unpack77.elt90 = getelementptr inbounds [3 x %4], [3 x %4]* %0, i64 0, i64 2, i32 2, !dbg !25
+  %.unpack77.unpack91 = load float, float* %.unpack77.elt90, align 8, !dbg !25
+  %.unpack7792 = insertvalue %4 %150, float %.unpack77.unpack91, 2, !dbg !25
+  %151 = insertvalue [3 x %4] %148, %4 %.unpack7792, 2, !dbg !25
+  %152 = insertvalue %7 undef, [3 x %4] %151, 0, !dbg !25
+  %153 = insertvalue %6 %127, %7 %152, 4, !dbg !25
+  %154 = insertvalue %6 %153, %3 %87, 5, !dbg !25
+  %155 = insertvalue %6 %154, %3 %89, 6, !dbg !25
+  %156 = extractvalue %3 %91, 0, !dbg !25
+  %157 = insertvalue %6 %155, float %156, 7, !dbg !25
+  ret %6 %157, !dbg !25
+}
+
+declare float @__nv_sqrtf(float) local_unnamed_addr
+
+define ptx_kernel %3 @lookup_tex(i1 %opt_565059, %2 %tex_565060, %1 %uv_565061) local_unnamed_addr !dbg !26 {
+lookup_tex:
+  %uv_565075 = alloca %1, align 8
+  %0 = extractvalue %2 %tex_565060, 2, !dbg !28
+  %1 = extractvalue %1 %uv_565061, 0, !dbg !28
+  %uv_565075.repack = getelementptr inbounds %1, %1* %uv_565075, i64 0, i32 0, !dbg !28
+  %uv_565061.elt = extractvalue %1 %uv_565061, 0, !dbg !28
+  store float %uv_565061.elt, float* %uv_565075.repack, align 8, !dbg !28
+  %uv_565075.repack29 = getelementptr inbounds %1, %1* %uv_565075, i64 0, i32 1, !dbg !28
+  %uv_565061.elt30 = extractvalue %1 %uv_565061, 1, !dbg !28
+  store float %uv_565061.elt30, float* %uv_565075.repack29, align 4, !dbg !28
+  %2 = getelementptr inbounds %1, %1* %uv_565075, i64 0, i32 0, !dbg !28
+  %3 = getelementptr inbounds %1, %1* %uv_565075, i64 0, i32 1, !dbg !28
+  switch i32 %0, label %expr_false1 [
+    i32 0, label %expr_true13
+    i32 1, label %expr_true9
+  ], !dbg !28
+
+expr_false1:                                      ; preds = %lookup_tex
+  %4 = fcmp olt float %1, 0.000000e+00, !dbg !29
+  %5 = fcmp ogt float %1, 1.000000e+00
+  %or.cond = or i1 %4, %5, !dbg !29
+  %6 = extractvalue %1 %uv_565061, 1
+  %7 = fcmp olt float %6, 0.000000e+00
+  %or.cond68 = or i1 %or.cond, %7, !dbg !29
+  %8 = fcmp ogt float %6, 1.000000e+00
+  %or.cond69 = or i1 %or.cond68, %8, !dbg !29
+  br i1 %or.cond69, label %if_then, label %if_join20, !dbg !29
+
+if_then:                                          ; preds = %expr_false1
+  %9 = extractvalue %2 %tex_565060, 1, !dbg !30
+  ret %3 %9, !dbg !30
+
+expr_true9:                                       ; preds = %lookup_tex
+  %10 = call float @__nv_floorf(float %1), !dbg !29
+  %11 = fsub float %1, %10, !dbg !31
+  store float %11, float* %2, align 8, !dbg !31
+  %12 = load float, float* %3, align 4, !dbg !31
+  %13 = call float @__nv_floorf(float %12), !dbg !31
+  %14 = fsub float %12, %13, !dbg !31
+  br label %if_join20.sink.split, !dbg !31
+
+expr_true13:                                      ; preds = %lookup_tex
+  %15 = call float @__nv_fmaxf(float 0.000000e+00, float %1), !dbg !32
+  %16 = call float @__nv_fminf(float 1.000000e+00, float %15), !dbg !33
+  store float %16, float* %2, align 8, !dbg !34
+  %17 = load float, float* %3, align 4, !dbg !34
+  %18 = call float @__nv_fmaxf(float 0.000000e+00, float %17), !dbg !34
+  %19 = call float @__nv_fminf(float 1.000000e+00, float %18), !dbg !33
+  br label %if_join20.sink.split, !dbg !35
+
+if_join20.sink.split:                             ; preds = %expr_true13, %expr_true9
+  %.sink = phi float [ %14, %expr_true9 ], [ %19, %expr_true13 ]
+  store float %.sink, float* %3, align 4, !dbg !36
+  br label %if_join20, !dbg !37
+
+if_join20:                                        ; preds = %expr_false1, %if_join20.sink.split
+  %20 = extractvalue %2 %tex_565060, 3, !dbg !37
+  %21 = icmp eq i32 %20, 0, !dbg !37
+  %22 = extractvalue %2 %tex_565060, 4, !dbg !37
+  %23 = sitofp i32 %22 to float, !dbg !37
+  %24 = add nsw i32 %22, -1, !dbg !37
+  %25 = extractvalue %2 %tex_565060, 5, !dbg !37
+  %26 = sitofp i32 %25 to float, !dbg !37
+  %27 = add nsw i32 %25, -1, !dbg !37
+  %28 = extractvalue %2 %tex_565060, 0, !dbg !37
+  %.elt57 = getelementptr inbounds %1, %1* %uv_565075, i64 0, i32 0, !dbg !38
+  %.unpack58 = load float, float* %.elt57, align 8, !dbg !38
+  %.elt59 = getelementptr inbounds %1, %1* %uv_565075, i64 0, i32 1, !dbg !38
+  %.unpack60 = load float, float* %.elt59, align 4, !dbg !38
+  %29 = fmul float %.unpack58, %23, !dbg !38
+  %30 = fptosi float %29 to i32, !dbg !38
+  %31 = call ptx_device i32 @llvm.nvvm.min.i(i32 %30, i32 %24), !dbg !38
+  %32 = fmul float %.unpack60, %26, !dbg !36
+  %33 = fptosi float %32 to i32, !dbg !36
+  %34 = call ptx_device i32 @llvm.nvvm.min.i(i32 %33, i32 %27), !dbg !36
+  br i1 %21, label %_cont27, label %_cont22, !dbg !37
+
+_cont22:                                          ; preds = %if_join20
+  %35 = add nsw i32 %31, 1, !dbg !39
+  %36 = call ptx_device i32 @llvm.nvvm.min.i(i32 %35, i32 %24), !dbg !39
+  %37 = add nsw i32 %34, 1, !dbg !40
+  %38 = call ptx_device i32 @llvm.nvvm.min.i(i32 %37, i32 %27), !dbg !40
+  %39 = mul nsw i32 %34, %22, !dbg !41
+  %40 = add nsw i32 %31, %39, !dbg !41
+  %41 = sext i32 %40 to i64, !dbg !41
+  %.elt33 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %41, i32 0, !dbg !41
+  %.unpack34 = load float, float* %.elt33, align 4, !dbg !41
+  %.elt35 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %41, i32 1, !dbg !41
+  %.unpack36 = load float, float* %.elt35, align 4, !dbg !41
+  %.elt37 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %41, i32 2, !dbg !41
+  %.unpack38 = load float, float* %.elt37, align 4, !dbg !41
+  %42 = add nsw i32 %36, %39, !dbg !41
+  %43 = sext i32 %42 to i64, !dbg !41
+  %.elt39 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %43, i32 0, !dbg !41
+  %.unpack40 = load float, float* %.elt39, align 4, !dbg !41
+  %.elt41 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %43, i32 1, !dbg !41
+  %.unpack42 = load float, float* %.elt41, align 4, !dbg !41
+  %.elt43 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %43, i32 2, !dbg !41
+  %.unpack44 = load float, float* %.elt43, align 4, !dbg !41
+  %44 = mul nsw i32 %38, %22, !dbg !41
+  %45 = add nsw i32 %31, %44, !dbg !41
+  %46 = sext i32 %45 to i64, !dbg !41
+  %.elt45 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %46, i32 0, !dbg !41
+  %.unpack46 = load float, float* %.elt45, align 4, !dbg !41
+  %.elt47 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %46, i32 1, !dbg !41
+  %.unpack48 = load float, float* %.elt47, align 4, !dbg !41
+  %.elt49 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %46, i32 2, !dbg !41
+  %.unpack50 = load float, float* %.elt49, align 4, !dbg !41
+  %47 = add nsw i32 %36, %44, !dbg !41
+  %48 = sext i32 %47 to i64, !dbg !41
+  %.elt51 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %48, i32 0, !dbg !41
+  %.unpack52 = load float, float* %.elt51, align 4, !dbg !41
+  %.elt53 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %48, i32 1, !dbg !41
+  %.unpack54 = load float, float* %.elt53, align 4, !dbg !41
+  %.elt55 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %48, i32 2, !dbg !41
+  %.unpack56 = load float, float* %.elt55, align 4, !dbg !41
+  %49 = sitofp i32 %33 to float, !dbg !41
+  %ky = fsub float %32, %49, !dbg !41
+  %50 = fsub float 1.000000e+00, %ky, !dbg !41
+  %51 = sitofp i32 %30 to float, !dbg !41
+  %kx = fsub float %29, %51, !dbg !41
+  %52 = fsub float 1.000000e+00, %kx, !dbg !41
+  %53 = fmul float %52, %.unpack34, !dbg !41
+  %54 = fmul float %kx, %.unpack40, !dbg !41
+  %55 = fadd float %53, %54, !dbg !41
+  %56 = fmul float %50, %55, !dbg !41
+  %57 = fmul float %52, %.unpack46, !dbg !41
+  %58 = fmul float %kx, %.unpack52, !dbg !41
+  %59 = fadd float %57, %58, !dbg !41
+  %60 = fmul float %ky, %59, !dbg !41
+  %61 = fadd float %56, %60, !dbg !41
+  %62 = insertvalue %3 undef, float %61, 0, !dbg !41
+  %63 = fmul float %52, %.unpack36, !dbg !41
+  %64 = fmul float %kx, %.unpack42, !dbg !41
+  %65 = fadd float %63, %64, !dbg !41
+  %66 = fmul float %50, %65, !dbg !41
+  %67 = fmul float %52, %.unpack48, !dbg !41
+  %68 = fmul float %kx, %.unpack54, !dbg !41
+  %69 = fadd float %67, %68, !dbg !41
+  %70 = fmul float %ky, %69, !dbg !41
+  %71 = fadd float %66, %70, !dbg !41
+  %72 = insertvalue %3 %62, float %71, 1, !dbg !41
+  %73 = fmul float %52, %.unpack38, !dbg !41
+  %74 = fmul float %kx, %.unpack44, !dbg !41
+  %75 = fadd float %73, %74, !dbg !41
+  %76 = fmul float %50, %75, !dbg !41
+  %77 = fmul float %52, %.unpack50, !dbg !41
+  %78 = fmul float %kx, %.unpack56, !dbg !41
+  %79 = fadd float %77, %78, !dbg !41
+  %80 = fmul float %ky, %79, !dbg !41
+  %81 = fadd float %76, %80, !dbg !41
+  %82 = insertvalue %3 %72, float %81, 2, !dbg !41
+  ret %3 %82, !dbg !41
+
+_cont27:                                          ; preds = %if_join20
+  %83 = mul nsw i32 %34, %22, !dbg !42
+  %84 = add nsw i32 %31, %83, !dbg !42
+  %85 = sext i32 %84 to i64, !dbg !42
+  %.elt61 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %85, i32 0, !dbg !42
+  %.unpack62 = load float, float* %.elt61, align 4, !dbg !42
+  %86 = insertvalue %3 undef, float %.unpack62, 0, !dbg !42
+  %.elt63 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %85, i32 1, !dbg !42
+  %.unpack64 = load float, float* %.elt63, align 4, !dbg !42
+  %87 = insertvalue %3 %86, float %.unpack64, 1, !dbg !42
+  %.elt65 = getelementptr inbounds [0 x %3], [0 x %3]* %28, i64 0, i64 %85, i32 2, !dbg !42
+  %.unpack66 = load float, float* %.elt65, align 4, !dbg !42
+  %88 = insertvalue %3 %87, float %.unpack66, 2, !dbg !42
+  ret %3 %88, !dbg !42
+}
+
+declare float @__nv_floorf(float) local_unnamed_addr
+
+declare float @__nv_fmaxf(float, float) local_unnamed_addr
+
+declare float @__nv_fminf(float, float) local_unnamed_addr
+
+declare ptx_device i32 @llvm.nvvm.min.i(i32, i32)
+
+attributes #0 = { nounwind readnone }
+
+!nvvmir.version = !{!0}
+!llvm.module.flags = !{!1}
+!llvm.dbg.cu = !{!2}
+!nvvm.annotations = !{!5, !6, !7, !8, !9, !10}
+
+!0 = !{i64 1, i64 5}
+!1 = !{i32 2, !"Debug Info Version", i32 3}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "Impala", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug, enums: !4)
+!3 = !DIFile(filename: "/home/niklas/repos/anydsl/rodent/build/tools/bench_interface/./bench_interface", directory: "")
+!4 = !{}
+!5 = !{void ([0 x %4]*, %0, [0 x %4]*, [0 x %5]*, [0 x %3]*)* @lambda_552205, !"kernel", i64 1}
+!6 = !{void ([0 x %4]*, %0, [0 x %4]*, [0 x %5]*, [0 x %3]*)* @lambda_552205, !"maxntidx", i64 64}
+!7 = !{void ([0 x %4]*, %0, [0 x %4]*, [0 x %5]*, [0 x %3]*)* @lambda_552205, !"maxntidy", i64 1}
+!8 = !{void ([0 x %4]*, %0, [0 x %4]*, [0 x %5]*, [0 x %3]*)* @lambda_552205, !"maxntidz", i64 1}
+!9 = !{%6 (i1, %0, %5)* @compute_shader_input, !"kernel", i64 1}
+!10 = !{%3 (i1, %2, %1)* @lookup_tex, !"kernel", i64 1}
+!11 = distinct !DISubprogram(name: "lambda_552205", linkageName: "lambda_552205", scope: null, file: !12, line: 622, type: !13, scopeLine: 622, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !4)
+!12 = !DIFile(filename: "intrinsics_nvvm.impala", directory: "Z9\A7\F1DV\00\00\10\A0\A8\94AV\00\00os/anydsl/runtime/platforms/impala")
+!13 = !DISubroutineType(types: !4)
+!14 = !DILocation(line: 622, column: 36, scope: !11)
+!15 = !DILocation(line: 609, column: 29, scope: !11)
+!16 = !DILocation(line: 609, column: 58, scope: !11)
+!17 = !DILocation(line: 609, column: 88, scope: !11)
+!18 = !DILocation(line: 140, column: 21, scope: !11)
+!19 = distinct !DISubprogram(name: "compute_shader_input", linkageName: "compute_shader_input", scope: null, file: !20, line: 92, type: !13, scopeLine: 92, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !4)
+!20 = !DIFile(filename: "bench_interface.impala", directory: "\AA_\B9\F1DV\00\00\10\A0\A8\94AV\00\00os/anydsl/rodent/tools/bench_interface")
+!21 = !DILocation(line: 92, column: 1, scope: !19)
+!22 = !DILocation(line: 82, column: 77, scope: !19)
+!23 = !DILocation(line: 106, column: 14, scope: !19)
+!24 = !DILocation(line: 107, column: 14, scope: !19)
+!25 = !DILocation(line: 108, column: 14, scope: !19)
+!26 = distinct !DISubprogram(name: "lookup_tex", linkageName: "lookup_tex", scope: null, file: !27, line: 67, type: !13, scopeLine: 67, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !4)
+!27 = !DIFile(filename: "bench_interface.impala", directory: ",|P\F2DV\00\00\10\A0\A8\94AV\00\00os/anydsl/rodent/tools/bench_interface")
+!28 = !DILocation(line: 67, column: 1, scope: !26)
+!29 = !DILocation(line: 72, column: 41, scope: !26)
+!30 = !DILocation(line: 78, column: 39, scope: !26)
+!31 = !DILocation(line: 49, column: 34, scope: !26)
+!32 = !DILocation(line: 68, column: 33, scope: !26)
+!33 = !DILocation(line: 41, column: 46, scope: !26)
+!34 = !DILocation(line: 70, column: 16, scope: !26)
+!35 = !DILocation(line: 71, column: 16, scope: !26)
+!36 = !DILocation(line: 0, scope: !26)
+!37 = !DILocation(line: 81, column: 5, scope: !26)
+!38 = !DILocation(line: 83, column: 37, scope: !26)
+!39 = !DILocation(line: 68, column: 18, scope: !26)
+!40 = !DILocation(line: 69, column: 18, scope: !26)
+!41 = !DILocation(line: 70, column: 18, scope: !26)
+!42 = !DILocation(line: 59, column: 20, scope: !26)

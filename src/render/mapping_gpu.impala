@@ -530,6 +530,9 @@ fn @make_gpu_device( dev_id: i32
             rodent_load_jpg(dev_id, filename, &mut pixel_data, &mut width, &mut height);
             let (ptr, stride) = (pixel_data, width);
             make_image_rgba32(@ |x, y| read_pixel(ptr as &[u32], y * stride + x), width, height)
+        },
+        load_warp: @ |filename| {
+            rodent_load_warp(dev_id, filename)
         }
     }
 }

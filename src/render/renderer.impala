@@ -59,6 +59,46 @@ fn @make_debug_renderer() -> Renderer {
     }
 }
 
+fn @make_white_furnace_renderer() -> Renderer {
+    @ |scene, device, iter| {
+        let offset = 0.001f;
+        let on_emit = make_camera_emitter(scene, device, iter);
+        
+        fn @on_shadow( ray: Ray
+            , hit: Hit
+            , state: &mut RayState
+            , surf: SurfaceElement
+            , mat: Material
+            , emit: fn (Ray, Color) -> !
+            ) -> () {
+        // No shadow rays for specular materials
+        if mat.bsdf.is_specular {
+            return()
+        }
+
+        let out_dir = vec3_neg(ray.dir);
+        let mat_sample = mat.bsdf.sample(&mut state.rnd, out_dir, false);
+        emit(
+            make_ray(surf.point, mat_sample.in_dir, offset, flt_max),
+            white
+        )
+
+        }
+
+        let on_bounce = @ |_, _, _, _, _, _| ();
+        let on_hit = @ |_, _, _, _, _, _| ();
+
+        let path_tracer = PathTracer {
+            on_emit:   on_emit,
+            on_hit:    on_hit,
+            on_shadow: on_shadow,
+            on_bounce: on_bounce
+        };
+
+        device.trace(scene, path_tracer, 1);
+    }
+}
+
 fn @make_path_tracing_renderer(max_path_len: i32, spp: i32)-> Renderer {
     @ |scene, device, iter| {
         let offset = 0.001f;

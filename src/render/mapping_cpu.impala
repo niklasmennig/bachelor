@@ -531,6 +531,9 @@ fn @make_cpu_device(use_embree: bool, vector_compact: bool, single: bool, min_ma
             let mut height;
             rodent_load_jpg(0, filename, &mut pixel_data, &mut width, &mut height);
             make_image_rgba32(@ |x, y| (pixel_data as &[u32])(y * width + x), width, height)
+        },
+        load_warp: @ |filename| {
+            rodent_load_warp(0, filename)
         }
     }
 }

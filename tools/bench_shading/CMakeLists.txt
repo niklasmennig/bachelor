@@ -1,5 +1,6 @@
 set(SHADING_SRCS
     bench_shading.impala
+    ../../src/render/brdf_sampler.impala
     ../../src/render/mapping_cpu.impala
     ../../src/render/material.impala
     ../../src/render/geometry.impala

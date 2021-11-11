@@ -1,5 +1,6 @@
 set(INTERFACE_SRCS
     bench_interface.impala
+    ../../src/render/brdf_sampler.impala
     ../../src/render/material.impala
     ../../src/render/light.impala
     ../../src/render/image.impala

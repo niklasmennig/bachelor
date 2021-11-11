@@ -16,6 +16,8 @@
 #include "image.h"
 #include "buffer.h"
 
+#include "measured.h"
+
 template <typename Node, typename Tri>
 struct Bvh {
     anydsl::Array<Node> nodes;
@@ -324,6 +326,22 @@ struct EmbreeDevice {
 struct Interface {
     using DeviceImage = std::tuple<anydsl::Array<uint8_t>, int32_t, int32_t>;
 
+    struct DeviceWarp
+    {
+        Vec2i size;
+        Vec2 patch_size;
+        Vec2 inv_patch_size;
+        anydsl::Array<unsigned int> param_size;
+        anydsl::Array<unsigned int> param_strides;
+        anydsl::Array<float> param_values;
+        int param_values_offset;
+        anydsl::Array<float> data;
+        anydsl::Array<float> marginal_cdf;
+        anydsl::Array<float> conditional_cdf;
+        anydsl::Array<unsigned int> array_sizes;
+    };
+    
+
     struct DeviceData {
         std::unordered_map<std::string, Bvh2Tri1> bvh2_tri1;
         std::unordered_map<std::string, Bvh4Tri4> bvh4_tri4;
@@ -491,6 +509,62 @@ struct Interface {
         return images[filename] = std::move(copy_to_device(dev, img));
     }
 
+    std::unordered_map<std::string, DeviceWarp> loaded_warps;
+    DeviceWarp& load_warp(int32_t dev, std::string path) {
+        if (loaded_warps.find(path) != loaded_warps.end()) {
+            return loaded_warps[path];
+        }
+        std::vector<float> data;
+        std::ifstream is;
+        is.open(path);
+        read_buffer(is, data);
+        //return delinearize_warp(data);
+        auto delin = delinearize_warp(data);
+        return loaded_warps[path] = DeviceWarp {
+            size : delin.size,
+            patch_size : delin.patch_size,
+            inv_patch_size : delin.inv_patch_size,
+            param_size : std::move(copy_to_device(dev, delin.param_size, delin.array_sizes[0])),
+            param_strides : std::move(copy_to_device(dev, delin.param_strides, delin.array_sizes[1])),
+            param_values : std::move(copy_to_device(dev, delin.param_values, delin.array_sizes[2])),
+            param_values_offset : delin.param_values_offset,
+            data : std::move(copy_to_device(dev, delin.data, delin.array_sizes[3])),
+            marginal_cdf : std::move(copy_to_device(dev, delin.marginal_cdf, delin.array_sizes[4])),
+            conditional_cdf : std::move(copy_to_device(dev, delin.conditional_cdf, delin.array_sizes[5])),
+            array_sizes : std::move(copy_to_device(dev, delin.array_sizes, 6))
+        };
+    }
+
+    void fill_warp(int32_t dev, Warp* warp, const std::string file) {
+        DeviceWarp& dw = load_warp(dev, file);
+        warp->size = dw.size;
+        warp->patch_size = dw.patch_size;
+        warp->inv_patch_size = dw.inv_patch_size;
+        warp->param_size = dw.param_size.data();
+        warp->param_strides = dw.param_strides.data();
+        warp->param_values = dw.param_values.data();
+        warp->data = dw.data.data();
+        warp->marginal_cdf = dw.marginal_cdf.data();
+        warp->conditional_cdf = dw.conditional_cdf.data();
+    }
+
+    Warp create_warp(int32_t dev, const std::string file) {
+        DeviceWarp& dw = load_warp(dev, file);
+        //printf("read warp array sizes for %s: %d %d %d %d %d %d\n", file.c_str(), dw.array_sizes[0], dw.array_sizes[1], dw.array_sizes[2], dw.array_sizes[3], dw.array_sizes[4], dw.array_sizes[5]);
+        return Warp {
+            size : dw.size,
+            patch_size : dw.patch_size,
+            inv_patch_size : dw.inv_patch_size,
+            param_size : dw.param_size.data(),
+            param_strides : dw.param_strides.data(),
+            param_values : dw.param_values.data(),
+            data : dw.data.data(),
+            marginal_cdf : dw.marginal_cdf.data(),
+            conditional_cdf : dw.conditional_cdf.data(),
+            array_sizes : dw.array_sizes.data()
+        };
+    }
+
     void present(int32_t dev) {
         anydsl::copy(devices[dev].film_pixels, host_pixels);
     }
@@ -598,6 +672,11 @@ void rodent_load_jpg(int32_t dev, const char* file, uint8_t** pixels, int32_t* w
 uint8_t* rodent_load_buffer(int32_t dev, const char* file) {
     auto& array = interface->load_buffer(dev, file);
     return const_cast<uint8_t*>(array.data());
+}
+
+Warp rodent_load_warp(int32_t dev, const char* file) {
+    //interface->fill_warp(dev, warp, file);
+    return interface->create_warp(dev, file);
 }
 
 void rodent_load_bvh2_tri1(int32_t dev, const char* file, Node2** nodes, Tri1** tris) {

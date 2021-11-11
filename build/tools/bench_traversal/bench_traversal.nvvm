@@ -1,0 +1,1232 @@
+; ModuleID = '/home/niklas/repos/anydsl/rodent/build/tools/bench_traversal/./bench_traversal'
+source_filename = "/home/niklas/repos/anydsl/rodent/build/tools/bench_traversal/./bench_traversal"
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v16:16:16-v32:32:32-v64:64:64-v128:128:128-n16:32:64"
+target triple = "nvptx64-nvidia-cuda"
+
+%0 = type { i32, float, float, float }
+%1 = type { [3 x float], i32, [3 x float], i32, [3 x float], i32 }
+%2 = type { [12 x float], [2 x i32], [2 x i32] }
+%3 = type { [3 x float], float, [3 x float], float }
+%4 = type { float, %5, i32, i32 }
+%5 = type { float, float }
+%6 = type { %7, %7, %7, %7, float, float }
+%7 = type { float, float, float }
+
+define ptx_kernel void @lambda_9283815([0 x %0]* %_9306792, [0 x %1]* %_9306793, i32 %_9306794, [0 x %2]* %_9306795, [0 x %3]* %_9306796) local_unnamed_addr !dbg !13 {
+lambda_9283815:
+  %mask_9307269 = alloca i1, align 1
+  %prim_id_9307164 = alloca i32, align 4
+  %val_9307429 = alloca { i32, float }, align 8
+  %val_9307426 = alloca { i32, float }, align 8
+  %mask_9306971 = alloca i32, align 4
+  %nodes_9307391 = alloca [64 x i32], align 4
+  %ptr_9307388 = alloca i32, align 4
+  %node_9306852 = alloca i32, align 4
+  %hit_9306871 = alloca %4, align 8
+  %ray_9306973 = alloca %6, align 8
+  %0 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.x(), !dbg !16
+  %1 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.ctaid.x(), !dbg !17
+  %2 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.y(), !dbg !18
+  %3 = shl nsw i32 %1, 6, !dbg !19
+  %i = add nsw i32 %0, %3, !dbg !19
+  %4 = add nsw i32 %i, %2, !dbg !19
+  %.not = icmp slt i32 %4, %_9306794, !dbg !19
+  br i1 %.not, label %expr_false, label %expr_true69, !dbg !19
+
+expr_false:                                       ; preds = %lambda_9283815
+  %5 = sext i32 %4 to i64, !dbg !20
+  %6 = getelementptr inbounds [0 x %3], [0 x %3]* %_9306796, i64 0, i64 %5, !dbg !20
+  %7 = bitcast %3* %6 to <4 x float>*, !dbg !20
+  %8 = load <4 x float>, <4 x float>* %7, align 16, !dbg !20
+  %9 = getelementptr inbounds [0 x %3], [0 x %3]* %_9306796, i64 0, i64 %5, i32 2, !dbg !20
+  %10 = bitcast [3 x float]* %9 to <4 x float>*, !dbg !20
+  %11 = load <4 x float>, <4 x float>* %10, align 16, !dbg !20
+  %12 = extractelement <4 x float> %11, i32 0, !dbg !20
+  %13 = fcmp ogt float %12, 0.000000e+00, !dbg !20
+  %14 = fneg float %12, !dbg !20
+  %15 = select i1 %13, float %12, float %14, !dbg !20
+  %16 = fcmp olt float %15, 0x3E45798EE0000000, !dbg !20
+  br i1 %16, label %expr_true, label %expr_false6, !dbg !20
+
+expr_false6:                                      ; preds = %expr_false
+  %17 = fdiv float 1.000000e+00, %12, !dbg !21
+  br label %safe_rcp_cont, !dbg !21
+
+expr_true:                                        ; preds = %expr_false
+  %18 = bitcast float %12 to i32, !dbg !21
+  %19 = and i32 %18, -2147483648, !dbg !21
+  %20 = or i32 %19, 2139095039, !dbg !21
+  %21 = bitcast i32 %20 to float, !dbg !21
+  br label %safe_rcp_cont, !dbg !21
+
+safe_rcp_cont:                                    ; preds = %expr_true, %expr_false6
+  %safe_rcp_cont7 = phi float [ %17, %expr_false6 ], [ %21, %expr_true ], !dbg !22
+  %22 = extractelement <4 x float> %11, i32 1, !dbg !22
+  %23 = fcmp ogt float %22, 0.000000e+00, !dbg !22
+  %24 = fneg float %22, !dbg !22
+  %25 = select i1 %23, float %22, float %24, !dbg !22
+  %26 = fcmp olt float %25, 0x3E45798EE0000000, !dbg !22
+  br i1 %26, label %expr_true9, label %expr_false8, !dbg !22
+
+expr_false8:                                      ; preds = %safe_rcp_cont
+  %27 = fdiv float 1.000000e+00, %22, !dbg !21
+  br label %safe_rcp_cont10, !dbg !21
+
+expr_true9:                                       ; preds = %safe_rcp_cont
+  %28 = bitcast float %22 to i32, !dbg !21
+  %29 = and i32 %28, -2147483648, !dbg !21
+  %30 = or i32 %29, 2139095039, !dbg !21
+  %31 = bitcast i32 %30 to float, !dbg !21
+  br label %safe_rcp_cont10, !dbg !21
+
+safe_rcp_cont10:                                  ; preds = %expr_true9, %expr_false8
+  %safe_rcp_cont11 = phi float [ %27, %expr_false8 ], [ %31, %expr_true9 ], !dbg !23
+  %32 = extractelement <4 x float> %11, i32 2, !dbg !23
+  %33 = fcmp ogt float %32, 0.000000e+00, !dbg !23
+  %34 = fneg float %32, !dbg !23
+  %35 = select i1 %33, float %32, float %34, !dbg !23
+  %36 = fcmp olt float %35, 0x3E45798EE0000000, !dbg !23
+  br i1 %36, label %expr_true13, label %expr_false12, !dbg !23
+
+expr_false12:                                     ; preds = %safe_rcp_cont10
+  %37 = fdiv float 1.000000e+00, %32, !dbg !21
+  br label %safe_rcp_cont14, !dbg !21
+
+expr_true13:                                      ; preds = %safe_rcp_cont10
+  %38 = bitcast float %32 to i32, !dbg !21
+  %39 = and i32 %38, -2147483648, !dbg !21
+  %40 = or i32 %39, 2139095039, !dbg !21
+  %41 = bitcast i32 %40 to float, !dbg !21
+  br label %safe_rcp_cont14, !dbg !21
+
+safe_rcp_cont14:                                  ; preds = %expr_true13, %expr_false12
+  %safe_rcp_cont15 = phi float [ %37, %expr_false12 ], [ %41, %expr_true13 ], !dbg !24
+  %42 = extractelement <4 x float> %8, i32 0, !dbg !24
+  %43 = extractelement <4 x float> %8, i32 1, !dbg !24
+  %44 = extractelement <4 x float> %8, i32 2, !dbg !24
+  %45 = fneg float %42, !dbg !24
+  %46 = fmul float %safe_rcp_cont7, %45, !dbg !24
+  %47 = fneg float %43, !dbg !24
+  %48 = fmul float %safe_rcp_cont11, %47, !dbg !24
+  %49 = fneg float %44, !dbg !24
+  %50 = fmul float %safe_rcp_cont15, %49, !dbg !24
+  %51 = extractelement <4 x float> %8, i32 3, !dbg !24
+  %52 = extractelement <4 x float> %11, i32 3, !dbg !24
+  %ray_9306973.repack.repack = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 0, i32 0, !dbg !24
+  store float %42, float* %ray_9306973.repack.repack, align 8, !dbg !24
+  %ray_9306973.repack.repack80 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 0, i32 1, !dbg !24
+  store float %43, float* %ray_9306973.repack.repack80, align 4, !dbg !24
+  %ray_9306973.repack.repack82 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 0, i32 2, !dbg !24
+  store float %44, float* %ray_9306973.repack.repack82, align 8, !dbg !24
+  %ray_9306973.repack70.repack = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 1, i32 0, !dbg !24
+  store float %12, float* %ray_9306973.repack70.repack, align 4, !dbg !24
+  %ray_9306973.repack70.repack84 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 1, i32 1, !dbg !24
+  store float %22, float* %ray_9306973.repack70.repack84, align 8, !dbg !24
+  %ray_9306973.repack70.repack86 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 1, i32 2, !dbg !24
+  store float %32, float* %ray_9306973.repack70.repack86, align 4, !dbg !24
+  %ray_9306973.repack72.repack = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 0, !dbg !24
+  store float %safe_rcp_cont7, float* %ray_9306973.repack72.repack, align 8, !dbg !24
+  %ray_9306973.repack72.repack88 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 1, !dbg !24
+  store float %safe_rcp_cont11, float* %ray_9306973.repack72.repack88, align 4, !dbg !24
+  %ray_9306973.repack72.repack90 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 2, !dbg !24
+  store float %safe_rcp_cont15, float* %ray_9306973.repack72.repack90, align 8, !dbg !24
+  %ray_9306973.repack74.repack = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 0, !dbg !24
+  store float %46, float* %ray_9306973.repack74.repack, align 4, !dbg !24
+  %ray_9306973.repack74.repack92 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 1, !dbg !24
+  store float %48, float* %ray_9306973.repack74.repack92, align 8, !dbg !24
+  %ray_9306973.repack74.repack94 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 2, !dbg !24
+  store float %50, float* %ray_9306973.repack74.repack94, align 4, !dbg !24
+  %ray_9306973.repack76 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 4, !dbg !24
+  store float %51, float* %ray_9306973.repack76, align 8, !dbg !24
+  %ray_9306973.repack78 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 5, !dbg !24
+  store float %52, float* %ray_9306973.repack78, align 4, !dbg !24
+  %hit_9306871.repack = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 0, !dbg !24
+  store float %52, float* %hit_9306871.repack, align 8, !dbg !24
+  %hit_9306871.repack98 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 2, !dbg !24
+  store i32 -1, i32* %hit_9306871.repack98, align 4, !dbg !24
+  %hit_9306871.repack100 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 3, !dbg !24
+  store i32 -1, i32* %hit_9306871.repack100, align 8, !dbg !24
+  store i32 0, i32* %node_9306852, align 4, !dbg !24
+  store i32 0, i32* %ptr_9307388, align 4, !dbg !24
+  %53 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9307391, i64 0, i64 0, !dbg !24
+  store i32 0, i32* %53, align 4, !dbg !24
+  store i32 1, i32* %node_9306852, align 4, !dbg !24
+  %54 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 5, !dbg !24
+  %.unpack106.elt = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 0
+  %.unpack106.elt123 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 1
+  %.unpack106.elt125 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 2
+  %.unpack108.elt = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 0
+  %.unpack108.elt128 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 1
+  %.unpack108.elt130 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 2
+  %.elt109 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 4
+  %55 = bitcast float* %.elt109 to i32*
+  %.elt111 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 5
+  %56 = bitcast float* %.elt111 to i32*
+  %val_9307426.repack = getelementptr inbounds { i32, float }, { i32, float }* %val_9307426, i64 0, i32 0
+  %val_9307426.repack246 = getelementptr inbounds { i32, float }, { i32, float }* %val_9307426, i64 0, i32 1
+  %57 = bitcast float* %val_9307426.repack246 to i32*
+  %.unpack139.elt = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 0
+  %.unpack139.elt156 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 1
+  %.unpack139.elt158 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 2, i32 2
+  %.unpack141.elt = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 0
+  %.unpack141.elt161 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 1
+  %.unpack141.elt163 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 3, i32 2
+  %.elt142 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 4
+  %58 = bitcast float* %.elt142 to i32*
+  %.elt144 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 5
+  %59 = bitcast float* %.elt144 to i32*
+  %val_9307429.repack = getelementptr inbounds { i32, float }, { i32, float }* %val_9307429, i64 0, i32 0
+  %val_9307429.repack243 = getelementptr inbounds { i32, float }, { i32, float }* %val_9307429, i64 0, i32 1
+  %60 = bitcast float* %val_9307429.repack243 to i32*
+  %.elt = getelementptr inbounds { i32, float }, { i32, float }* %val_9307426, i64 0, i32 0
+  %.elt172 = getelementptr inbounds { i32, float }, { i32, float }* %val_9307429, i64 0, i32 0
+  %.elt174 = getelementptr inbounds { i32, float }, { i32, float }* %val_9307429, i64 0, i32 1
+  %.elt170 = getelementptr inbounds { i32, float }, { i32, float }* %val_9307426, i64 0, i32 1
+  %.unpack190.elt = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 0, i32 0
+  %.unpack190.elt201 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 0, i32 1
+  %.unpack190.elt203 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 0, i32 2
+  %.unpack192.elt = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 1, i32 0
+  %.unpack192.elt206 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 1, i32 1
+  %.unpack192.elt208 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 1, i32 2
+  %.elt197 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 4
+  %.elt199 = getelementptr inbounds %6, %6* %ray_9306973, i64 0, i32 5
+  br label %expr_true16, !dbg !25
+
+expr_true16:                                      ; preds = %safe_rcp_cont14, %expr_false45
+  %61 = load i32, i32* %node_9306852, align 4, !dbg !26
+  %62 = add nsw i32 %61, -1, !dbg !26
+  %63 = sext i32 %62 to i64, !dbg !26
+  %64 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306795, i64 0, i64 %63, !dbg !26
+  %65 = bitcast %2* %64 to <4 x float>*, !dbg !26
+  %66 = addrspacecast <4 x float>* %65 to <4 x float> addrspace(1)*, !dbg !26
+  %67 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %66) #2, !dbg !26
+  %68 = extractvalue { float, float, float, float } %67, 0, !dbg !26
+  %69 = extractvalue { float, float, float, float } %67, 1, !dbg !26
+  %70 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306795, i64 0, i64 %63, i32 0, i64 4, !dbg !26
+  %71 = bitcast float* %70 to <4 x float>*, !dbg !26
+  %72 = addrspacecast <4 x float>* %71 to <4 x float> addrspace(1)*, !dbg !26
+  %73 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %72) #2, !dbg !26
+  %74 = extractvalue { float, float, float, float } %73, 0, !dbg !26
+  %75 = extractvalue { float, float, float, float } %73, 1, !dbg !26
+  %76 = extractvalue { float, float, float, float } %73, 2, !dbg !26
+  %77 = extractvalue { float, float, float, float } %73, 3, !dbg !26
+  %78 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306795, i64 0, i64 %63, i32 0, i64 8, !dbg !26
+  %79 = bitcast float* %78 to <4 x float>*, !dbg !26
+  %80 = addrspacecast <4 x float>* %79 to <4 x float> addrspace(1)*, !dbg !26
+  %81 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %80) #2, !dbg !26
+  %82 = extractvalue { float, float, float, float } %81, 0, !dbg !26
+  %83 = extractvalue { float, float, float, float } %81, 1, !dbg !26
+  %84 = extractvalue { float, float, float, float } %81, 2, !dbg !26
+  %85 = extractvalue { float, float, float, float } %81, 3, !dbg !26
+  %86 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306795, i64 0, i64 %63, i32 1, !dbg !26
+  %87 = bitcast [2 x i32]* %86 to <4 x i32>*, !dbg !26
+  %88 = addrspacecast <4 x i32>* %87 to <4 x i32> addrspace(1)*, !dbg !26
+  %89 = call { i32, i32, i32, i32 } asm "ld.global.nc.v4.s32 {$0, $1, $2, $3}, [$4];", "=r,=r,=r,=r,l,~{dirflag},~{fpsr},~{flags}"(<4 x i32> addrspace(1)* %88) #2, !dbg !26
+  %90 = extractvalue { i32, i32, i32, i32 } %89, 1, !dbg !26
+  store i32 0, i32* %mask_9306971, align 4, !dbg !26
+  %.unpack106.unpack = load float, float* %.unpack106.elt, align 8, !dbg !26
+  %.unpack106.unpack124 = load float, float* %.unpack106.elt123, align 4, !dbg !26
+  %.unpack106.unpack126 = load float, float* %.unpack106.elt125, align 8, !dbg !26
+  %.unpack108.unpack = load float, float* %.unpack108.elt, align 4, !dbg !26
+  %.unpack108.unpack129 = load float, float* %.unpack108.elt128, align 8, !dbg !26
+  %.unpack108.unpack131 = load float, float* %.unpack108.elt130, align 4, !dbg !26
+  %.unpack110133 = load i32, i32* %55, align 8, !dbg !26
+  %.unpack112134 = load i32, i32* %56, align 4, !dbg !26
+  %91 = fmul float %.unpack106.unpack, %68, !dbg !26
+  %92 = fadd float %91, %.unpack108.unpack, !dbg !26
+  %93 = fmul float %.unpack106.unpack, %69, !dbg !26
+  %94 = fadd float %93, %.unpack108.unpack, !dbg !26
+  %95 = call float @__nv_fminf(float %92, float %94), !dbg !26
+  %96 = extractvalue { float, float, float, float } %67, 3, !dbg !26
+  %97 = extractvalue { float, float, float, float } %67, 2, !dbg !26
+  %98 = fmul float %.unpack106.unpack124, %97, !dbg !27
+  %99 = fadd float %98, %.unpack108.unpack129, !dbg !27
+  %100 = fmul float %.unpack106.unpack124, %96, !dbg !27
+  %101 = fadd float %100, %.unpack108.unpack129, !dbg !27
+  %102 = call float @__nv_fminf(float %99, float %101), !dbg !27
+  %103 = fmul float %.unpack106.unpack126, %74, !dbg !28
+  %104 = fadd float %103, %.unpack108.unpack131, !dbg !28
+  %105 = bitcast float %104 to i32, !dbg !28
+  %106 = fmul float %.unpack106.unpack126, %75, !dbg !28
+  %107 = fadd float %106, %.unpack108.unpack131, !dbg !28
+  %108 = bitcast float %107 to i32, !dbg !28
+  %109 = call i32 asm "vmin.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %105, i32 %108, i32 %.unpack110133) #2, !dbg !28
+  %110 = bitcast float %95 to i32, !dbg !28
+  %111 = bitcast float %102 to i32, !dbg !28
+  %112 = call i32 asm "vmax.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %110, i32 %111, i32 %109) #2, !dbg !28
+  %.cast = bitcast i32 %112 to float, !dbg !28
+  %113 = call float @__nv_fmaxf(float %92, float %94), !dbg !28
+  %114 = call float @__nv_fmaxf(float %99, float %101), !dbg !29
+  %115 = call i32 asm "vmax.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %105, i32 %108, i32 %.unpack112134) #2, !dbg !30
+  %116 = bitcast float %113 to i32, !dbg !30
+  %117 = bitcast float %114 to i32, !dbg !30
+  %118 = call i32 asm "vmin.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %116, i32 %117, i32 %115) #2, !dbg !30
+  %.cast135 = bitcast i32 %118 to float, !dbg !30
+  %119 = fcmp ugt float %.cast, %.cast135, !dbg !30
+  br i1 %119, label %_cont27, label %expr_true26, !dbg !30
+
+expr_true26:                                      ; preds = %expr_true16
+  %120 = extractvalue { i32, i32, i32, i32 } %89, 0, !dbg !26
+  %121 = load i32, i32* %mask_9306971, align 4, !dbg !31
+  %122 = or i32 %121, 1, !dbg !31
+  store i32 %122, i32* %mask_9306971, align 4, !dbg !31
+  store i32 %120, i32* %val_9307426.repack, align 8, !dbg !31
+  store i32 %112, i32* %57, align 4, !dbg !31
+  br label %_cont27, !dbg !31
+
+_cont27:                                          ; preds = %expr_true16, %expr_true26
+  %.unpack139.unpack = load float, float* %.unpack139.elt, align 8, !dbg !32
+  %.unpack139.unpack157 = load float, float* %.unpack139.elt156, align 4, !dbg !32
+  %.unpack139.unpack159 = load float, float* %.unpack139.elt158, align 8, !dbg !32
+  %.unpack141.unpack = load float, float* %.unpack141.elt, align 4, !dbg !32
+  %.unpack141.unpack162 = load float, float* %.unpack141.elt161, align 8, !dbg !32
+  %.unpack141.unpack164 = load float, float* %.unpack141.elt163, align 4, !dbg !32
+  %.unpack143167 = load i32, i32* %58, align 8, !dbg !32
+  %.unpack145168 = load i32, i32* %59, align 4, !dbg !32
+  %123 = fmul float %.unpack139.unpack, %76, !dbg !32
+  %124 = fadd float %123, %.unpack141.unpack, !dbg !32
+  %125 = fmul float %.unpack139.unpack, %77, !dbg !32
+  %126 = fadd float %125, %.unpack141.unpack, !dbg !32
+  %127 = call float @__nv_fminf(float %124, float %126), !dbg !32
+  %128 = fmul float %.unpack139.unpack157, %82, !dbg !27
+  %129 = fadd float %128, %.unpack141.unpack162, !dbg !27
+  %130 = fmul float %.unpack139.unpack157, %83, !dbg !27
+  %131 = fadd float %130, %.unpack141.unpack162, !dbg !27
+  %132 = call float @__nv_fminf(float %129, float %131), !dbg !27
+  %133 = fmul float %.unpack139.unpack159, %84, !dbg !28
+  %134 = fadd float %133, %.unpack141.unpack164, !dbg !28
+  %135 = bitcast float %134 to i32, !dbg !28
+  %136 = fmul float %.unpack139.unpack159, %85, !dbg !28
+  %137 = fadd float %136, %.unpack141.unpack164, !dbg !28
+  %138 = bitcast float %137 to i32, !dbg !28
+  %139 = call i32 asm "vmin.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %135, i32 %138, i32 %.unpack143167) #2, !dbg !28
+  %140 = bitcast float %127 to i32, !dbg !28
+  %141 = bitcast float %132 to i32, !dbg !28
+  %142 = call i32 asm "vmax.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %140, i32 %141, i32 %139) #2, !dbg !28
+  %.cast166 = bitcast i32 %142 to float, !dbg !28
+  %143 = call float @__nv_fmaxf(float %124, float %126), !dbg !28
+  %144 = call float @__nv_fmaxf(float %129, float %131), !dbg !29
+  %145 = call i32 asm "vmax.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %135, i32 %138, i32 %.unpack145168) #2, !dbg !30
+  %146 = bitcast float %143 to i32, !dbg !30
+  %147 = bitcast float %144 to i32, !dbg !30
+  %148 = call i32 asm "vmin.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %146, i32 %147, i32 %145) #2, !dbg !30
+  %.cast169 = bitcast i32 %148 to float, !dbg !30
+  %149 = fcmp ugt float %.cast166, %.cast169, !dbg !30
+  br i1 %149, label %_cont38, label %expr_true37, !dbg !30
+
+expr_true37:                                      ; preds = %_cont27
+  %150 = load i32, i32* %mask_9306971, align 4, !dbg !31
+  %151 = or i32 %150, 2, !dbg !31
+  store i32 %151, i32* %mask_9306971, align 4, !dbg !31
+  store i32 %90, i32* %val_9307429.repack, align 8, !dbg !31
+  store i32 %142, i32* %60, align 4, !dbg !31
+  br label %_cont38, !dbg !31
+
+_cont38:                                          ; preds = %_cont27, %expr_true37
+  %152 = load i32, i32* %mask_9306971, align 4, !dbg !32
+  %153 = icmp eq i32 %152, 0, !dbg !32
+  br i1 %153, label %expr_true42, label %expr_false39, !dbg !32
+
+expr_false39:                                     ; preds = %_cont38
+  %.unpack = load i32, i32* %.elt, align 8, !dbg !33
+  %.unpack173 = load i32, i32* %.elt172, align 8, !dbg !33
+  %154 = load i32, i32* %mask_9306971, align 4, !dbg !33
+  %155 = icmp eq i32 %154, 3, !dbg !33
+  br i1 %155, label %expr_true41, label %expr_false40, !dbg !33
+
+expr_false40:                                     ; preds = %expr_false39
+  %156 = load i32, i32* %mask_9306971, align 4, !dbg !34
+  %157 = icmp eq i32 %156, 1, !dbg !34
+  %158 = select i1 %157, i32 %.unpack, i32 %.unpack173, !dbg !34
+  store i32 %158, i32* %node_9306852, align 4, !dbg !34
+  br label %if_join43, !dbg !34
+
+expr_true41:                                      ; preds = %expr_false39
+  %.unpack175 = load float, float* %.elt174, align 4, !dbg !33
+  %.unpack171 = load float, float* %.elt170, align 4, !dbg !33
+  %159 = fcmp olt float %.unpack171, %.unpack175, !dbg !34
+  %160 = select i1 %159, i32 %.unpack, i32 %.unpack173, !dbg !34
+  store i32 %160, i32* %node_9306852, align 4, !dbg !34
+  %161 = load i32, i32* %ptr_9307388, align 4, !dbg !34
+  %162 = add nsw i32 %161, 1, !dbg !34
+  store i32 %162, i32* %ptr_9307388, align 4, !dbg !34
+  %163 = sext i32 %162 to i64, !dbg !34
+  %164 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9307391, i64 0, i64 %163, !dbg !34
+  %165 = select i1 %159, i32 %.unpack173, i32 %.unpack, !dbg !34
+  store i32 %165, i32* %164, align 4, !dbg !34
+  br label %if_join43, !dbg !34
+
+expr_true42:                                      ; preds = %_cont38
+  %166 = load i32, i32* %ptr_9307388, align 4, !dbg !33
+  %167 = sext i32 %166 to i64, !dbg !33
+  %168 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9307391, i64 0, i64 %167, !dbg !33
+  %169 = load i32, i32* %168, align 4, !dbg !33
+  store i32 %169, i32* %node_9306852, align 4, !dbg !33
+  %170 = add nsw i32 %166, -1, !dbg !33
+  store i32 %170, i32* %ptr_9307388, align 4, !dbg !33
+  br label %if_join43, !dbg !33
+
+if_join43:                                        ; preds = %expr_false40, %expr_true41, %expr_true42
+  %171 = load i32, i32* %node_9306852, align 4, !dbg !35
+  %172 = icmp slt i32 %171, 0, !dbg !35
+  br i1 %172, label %expr_true46, label %expr_false45, !dbg !35
+
+expr_false45:                                     ; preds = %expr_true66, %if_join43
+  %173 = load i32, i32* %node_9306852, align 4, !dbg !25
+  %174 = icmp eq i32 %173, 0, !dbg !25
+  br i1 %174, label %expr_false67, label %expr_true16, !dbg !25
+
+expr_true46:                                      ; preds = %if_join43, %expr_true66
+  %175 = load i32, i32* %node_9306852, align 4, !dbg !36
+  %176 = load i32, i32* %ptr_9307388, align 4, !dbg !36
+  %177 = sext i32 %176 to i64, !dbg !36
+  %178 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9307391, i64 0, i64 %177, !dbg !36
+  %179 = load i32, i32* %178, align 4, !dbg !36
+  store i32 %179, i32* %node_9306852, align 4, !dbg !36
+  %180 = add nsw i32 %176, -1, !dbg !36
+  store i32 %180, i32* %ptr_9307388, align 4, !dbg !36
+  %prim_id = xor i32 %175, -1, !dbg !36
+  store i32 %prim_id, i32* %prim_id_9307164, align 4, !dbg !36
+  br label %while_head47, !dbg !36
+
+while_head47:                                     ; preds = %_cont64, %expr_true46
+  %181 = load i32, i32* %prim_id_9307164, align 4, !dbg !37
+  %182 = add nsw i32 %181, 1, !dbg !37
+  store i32 %182, i32* %prim_id_9307164, align 4, !dbg !37
+  %183 = sext i32 %181 to i64, !dbg !37
+  %184 = getelementptr inbounds [0 x %1], [0 x %1]* %_9306793, i64 0, i64 %183, !dbg !37
+  %185 = bitcast %1* %184 to <4 x float>*, !dbg !37
+  %186 = addrspacecast <4 x float>* %185 to <4 x float> addrspace(1)*, !dbg !37
+  %187 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %186) #2, !dbg !37
+  %188 = getelementptr inbounds [0 x %1], [0 x %1]* %_9306793, i64 0, i64 %183, i32 2, !dbg !37
+  %189 = bitcast [3 x float]* %188 to <4 x float>*, !dbg !37
+  %190 = addrspacecast <4 x float>* %189 to <4 x float> addrspace(1)*, !dbg !37
+  %191 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %190) #2, !dbg !37
+  %192 = extractvalue { float, float, float, float } %191, 0, !dbg !37
+  %193 = extractvalue { float, float, float, float } %191, 1, !dbg !37
+  %194 = extractvalue { float, float, float, float } %191, 2, !dbg !37
+  %195 = getelementptr inbounds [0 x %1], [0 x %1]* %_9306793, i64 0, i64 %183, i32 4, !dbg !37
+  %196 = bitcast [3 x float]* %195 to <4 x float>*, !dbg !37
+  %197 = addrspacecast <4 x float>* %196 to <4 x float> addrspace(1)*, !dbg !37
+  %198 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %197) #2, !dbg !37
+  %199 = extractvalue { float, float, float, float } %198, 0, !dbg !37
+  %200 = extractvalue { float, float, float, float } %198, 1, !dbg !37
+  %201 = extractvalue { float, float, float, float } %198, 2, !dbg !37
+  %202 = extractvalue { float, float, float, float } %198, 3, !dbg !37
+  %.cast188 = bitcast float %202 to i32, !dbg !37
+  %.unpack190.unpack = load float, float* %.unpack190.elt, align 8, !dbg !37
+  %.unpack190.unpack202 = load float, float* %.unpack190.elt201, align 4, !dbg !37
+  %.unpack190.unpack204 = load float, float* %.unpack190.elt203, align 8, !dbg !37
+  %.unpack192.unpack = load float, float* %.unpack192.elt, align 4, !dbg !37
+  %.unpack192.unpack207 = load float, float* %.unpack192.elt206, align 8, !dbg !37
+  %.unpack192.unpack209 = load float, float* %.unpack192.elt208, align 4, !dbg !37
+  %.unpack198 = load float, float* %.elt197, align 8, !dbg !37
+  %.unpack200 = load float, float* %.elt199, align 4, !dbg !37
+  %203 = fmul float %193, %201, !dbg !37
+  %204 = fmul float %194, %200, !dbg !37
+  %205 = fsub float %203, %204, !dbg !37
+  %206 = fmul float %205, %.unpack192.unpack, !dbg !37
+  %207 = fmul float %194, %199, !dbg !37
+  %208 = fmul float %192, %201, !dbg !37
+  %209 = fsub float %207, %208, !dbg !37
+  %210 = fmul float %209, %.unpack192.unpack207, !dbg !37
+  %211 = fadd float %206, %210, !dbg !37
+  %212 = fmul float %192, %200, !dbg !37
+  %213 = fmul float %193, %199, !dbg !37
+  %214 = fsub float %212, %213, !dbg !37
+  %215 = fmul float %214, %.unpack192.unpack209, !dbg !37
+  %216 = fadd float %211, %215, !dbg !37
+  %217 = call float @__nv_fabsf(float %216), !dbg !37
+  %218 = extractvalue { float, float, float, float } %187, 2, !dbg !37
+  %219 = extractvalue { float, float, float, float } %187, 1, !dbg !37
+  %220 = extractvalue { float, float, float, float } %187, 0, !dbg !37
+  %221 = fsub float %218, %.unpack190.unpack204, !dbg !38
+  %222 = fmul float %.unpack192.unpack207, %221, !dbg !38
+  %223 = fsub float %219, %.unpack190.unpack202, !dbg !38
+  %224 = fmul float %.unpack192.unpack209, %223, !dbg !38
+  %225 = fsub float %222, %224, !dbg !38
+  %226 = fmul float %225, %199, !dbg !38
+  %227 = fsub float %220, %.unpack190.unpack, !dbg !38
+  %228 = fmul float %.unpack192.unpack209, %227, !dbg !38
+  %229 = fmul float %.unpack192.unpack, %221, !dbg !38
+  %230 = fsub float %228, %229, !dbg !38
+  %231 = fmul float %230, %200, !dbg !38
+  %232 = fadd float %226, %231, !dbg !38
+  %233 = fmul float %.unpack192.unpack, %223, !dbg !38
+  %234 = fmul float %.unpack192.unpack207, %227, !dbg !38
+  %235 = fsub float %233, %234, !dbg !38
+  %236 = fmul float %235, %201, !dbg !38
+  %237 = fadd float %232, %236, !dbg !38
+  %238 = bitcast float %237 to i32, !dbg !38
+  %239 = bitcast float %216 to i32, !dbg !38
+  %240 = and i32 %239, -2147483648, !dbg !38
+  %241 = xor i32 %240, %238, !dbg !38
+  %242 = bitcast i32 %241 to float, !dbg !38
+  %mask = fcmp oge float %242, 0.000000e+00, !dbg !38
+  store i1 %mask, i1* %mask_9307269, align 1, !dbg !38
+  %243 = fmul float %225, %192, !dbg !38
+  %244 = fmul float %230, %193, !dbg !38
+  %245 = fadd float %243, %244, !dbg !38
+  %246 = fmul float %235, %194, !dbg !38
+  %247 = fadd float %245, %246, !dbg !38
+  %248 = bitcast float %247 to i32, !dbg !38
+  %249 = xor i32 %240, %248, !dbg !38
+  %250 = bitcast i32 %249 to float, !dbg !38
+  %251 = fcmp oge float %250, 0.000000e+00, !dbg !38
+  %252 = and i1 %mask, %251, !dbg !38
+  %253 = fadd float %242, %250, !dbg !38
+  %254 = fcmp ole float %253, %217, !dbg !38
+  %255 = and i1 %252, %254, !dbg !38
+  store i1 %255, i1* %mask_9307269, align 1, !dbg !38
+  %256 = xor i1 %255, true, !dbg !38
+  %257 = call ptx_device i1 @llvm.expect.i1(i1 %256, i1 true), !dbg !39
+  br i1 %257, label %_cont64, label %expr_false52, !dbg !40
+
+expr_false52:                                     ; preds = %while_head47
+  %258 = load i1, i1* %mask_9307269, align 1, !dbg !41
+  %259 = fcmp une float %217, 0.000000e+00, !dbg !41
+  %260 = and i1 %258, %259, !dbg !41
+  store i1 %260, i1* %mask_9307269, align 1, !dbg !41
+  %261 = fmul float %217, %.unpack198, !dbg !41
+  %262 = fmul float %227, %205, !dbg !41
+  %263 = fmul float %223, %209, !dbg !41
+  %264 = fadd float %262, %263, !dbg !41
+  %265 = fmul float %221, %214, !dbg !41
+  %266 = fadd float %264, %265, !dbg !41
+  %267 = bitcast float %266 to i32, !dbg !41
+  %268 = xor i32 %240, %267, !dbg !41
+  %269 = bitcast i32 %268 to float, !dbg !41
+  %270 = fcmp ole float %261, %269, !dbg !41
+  %271 = and i1 %260, %270, !dbg !41
+  %272 = fmul float %217, %.unpack200, !dbg !41
+  %273 = fcmp oge float %272, %269, !dbg !41
+  %274 = and i1 %271, %273, !dbg !41
+  store i1 %274, i1* %mask_9307269, align 1, !dbg !41
+  %275 = xor i1 %274, true, !dbg !41
+  %276 = call ptx_device i1 @llvm.expect.i1(i1 %275, i1 true), !dbg !42
+  br i1 %276, label %_cont64, label %expr_false57, !dbg !43
+
+expr_false57:                                     ; preds = %expr_false52
+  %277 = load i1, i1* %mask_9307269, align 1, !dbg !44
+  br i1 %277, label %expr_true59, label %_cont64, !dbg !44
+
+expr_true59:                                      ; preds = %expr_false57
+  %278 = extractvalue { float, float, float, float } %191, 3, !dbg !37
+  %279 = and i32 %.cast188, 2147483647, !dbg !45
+  %inv_det = fdiv float 1.000000e+00, %217, !dbg !45
+  %280 = fmul float %inv_det, %269, !dbg !45
+  %281 = fmul float %inv_det, %242, !dbg !45
+  %282 = fmul float %inv_det, %250, !dbg !45
+  %hit_9306871.repack221 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 0, !dbg !45
+  store float %280, float* %hit_9306871.repack221, align 8, !dbg !45
+  %hit_9306871.repack223.repack = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 1, i32 0, !dbg !45
+  store float %281, float* %hit_9306871.repack223.repack, align 4, !dbg !45
+  %hit_9306871.repack223.repack230 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 1, i32 1, !dbg !45
+  store float %282, float* %hit_9306871.repack223.repack230, align 8, !dbg !45
+  %hit_9306871.repack225 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 2, !dbg !45
+  store i32 %279, i32* %hit_9306871.repack225, align 4, !dbg !45
+  %hit_9306871.repack227 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 3, !dbg !45
+  %283 = bitcast i32* %hit_9306871.repack227 to float*, !dbg !45
+  store float %278, float* %283, align 8, !dbg !45
+  store float %280, float* %54, align 4, !dbg !45
+  br label %gpu_traverse_single_helper_cont, !dbg !46
+
+_cont64:                                          ; preds = %while_head47, %expr_false52, %expr_false57
+  %284 = icmp slt i32 %.cast188, 0, !dbg !32
+  br i1 %284, label %expr_true66, label %while_head47, !dbg !32
+
+expr_true66:                                      ; preds = %_cont64
+  %285 = load i32, i32* %node_9306852, align 4, !dbg !35
+  %286 = icmp slt i32 %285, 0, !dbg !35
+  br i1 %286, label %expr_true46, label %expr_false45, !dbg !35
+
+expr_false67:                                     ; preds = %expr_false45
+  %.elt176 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 0, !dbg !26
+  %.unpack177 = load float, float* %.elt176, align 8, !dbg !26
+  %.unpack179.elt = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 1, i32 0, !dbg !26
+  %.unpack179.unpack = load float, float* %.unpack179.elt, align 4, !dbg !26
+  %.unpack179.elt184 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 1, i32 1, !dbg !26
+  %.unpack179.unpack185 = load float, float* %.unpack179.elt184, align 8, !dbg !26
+  %.elt180 = getelementptr inbounds %4, %4* %hit_9306871, i64 0, i32 2, !dbg !26
+  %.unpack181 = load i32, i32* %.elt180, align 4, !dbg !26
+  br label %gpu_traverse_single_helper_cont, !dbg !26
+
+gpu_traverse_single_helper_cont:                  ; preds = %expr_false67, %expr_true59
+  %.pn237 = phi float [ %280, %expr_true59 ], [ %.unpack177, %expr_false67 ]
+  %.pn241 = phi float [ %281, %expr_true59 ], [ %.unpack179.unpack, %expr_false67 ]
+  %.pn239 = phi float [ %282, %expr_true59 ], [ %.unpack179.unpack185, %expr_false67 ]
+  %.pn233 = phi i32 [ %279, %expr_true59 ], [ %.unpack181, %expr_false67 ]
+  %287 = sext i32 %4 to i64, !dbg !47
+  %288 = getelementptr inbounds [0 x %0], [0 x %0]* %_9306792, i64 0, i64 %287, !dbg !47
+  %289 = bitcast %0* %288 to <4 x float>*, !dbg !47
+  %290 = insertelement <4 x i32> undef, i32 %.pn233, i32 0, !dbg !47
+  %291 = bitcast <4 x i32> %290 to <4 x float>, !dbg !47
+  %292 = insertelement <4 x float> %291, float %.pn237, i32 1, !dbg !47
+  %293 = insertelement <4 x float> %292, float %.pn241, i32 2, !dbg !47
+  %294 = insertelement <4 x float> %293, float %.pn239, i32 3, !dbg !47
+  store <4 x float> %294, <4 x float>* %289, align 16, !dbg !47
+  ret void, !dbg !47
+
+expr_true69:                                      ; preds = %lambda_9283815
+  ret void, !dbg !20
+}
+
+; Function Attrs: nounwind readnone
+declare ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.x() #0
+
+; Function Attrs: nounwind readnone
+declare ptx_device i32 @llvm.nvvm.read.ptx.sreg.ctaid.x() #0
+
+; Function Attrs: nounwind readnone
+declare ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.y() #0
+
+declare float @__nv_fminf(float, float) local_unnamed_addr
+
+declare float @__nv_fmaxf(float, float) local_unnamed_addr
+
+declare float @__nv_fabsf(float) local_unnamed_addr
+
+; Function Attrs: nofree nosync nounwind readnone willreturn
+declare ptx_device i1 @llvm.expect.i1(i1, i1) #1
+
+define ptx_kernel void @lambda_9236741([0 x %0]* %_9306006, i32 %_9306007, [0 x %3]* %_9306008, [0 x %1]* %_9306009, [0 x %2]* %_9306010) local_unnamed_addr !dbg !48 {
+lambda_9236741:
+  %mask_9306521 = alloca i1, align 1
+  %prim_id_9306412 = alloca i32, align 4
+  %val_9306688 = alloca { i32, float }, align 8
+  %val_9306685 = alloca { i32, float }, align 8
+  %mask_9306209 = alloca i32, align 4
+  %nodes_9306649 = alloca [64 x i32], align 4
+  %ptr_9306646 = alloca i32, align 4
+  %node_9306084 = alloca i32, align 4
+  %hit_9306090 = alloca %4, align 8
+  %ray_9306211 = alloca %6, align 8
+  %0 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.x(), !dbg !50
+  %1 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.ctaid.x(), !dbg !51
+  %2 = call ptx_device i32 @llvm.nvvm.read.ptx.sreg.tid.y(), !dbg !52
+  %3 = shl nsw i32 %1, 6, !dbg !53
+  %i = add nsw i32 %0, %3, !dbg !53
+  %4 = add nsw i32 %i, %2, !dbg !53
+  %.not = icmp slt i32 %4, %_9306007, !dbg !53
+  br i1 %.not, label %expr_false, label %expr_true66, !dbg !53
+
+expr_false:                                       ; preds = %lambda_9236741
+  %5 = sext i32 %4 to i64, !dbg !54
+  %6 = getelementptr inbounds [0 x %3], [0 x %3]* %_9306008, i64 0, i64 %5, !dbg !54
+  %7 = bitcast %3* %6 to <4 x float>*, !dbg !54
+  %8 = load <4 x float>, <4 x float>* %7, align 16, !dbg !54
+  %9 = getelementptr inbounds [0 x %3], [0 x %3]* %_9306008, i64 0, i64 %5, i32 2, !dbg !54
+  %10 = bitcast [3 x float]* %9 to <4 x float>*, !dbg !54
+  %11 = load <4 x float>, <4 x float>* %10, align 16, !dbg !54
+  %12 = extractelement <4 x float> %11, i32 0, !dbg !54
+  %13 = fcmp ogt float %12, 0.000000e+00, !dbg !54
+  %14 = fneg float %12, !dbg !54
+  %15 = select i1 %13, float %12, float %14, !dbg !54
+  %16 = fcmp olt float %15, 0x3E45798EE0000000, !dbg !54
+  br i1 %16, label %expr_true, label %expr_false6, !dbg !54
+
+expr_false6:                                      ; preds = %expr_false
+  %17 = fdiv float 1.000000e+00, %12, !dbg !55
+  br label %safe_rcp_cont, !dbg !55
+
+expr_true:                                        ; preds = %expr_false
+  %18 = bitcast float %12 to i32, !dbg !55
+  %19 = and i32 %18, -2147483648, !dbg !55
+  %20 = or i32 %19, 2139095039, !dbg !55
+  %21 = bitcast i32 %20 to float, !dbg !55
+  br label %safe_rcp_cont, !dbg !55
+
+safe_rcp_cont:                                    ; preds = %expr_true, %expr_false6
+  %safe_rcp_cont7 = phi float [ %17, %expr_false6 ], [ %21, %expr_true ], !dbg !56
+  %22 = extractelement <4 x float> %11, i32 1, !dbg !56
+  %23 = fcmp ogt float %22, 0.000000e+00, !dbg !56
+  %24 = fneg float %22, !dbg !56
+  %25 = select i1 %23, float %22, float %24, !dbg !56
+  %26 = fcmp olt float %25, 0x3E45798EE0000000, !dbg !56
+  br i1 %26, label %expr_true9, label %expr_false8, !dbg !56
+
+expr_false8:                                      ; preds = %safe_rcp_cont
+  %27 = fdiv float 1.000000e+00, %22, !dbg !55
+  br label %safe_rcp_cont10, !dbg !55
+
+expr_true9:                                       ; preds = %safe_rcp_cont
+  %28 = bitcast float %22 to i32, !dbg !55
+  %29 = and i32 %28, -2147483648, !dbg !55
+  %30 = or i32 %29, 2139095039, !dbg !55
+  %31 = bitcast i32 %30 to float, !dbg !55
+  br label %safe_rcp_cont10, !dbg !55
+
+safe_rcp_cont10:                                  ; preds = %expr_true9, %expr_false8
+  %safe_rcp_cont11 = phi float [ %27, %expr_false8 ], [ %31, %expr_true9 ], !dbg !57
+  %32 = extractelement <4 x float> %11, i32 2, !dbg !57
+  %33 = fcmp ogt float %32, 0.000000e+00, !dbg !57
+  %34 = fneg float %32, !dbg !57
+  %35 = select i1 %33, float %32, float %34, !dbg !57
+  %36 = fcmp olt float %35, 0x3E45798EE0000000, !dbg !57
+  br i1 %36, label %expr_true13, label %expr_false12, !dbg !57
+
+expr_false12:                                     ; preds = %safe_rcp_cont10
+  %37 = fdiv float 1.000000e+00, %32, !dbg !55
+  br label %safe_rcp_cont14, !dbg !55
+
+expr_true13:                                      ; preds = %safe_rcp_cont10
+  %38 = bitcast float %32 to i32, !dbg !55
+  %39 = and i32 %38, -2147483648, !dbg !55
+  %40 = or i32 %39, 2139095039, !dbg !55
+  %41 = bitcast i32 %40 to float, !dbg !55
+  br label %safe_rcp_cont14, !dbg !55
+
+safe_rcp_cont14:                                  ; preds = %expr_true13, %expr_false12
+  %safe_rcp_cont15 = phi float [ %37, %expr_false12 ], [ %41, %expr_true13 ], !dbg !58
+  %42 = extractelement <4 x float> %8, i32 0, !dbg !58
+  %43 = extractelement <4 x float> %8, i32 1, !dbg !58
+  %44 = extractelement <4 x float> %8, i32 2, !dbg !58
+  %45 = fneg float %42, !dbg !58
+  %46 = fmul float %safe_rcp_cont7, %45, !dbg !58
+  %47 = fneg float %43, !dbg !58
+  %48 = fmul float %safe_rcp_cont11, %47, !dbg !58
+  %49 = fneg float %44, !dbg !58
+  %50 = fmul float %safe_rcp_cont15, %49, !dbg !58
+  %51 = extractelement <4 x float> %8, i32 3, !dbg !58
+  %52 = extractelement <4 x float> %11, i32 3, !dbg !58
+  %ray_9306211.repack.repack = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 0, i32 0, !dbg !58
+  store float %42, float* %ray_9306211.repack.repack, align 8, !dbg !58
+  %ray_9306211.repack.repack77 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 0, i32 1, !dbg !58
+  store float %43, float* %ray_9306211.repack.repack77, align 4, !dbg !58
+  %ray_9306211.repack.repack79 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 0, i32 2, !dbg !58
+  store float %44, float* %ray_9306211.repack.repack79, align 8, !dbg !58
+  %ray_9306211.repack67.repack = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 1, i32 0, !dbg !58
+  store float %12, float* %ray_9306211.repack67.repack, align 4, !dbg !58
+  %ray_9306211.repack67.repack81 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 1, i32 1, !dbg !58
+  store float %22, float* %ray_9306211.repack67.repack81, align 8, !dbg !58
+  %ray_9306211.repack67.repack83 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 1, i32 2, !dbg !58
+  store float %32, float* %ray_9306211.repack67.repack83, align 4, !dbg !58
+  %ray_9306211.repack69.repack = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 0, !dbg !58
+  store float %safe_rcp_cont7, float* %ray_9306211.repack69.repack, align 8, !dbg !58
+  %ray_9306211.repack69.repack85 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 1, !dbg !58
+  store float %safe_rcp_cont11, float* %ray_9306211.repack69.repack85, align 4, !dbg !58
+  %ray_9306211.repack69.repack87 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 2, !dbg !58
+  store float %safe_rcp_cont15, float* %ray_9306211.repack69.repack87, align 8, !dbg !58
+  %ray_9306211.repack71.repack = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 0, !dbg !58
+  store float %46, float* %ray_9306211.repack71.repack, align 4, !dbg !58
+  %ray_9306211.repack71.repack89 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 1, !dbg !58
+  store float %48, float* %ray_9306211.repack71.repack89, align 8, !dbg !58
+  %ray_9306211.repack71.repack91 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 2, !dbg !58
+  store float %50, float* %ray_9306211.repack71.repack91, align 4, !dbg !58
+  %ray_9306211.repack73 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 4, !dbg !58
+  store float %51, float* %ray_9306211.repack73, align 8, !dbg !58
+  %ray_9306211.repack75 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 5, !dbg !58
+  store float %52, float* %ray_9306211.repack75, align 4, !dbg !58
+  %hit_9306090.repack = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 0, !dbg !58
+  store float %52, float* %hit_9306090.repack, align 8, !dbg !58
+  %hit_9306090.repack95 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 2, !dbg !58
+  store i32 -1, i32* %hit_9306090.repack95, align 4, !dbg !58
+  %hit_9306090.repack97 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 3, !dbg !58
+  store i32 -1, i32* %hit_9306090.repack97, align 8, !dbg !58
+  store i32 0, i32* %node_9306084, align 4, !dbg !58
+  store i32 0, i32* %ptr_9306646, align 4, !dbg !58
+  %53 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9306649, i64 0, i64 0, !dbg !58
+  store i32 0, i32* %53, align 4, !dbg !58
+  store i32 1, i32* %node_9306084, align 4, !dbg !58
+  %54 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 5, !dbg !58
+  %.unpack103.elt = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 0
+  %.unpack103.elt120 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 1
+  %.unpack103.elt122 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 2
+  %.unpack105.elt = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 0
+  %.unpack105.elt125 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 1
+  %.unpack105.elt127 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 2
+  %.elt106 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 4
+  %55 = bitcast float* %.elt106 to i32*
+  %.elt108 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 5
+  %56 = bitcast float* %.elt108 to i32*
+  %val_9306685.repack = getelementptr inbounds { i32, float }, { i32, float }* %val_9306685, i64 0, i32 0
+  %val_9306685.repack233 = getelementptr inbounds { i32, float }, { i32, float }* %val_9306685, i64 0, i32 1
+  %57 = bitcast float* %val_9306685.repack233 to i32*
+  %.unpack136.elt = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 0
+  %.unpack136.elt153 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 1
+  %.unpack136.elt155 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 2, i32 2
+  %.unpack138.elt = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 0
+  %.unpack138.elt158 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 1
+  %.unpack138.elt160 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 3, i32 2
+  %.elt139 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 4
+  %58 = bitcast float* %.elt139 to i32*
+  %.elt141 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 5
+  %59 = bitcast float* %.elt141 to i32*
+  %val_9306688.repack = getelementptr inbounds { i32, float }, { i32, float }* %val_9306688, i64 0, i32 0
+  %val_9306688.repack230 = getelementptr inbounds { i32, float }, { i32, float }* %val_9306688, i64 0, i32 1
+  %60 = bitcast float* %val_9306688.repack230 to i32*
+  %.elt = getelementptr inbounds { i32, float }, { i32, float }* %val_9306685, i64 0, i32 0
+  %.elt169 = getelementptr inbounds { i32, float }, { i32, float }* %val_9306688, i64 0, i32 0
+  %.elt171 = getelementptr inbounds { i32, float }, { i32, float }* %val_9306688, i64 0, i32 1
+  %.elt167 = getelementptr inbounds { i32, float }, { i32, float }* %val_9306685, i64 0, i32 1
+  %.unpack187.elt = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 0, i32 0
+  %.unpack187.elt198 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 0, i32 1
+  %.unpack187.elt200 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 0, i32 2
+  %.unpack189.elt = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 1, i32 0
+  %.unpack189.elt203 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 1, i32 1
+  %.unpack189.elt205 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 1, i32 2
+  %.elt194 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 4
+  %.elt196 = getelementptr inbounds %6, %6* %ray_9306211, i64 0, i32 5
+  %hit_9306090.repack218 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 0
+  %hit_9306090.repack220.repack = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 1, i32 0
+  %hit_9306090.repack220.repack227 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 1, i32 1
+  %hit_9306090.repack222 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 2
+  %hit_9306090.repack224 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 3
+  %61 = bitcast i32* %hit_9306090.repack224 to float*
+  br label %expr_true16, !dbg !59
+
+expr_true16:                                      ; preds = %safe_rcp_cont14, %expr_false45
+  %62 = load i32, i32* %node_9306084, align 4, !dbg !60
+  %63 = add nsw i32 %62, -1, !dbg !60
+  %64 = sext i32 %63 to i64, !dbg !60
+  %65 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306010, i64 0, i64 %64, !dbg !60
+  %66 = bitcast %2* %65 to <4 x float>*, !dbg !60
+  %67 = addrspacecast <4 x float>* %66 to <4 x float> addrspace(1)*, !dbg !60
+  %68 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %67) #2, !dbg !60
+  %69 = extractvalue { float, float, float, float } %68, 0, !dbg !60
+  %70 = extractvalue { float, float, float, float } %68, 1, !dbg !60
+  %71 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306010, i64 0, i64 %64, i32 0, i64 4, !dbg !60
+  %72 = bitcast float* %71 to <4 x float>*, !dbg !60
+  %73 = addrspacecast <4 x float>* %72 to <4 x float> addrspace(1)*, !dbg !60
+  %74 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %73) #2, !dbg !60
+  %75 = extractvalue { float, float, float, float } %74, 0, !dbg !60
+  %76 = extractvalue { float, float, float, float } %74, 1, !dbg !60
+  %77 = extractvalue { float, float, float, float } %74, 2, !dbg !60
+  %78 = extractvalue { float, float, float, float } %74, 3, !dbg !60
+  %79 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306010, i64 0, i64 %64, i32 0, i64 8, !dbg !60
+  %80 = bitcast float* %79 to <4 x float>*, !dbg !60
+  %81 = addrspacecast <4 x float>* %80 to <4 x float> addrspace(1)*, !dbg !60
+  %82 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %81) #2, !dbg !60
+  %83 = extractvalue { float, float, float, float } %82, 0, !dbg !60
+  %84 = extractvalue { float, float, float, float } %82, 1, !dbg !60
+  %85 = extractvalue { float, float, float, float } %82, 2, !dbg !60
+  %86 = extractvalue { float, float, float, float } %82, 3, !dbg !60
+  %87 = getelementptr inbounds [0 x %2], [0 x %2]* %_9306010, i64 0, i64 %64, i32 1, !dbg !60
+  %88 = bitcast [2 x i32]* %87 to <4 x i32>*, !dbg !60
+  %89 = addrspacecast <4 x i32>* %88 to <4 x i32> addrspace(1)*, !dbg !60
+  %90 = call { i32, i32, i32, i32 } asm "ld.global.nc.v4.s32 {$0, $1, $2, $3}, [$4];", "=r,=r,=r,=r,l,~{dirflag},~{fpsr},~{flags}"(<4 x i32> addrspace(1)* %89) #2, !dbg !60
+  %91 = extractvalue { i32, i32, i32, i32 } %90, 1, !dbg !60
+  store i32 0, i32* %mask_9306209, align 4, !dbg !60
+  %.unpack103.unpack = load float, float* %.unpack103.elt, align 8, !dbg !60
+  %.unpack103.unpack121 = load float, float* %.unpack103.elt120, align 4, !dbg !60
+  %.unpack103.unpack123 = load float, float* %.unpack103.elt122, align 8, !dbg !60
+  %.unpack105.unpack = load float, float* %.unpack105.elt, align 4, !dbg !60
+  %.unpack105.unpack126 = load float, float* %.unpack105.elt125, align 8, !dbg !60
+  %.unpack105.unpack128 = load float, float* %.unpack105.elt127, align 4, !dbg !60
+  %.unpack107130 = load i32, i32* %55, align 8, !dbg !60
+  %.unpack109131 = load i32, i32* %56, align 4, !dbg !60
+  %92 = fmul float %.unpack103.unpack, %69, !dbg !60
+  %93 = fadd float %92, %.unpack105.unpack, !dbg !60
+  %94 = fmul float %.unpack103.unpack, %70, !dbg !60
+  %95 = fadd float %94, %.unpack105.unpack, !dbg !60
+  %96 = call float @__nv_fminf(float %93, float %95), !dbg !60
+  %97 = extractvalue { float, float, float, float } %68, 3, !dbg !60
+  %98 = extractvalue { float, float, float, float } %68, 2, !dbg !60
+  %99 = fmul float %.unpack103.unpack121, %98, !dbg !61
+  %100 = fadd float %99, %.unpack105.unpack126, !dbg !61
+  %101 = fmul float %.unpack103.unpack121, %97, !dbg !61
+  %102 = fadd float %101, %.unpack105.unpack126, !dbg !61
+  %103 = call float @__nv_fminf(float %100, float %102), !dbg !61
+  %104 = fmul float %.unpack103.unpack123, %75, !dbg !62
+  %105 = fadd float %104, %.unpack105.unpack128, !dbg !62
+  %106 = bitcast float %105 to i32, !dbg !62
+  %107 = fmul float %.unpack103.unpack123, %76, !dbg !62
+  %108 = fadd float %107, %.unpack105.unpack128, !dbg !62
+  %109 = bitcast float %108 to i32, !dbg !62
+  %110 = call i32 asm "vmin.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %106, i32 %109, i32 %.unpack107130) #2, !dbg !62
+  %111 = bitcast float %96 to i32, !dbg !62
+  %112 = bitcast float %103 to i32, !dbg !62
+  %113 = call i32 asm "vmax.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %111, i32 %112, i32 %110) #2, !dbg !62
+  %.cast = bitcast i32 %113 to float, !dbg !62
+  %114 = call float @__nv_fmaxf(float %93, float %95), !dbg !62
+  %115 = call float @__nv_fmaxf(float %100, float %102), !dbg !63
+  %116 = call i32 asm "vmax.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %106, i32 %109, i32 %.unpack109131) #2, !dbg !64
+  %117 = bitcast float %114 to i32, !dbg !64
+  %118 = bitcast float %115 to i32, !dbg !64
+  %119 = call i32 asm "vmin.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %117, i32 %118, i32 %116) #2, !dbg !64
+  %.cast132 = bitcast i32 %119 to float, !dbg !64
+  %120 = fcmp ugt float %.cast, %.cast132, !dbg !64
+  br i1 %120, label %_cont27, label %expr_true26, !dbg !64
+
+expr_true26:                                      ; preds = %expr_true16
+  %121 = extractvalue { i32, i32, i32, i32 } %90, 0, !dbg !60
+  %122 = load i32, i32* %mask_9306209, align 4, !dbg !65
+  %123 = or i32 %122, 1, !dbg !65
+  store i32 %123, i32* %mask_9306209, align 4, !dbg !65
+  store i32 %121, i32* %val_9306685.repack, align 8, !dbg !65
+  store i32 %113, i32* %57, align 4, !dbg !65
+  br label %_cont27, !dbg !65
+
+_cont27:                                          ; preds = %expr_true16, %expr_true26
+  %.unpack136.unpack = load float, float* %.unpack136.elt, align 8, !dbg !66
+  %.unpack136.unpack154 = load float, float* %.unpack136.elt153, align 4, !dbg !66
+  %.unpack136.unpack156 = load float, float* %.unpack136.elt155, align 8, !dbg !66
+  %.unpack138.unpack = load float, float* %.unpack138.elt, align 4, !dbg !66
+  %.unpack138.unpack159 = load float, float* %.unpack138.elt158, align 8, !dbg !66
+  %.unpack138.unpack161 = load float, float* %.unpack138.elt160, align 4, !dbg !66
+  %.unpack140164 = load i32, i32* %58, align 8, !dbg !66
+  %.unpack142165 = load i32, i32* %59, align 4, !dbg !66
+  %124 = fmul float %.unpack136.unpack, %77, !dbg !66
+  %125 = fadd float %124, %.unpack138.unpack, !dbg !66
+  %126 = fmul float %.unpack136.unpack, %78, !dbg !66
+  %127 = fadd float %126, %.unpack138.unpack, !dbg !66
+  %128 = call float @__nv_fminf(float %125, float %127), !dbg !66
+  %129 = fmul float %.unpack136.unpack154, %83, !dbg !61
+  %130 = fadd float %129, %.unpack138.unpack159, !dbg !61
+  %131 = fmul float %.unpack136.unpack154, %84, !dbg !61
+  %132 = fadd float %131, %.unpack138.unpack159, !dbg !61
+  %133 = call float @__nv_fminf(float %130, float %132), !dbg !61
+  %134 = fmul float %.unpack136.unpack156, %85, !dbg !62
+  %135 = fadd float %134, %.unpack138.unpack161, !dbg !62
+  %136 = bitcast float %135 to i32, !dbg !62
+  %137 = fmul float %.unpack136.unpack156, %86, !dbg !62
+  %138 = fadd float %137, %.unpack138.unpack161, !dbg !62
+  %139 = bitcast float %138 to i32, !dbg !62
+  %140 = call i32 asm "vmin.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %136, i32 %139, i32 %.unpack140164) #2, !dbg !62
+  %141 = bitcast float %128 to i32, !dbg !62
+  %142 = bitcast float %133 to i32, !dbg !62
+  %143 = call i32 asm "vmax.s32.s32.s32.max $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %141, i32 %142, i32 %140) #2, !dbg !62
+  %.cast163 = bitcast i32 %143 to float, !dbg !62
+  %144 = call float @__nv_fmaxf(float %125, float %127), !dbg !62
+  %145 = call float @__nv_fmaxf(float %130, float %132), !dbg !63
+  %146 = call i32 asm "vmax.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %136, i32 %139, i32 %.unpack142165) #2, !dbg !64
+  %147 = bitcast float %144 to i32, !dbg !64
+  %148 = bitcast float %145 to i32, !dbg !64
+  %149 = call i32 asm "vmin.s32.s32.s32.min $0, $1, $2, $3;", "=r,r,r,r,~{dirflag},~{fpsr},~{flags}"(i32 %147, i32 %148, i32 %146) #2, !dbg !64
+  %.cast166 = bitcast i32 %149 to float, !dbg !64
+  %150 = fcmp ugt float %.cast163, %.cast166, !dbg !64
+  br i1 %150, label %_cont38, label %expr_true37, !dbg !64
+
+expr_true37:                                      ; preds = %_cont27
+  %151 = load i32, i32* %mask_9306209, align 4, !dbg !65
+  %152 = or i32 %151, 2, !dbg !65
+  store i32 %152, i32* %mask_9306209, align 4, !dbg !65
+  store i32 %91, i32* %val_9306688.repack, align 8, !dbg !65
+  store i32 %143, i32* %60, align 4, !dbg !65
+  br label %_cont38, !dbg !65
+
+_cont38:                                          ; preds = %_cont27, %expr_true37
+  %153 = load i32, i32* %mask_9306209, align 4, !dbg !66
+  %154 = icmp eq i32 %153, 0, !dbg !66
+  br i1 %154, label %expr_true42, label %expr_false39, !dbg !66
+
+expr_false39:                                     ; preds = %_cont38
+  %.unpack = load i32, i32* %.elt, align 8, !dbg !67
+  %.unpack170 = load i32, i32* %.elt169, align 8, !dbg !67
+  %155 = load i32, i32* %mask_9306209, align 4, !dbg !67
+  %156 = icmp eq i32 %155, 3, !dbg !67
+  br i1 %156, label %expr_true41, label %expr_false40, !dbg !67
+
+expr_false40:                                     ; preds = %expr_false39
+  %157 = load i32, i32* %mask_9306209, align 4, !dbg !68
+  %158 = icmp eq i32 %157, 1, !dbg !68
+  %159 = select i1 %158, i32 %.unpack, i32 %.unpack170, !dbg !68
+  store i32 %159, i32* %node_9306084, align 4, !dbg !68
+  br label %if_join43, !dbg !68
+
+expr_true41:                                      ; preds = %expr_false39
+  %.unpack172 = load float, float* %.elt171, align 4, !dbg !67
+  %.unpack168 = load float, float* %.elt167, align 4, !dbg !67
+  %160 = fcmp olt float %.unpack168, %.unpack172, !dbg !68
+  %161 = select i1 %160, i32 %.unpack, i32 %.unpack170, !dbg !68
+  store i32 %161, i32* %node_9306084, align 4, !dbg !68
+  %162 = load i32, i32* %ptr_9306646, align 4, !dbg !68
+  %163 = add nsw i32 %162, 1, !dbg !68
+  store i32 %163, i32* %ptr_9306646, align 4, !dbg !68
+  %164 = sext i32 %163 to i64, !dbg !68
+  %165 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9306649, i64 0, i64 %164, !dbg !68
+  %166 = select i1 %160, i32 %.unpack170, i32 %.unpack, !dbg !68
+  store i32 %166, i32* %165, align 4, !dbg !68
+  br label %if_join43, !dbg !68
+
+expr_true42:                                      ; preds = %_cont38
+  %167 = load i32, i32* %ptr_9306646, align 4, !dbg !67
+  %168 = sext i32 %167 to i64, !dbg !67
+  %169 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9306649, i64 0, i64 %168, !dbg !67
+  %170 = load i32, i32* %169, align 4, !dbg !67
+  store i32 %170, i32* %node_9306084, align 4, !dbg !67
+  %171 = add nsw i32 %167, -1, !dbg !67
+  store i32 %171, i32* %ptr_9306646, align 4, !dbg !67
+  br label %if_join43, !dbg !67
+
+if_join43:                                        ; preds = %expr_false40, %expr_true41, %expr_true42
+  %172 = load i32, i32* %node_9306084, align 4, !dbg !69
+  %173 = icmp slt i32 %172, 0, !dbg !69
+  br i1 %173, label %expr_true46, label %expr_false45, !dbg !69
+
+expr_false45:                                     ; preds = %expr_true64, %if_join43
+  %174 = load i32, i32* %node_9306084, align 4, !dbg !59
+  %175 = icmp eq i32 %174, 0, !dbg !59
+  br i1 %175, label %expr_false65, label %expr_true16, !dbg !59
+
+expr_true46:                                      ; preds = %if_join43, %expr_true64
+  %176 = load i32, i32* %node_9306084, align 4, !dbg !70
+  %177 = load i32, i32* %ptr_9306646, align 4, !dbg !70
+  %178 = sext i32 %177 to i64, !dbg !70
+  %179 = getelementptr inbounds [64 x i32], [64 x i32]* %nodes_9306649, i64 0, i64 %178, !dbg !70
+  %180 = load i32, i32* %179, align 4, !dbg !70
+  store i32 %180, i32* %node_9306084, align 4, !dbg !70
+  %181 = add nsw i32 %177, -1, !dbg !70
+  store i32 %181, i32* %ptr_9306646, align 4, !dbg !70
+  %prim_id = xor i32 %176, -1, !dbg !70
+  store i32 %prim_id, i32* %prim_id_9306412, align 4, !dbg !70
+  br label %while_head47, !dbg !70
+
+while_head47:                                     ; preds = %_cont62, %expr_true46
+  %182 = load i32, i32* %prim_id_9306412, align 4, !dbg !71
+  %183 = add nsw i32 %182, 1, !dbg !71
+  store i32 %183, i32* %prim_id_9306412, align 4, !dbg !71
+  %184 = sext i32 %182 to i64, !dbg !71
+  %185 = getelementptr inbounds [0 x %1], [0 x %1]* %_9306009, i64 0, i64 %184, !dbg !71
+  %186 = bitcast %1* %185 to <4 x float>*, !dbg !71
+  %187 = addrspacecast <4 x float>* %186 to <4 x float> addrspace(1)*, !dbg !71
+  %188 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %187) #2, !dbg !71
+  %189 = getelementptr inbounds [0 x %1], [0 x %1]* %_9306009, i64 0, i64 %184, i32 2, !dbg !71
+  %190 = bitcast [3 x float]* %189 to <4 x float>*, !dbg !71
+  %191 = addrspacecast <4 x float>* %190 to <4 x float> addrspace(1)*, !dbg !71
+  %192 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %191) #2, !dbg !71
+  %193 = extractvalue { float, float, float, float } %192, 0, !dbg !71
+  %194 = extractvalue { float, float, float, float } %192, 1, !dbg !71
+  %195 = extractvalue { float, float, float, float } %192, 2, !dbg !71
+  %196 = extractvalue { float, float, float, float } %192, 3, !dbg !71
+  %197 = getelementptr inbounds [0 x %1], [0 x %1]* %_9306009, i64 0, i64 %184, i32 4, !dbg !71
+  %198 = bitcast [3 x float]* %197 to <4 x float>*, !dbg !71
+  %199 = addrspacecast <4 x float>* %198 to <4 x float> addrspace(1)*, !dbg !71
+  %200 = call { float, float, float, float } asm "ld.global.nc.v4.f32 {$0, $1, $2, $3}, [$4];", "=f,=f,=f,=f,l,~{dirflag},~{fpsr},~{flags}"(<4 x float> addrspace(1)* %199) #2, !dbg !71
+  %201 = extractvalue { float, float, float, float } %200, 0, !dbg !71
+  %202 = extractvalue { float, float, float, float } %200, 1, !dbg !71
+  %203 = extractvalue { float, float, float, float } %200, 2, !dbg !71
+  %204 = extractvalue { float, float, float, float } %200, 3, !dbg !71
+  %.cast185 = bitcast float %204 to i32, !dbg !71
+  %.unpack187.unpack = load float, float* %.unpack187.elt, align 8, !dbg !71
+  %.unpack187.unpack199 = load float, float* %.unpack187.elt198, align 4, !dbg !71
+  %.unpack187.unpack201 = load float, float* %.unpack187.elt200, align 8, !dbg !71
+  %.unpack189.unpack = load float, float* %.unpack189.elt, align 4, !dbg !71
+  %.unpack189.unpack204 = load float, float* %.unpack189.elt203, align 8, !dbg !71
+  %.unpack189.unpack206 = load float, float* %.unpack189.elt205, align 4, !dbg !71
+  %.unpack195 = load float, float* %.elt194, align 8, !dbg !71
+  %.unpack197 = load float, float* %.elt196, align 4, !dbg !71
+  %205 = fmul float %194, %203, !dbg !71
+  %206 = fmul float %195, %202, !dbg !71
+  %207 = fsub float %205, %206, !dbg !71
+  %208 = fmul float %207, %.unpack189.unpack, !dbg !71
+  %209 = fmul float %195, %201, !dbg !71
+  %210 = fmul float %193, %203, !dbg !71
+  %211 = fsub float %209, %210, !dbg !71
+  %212 = fmul float %211, %.unpack189.unpack204, !dbg !71
+  %213 = fadd float %208, %212, !dbg !71
+  %214 = fmul float %193, %202, !dbg !71
+  %215 = fmul float %194, %201, !dbg !71
+  %216 = fsub float %214, %215, !dbg !71
+  %217 = fmul float %216, %.unpack189.unpack206, !dbg !71
+  %218 = fadd float %213, %217, !dbg !71
+  %219 = call float @__nv_fabsf(float %218), !dbg !71
+  %220 = extractvalue { float, float, float, float } %188, 2, !dbg !71
+  %221 = extractvalue { float, float, float, float } %188, 1, !dbg !71
+  %222 = extractvalue { float, float, float, float } %188, 0, !dbg !71
+  %223 = fsub float %220, %.unpack187.unpack201, !dbg !72
+  %224 = fmul float %.unpack189.unpack204, %223, !dbg !72
+  %225 = fsub float %221, %.unpack187.unpack199, !dbg !72
+  %226 = fmul float %.unpack189.unpack206, %225, !dbg !72
+  %227 = fsub float %224, %226, !dbg !72
+  %228 = fmul float %227, %201, !dbg !72
+  %229 = fsub float %222, %.unpack187.unpack, !dbg !72
+  %230 = fmul float %.unpack189.unpack206, %229, !dbg !72
+  %231 = fmul float %.unpack189.unpack, %223, !dbg !72
+  %232 = fsub float %230, %231, !dbg !72
+  %233 = fmul float %232, %202, !dbg !72
+  %234 = fadd float %228, %233, !dbg !72
+  %235 = fmul float %.unpack189.unpack, %225, !dbg !72
+  %236 = fmul float %.unpack189.unpack204, %229, !dbg !72
+  %237 = fsub float %235, %236, !dbg !72
+  %238 = fmul float %237, %203, !dbg !72
+  %239 = fadd float %234, %238, !dbg !72
+  %240 = bitcast float %239 to i32, !dbg !72
+  %241 = bitcast float %218 to i32, !dbg !72
+  %242 = and i32 %241, -2147483648, !dbg !72
+  %243 = xor i32 %242, %240, !dbg !72
+  %244 = bitcast i32 %243 to float, !dbg !72
+  %mask = fcmp oge float %244, 0.000000e+00, !dbg !72
+  store i1 %mask, i1* %mask_9306521, align 1, !dbg !72
+  %245 = fmul float %227, %193, !dbg !72
+  %246 = fmul float %232, %194, !dbg !72
+  %247 = fadd float %245, %246, !dbg !72
+  %248 = fmul float %237, %195, !dbg !72
+  %249 = fadd float %247, %248, !dbg !72
+  %250 = bitcast float %249 to i32, !dbg !72
+  %251 = xor i32 %242, %250, !dbg !72
+  %252 = bitcast i32 %251 to float, !dbg !72
+  %253 = fcmp oge float %252, 0.000000e+00, !dbg !72
+  %254 = and i1 %mask, %253, !dbg !72
+  %255 = fadd float %244, %252, !dbg !72
+  %256 = fcmp ole float %255, %219, !dbg !72
+  %257 = and i1 %254, %256, !dbg !72
+  store i1 %257, i1* %mask_9306521, align 1, !dbg !72
+  %258 = xor i1 %257, true, !dbg !72
+  %259 = call ptx_device i1 @llvm.expect.i1(i1 %258, i1 true), !dbg !73
+  br i1 %259, label %_cont62, label %expr_false52, !dbg !74
+
+expr_false52:                                     ; preds = %while_head47
+  %260 = load i1, i1* %mask_9306521, align 1, !dbg !75
+  %261 = fcmp une float %219, 0.000000e+00, !dbg !75
+  %262 = and i1 %260, %261, !dbg !75
+  store i1 %262, i1* %mask_9306521, align 1, !dbg !75
+  %263 = fmul float %219, %.unpack195, !dbg !75
+  %264 = fmul float %229, %207, !dbg !75
+  %265 = fmul float %225, %211, !dbg !75
+  %266 = fadd float %264, %265, !dbg !75
+  %267 = fmul float %223, %216, !dbg !75
+  %268 = fadd float %266, %267, !dbg !75
+  %269 = bitcast float %268 to i32, !dbg !75
+  %270 = xor i32 %242, %269, !dbg !75
+  %271 = bitcast i32 %270 to float, !dbg !75
+  %272 = fcmp ole float %263, %271, !dbg !75
+  %273 = and i1 %262, %272, !dbg !75
+  %274 = fmul float %219, %.unpack197, !dbg !75
+  %275 = fcmp oge float %274, %271, !dbg !75
+  %276 = and i1 %273, %275, !dbg !75
+  store i1 %276, i1* %mask_9306521, align 1, !dbg !75
+  %277 = xor i1 %276, true, !dbg !75
+  %278 = call ptx_device i1 @llvm.expect.i1(i1 %277, i1 true), !dbg !76
+  br i1 %278, label %_cont62, label %expr_false57, !dbg !77
+
+expr_false57:                                     ; preds = %expr_false52
+  %279 = load i1, i1* %mask_9306521, align 1, !dbg !78
+  br i1 %279, label %expr_true59, label %_cont62, !dbg !78
+
+expr_true59:                                      ; preds = %expr_false57
+  %inv_det = fdiv float 1.000000e+00, %219, !dbg !79
+  %280 = fmul float %inv_det, %271, !dbg !79
+  %281 = fmul float %inv_det, %244, !dbg !79
+  %282 = fmul float %inv_det, %252, !dbg !79
+  %283 = and i32 %.cast185, 2147483647, !dbg !79
+  store float %280, float* %hit_9306090.repack218, align 8, !dbg !79
+  store float %281, float* %hit_9306090.repack220.repack, align 4, !dbg !79
+  store float %282, float* %hit_9306090.repack220.repack227, align 8, !dbg !79
+  store i32 %283, i32* %hit_9306090.repack222, align 4, !dbg !79
+  store float %196, float* %61, align 8, !dbg !79
+  store float %280, float* %54, align 4, !dbg !79
+  br label %_cont62, !dbg !79
+
+_cont62:                                          ; preds = %while_head47, %expr_false52, %expr_false57, %expr_true59
+  %284 = icmp slt i32 %.cast185, 0, !dbg !66
+  br i1 %284, label %expr_true64, label %while_head47, !dbg !66
+
+expr_true64:                                      ; preds = %_cont62
+  %285 = load i32, i32* %node_9306084, align 4, !dbg !69
+  %286 = icmp slt i32 %285, 0, !dbg !69
+  br i1 %286, label %expr_true46, label %expr_false45, !dbg !69
+
+expr_false65:                                     ; preds = %expr_false45
+  %.elt173 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 0, !dbg !60
+  %.unpack174 = load float, float* %.elt173, align 8, !dbg !60
+  %.unpack176.elt = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 1, i32 0, !dbg !60
+  %.unpack176.unpack = load float, float* %.unpack176.elt, align 4, !dbg !60
+  %.unpack176.elt181 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 1, i32 1, !dbg !60
+  %.unpack176.unpack182 = load float, float* %.unpack176.elt181, align 8, !dbg !60
+  %.elt177 = getelementptr inbounds %4, %4* %hit_9306090, i64 0, i32 2, !dbg !60
+  %.unpack178 = load i32, i32* %.elt177, align 4, !dbg !60
+  %287 = sext i32 %4 to i64, !dbg !60
+  %288 = getelementptr inbounds [0 x %0], [0 x %0]* %_9306006, i64 0, i64 %287, !dbg !60
+  %289 = bitcast %0* %288 to <4 x float>*, !dbg !60
+  %290 = insertelement <4 x i32> undef, i32 %.unpack178, i32 0, !dbg !60
+  %291 = bitcast <4 x i32> %290 to <4 x float>, !dbg !60
+  %292 = insertelement <4 x float> %291, float %.unpack174, i32 1, !dbg !60
+  %293 = insertelement <4 x float> %292, float %.unpack176.unpack, i32 2, !dbg !60
+  %294 = insertelement <4 x float> %293, float %.unpack176.unpack182, i32 3, !dbg !60
+  store <4 x float> %294, <4 x float>* %289, align 16, !dbg !60
+  ret void, !dbg !60
+
+expr_true66:                                      ; preds = %lambda_9236741
+  ret void, !dbg !54
+}
+
+attributes #0 = { nounwind readnone }
+attributes #1 = { nofree nosync nounwind readnone willreturn }
+attributes #2 = { nounwind }
+
+!nvvmir.version = !{!0}
+!llvm.module.flags = !{!1}
+!llvm.dbg.cu = !{!2}
+!nvvm.annotations = !{!5, !6, !7, !8, !9, !10, !11, !12}
+
+!0 = !{i64 1, i64 5}
+!1 = !{i32 2, !"Debug Info Version", i32 3}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "Impala", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug, enums: !4)
+!3 = !DIFile(filename: "/home/niklas/repos/anydsl/rodent/build/tools/bench_traversal/./bench_traversal", directory: "")
+!4 = !{}
+!5 = !{void ([0 x %0]*, [0 x %1]*, i32, [0 x %2]*, [0 x %3]*)* @lambda_9283815, !"kernel", i64 1}
+!6 = !{void ([0 x %0]*, [0 x %1]*, i32, [0 x %2]*, [0 x %3]*)* @lambda_9283815, !"maxntidx", i64 64}
+!7 = !{void ([0 x %0]*, [0 x %1]*, i32, [0 x %2]*, [0 x %3]*)* @lambda_9283815, !"maxntidy", i64 1}
+!8 = !{void ([0 x %0]*, [0 x %1]*, i32, [0 x %2]*, [0 x %3]*)* @lambda_9283815, !"maxntidz", i64 1}
+!9 = !{void ([0 x %0]*, i32, [0 x %3]*, [0 x %1]*, [0 x %2]*)* @lambda_9236741, !"kernel", i64 1}
+!10 = !{void ([0 x %0]*, i32, [0 x %3]*, [0 x %1]*, [0 x %2]*)* @lambda_9236741, !"maxntidx", i64 64}
+!11 = !{void ([0 x %0]*, i32, [0 x %3]*, [0 x %1]*, [0 x %2]*)* @lambda_9236741, !"maxntidy", i64 1}
+!12 = !{void ([0 x %0]*, i32, [0 x %3]*, [0 x %1]*, [0 x %2]*)* @lambda_9236741, !"maxntidz", i64 1}
+!13 = distinct !DISubprogram(name: "lambda_9283815", linkageName: "lambda_9283815", scope: null, file: !14, line: 622, type: !15, scopeLine: 622, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !4)
+!14 = !DIFile(filename: "intrinsics_nvvm.impala", directory: "\CA\0B\E3`\E4U\00\00\10\107<\E1U\00\00os/anydsl/runtime/platforms/impala")
+!15 = !DISubroutineType(types: !4)
+!16 = !DILocation(line: 622, column: 36, scope: !13)
+!17 = !DILocation(line: 198, column: 23, scope: !13)
+!18 = !DILocation(line: 198, column: 42, scope: !13)
+!19 = !DILocation(line: 198, column: 73, scope: !13)
+!20 = !DILocation(line: 199, column: 31, scope: !13)
+!21 = !DILocation(line: 84, column: 40, scope: !13)
+!22 = !DILocation(line: 89, column: 29, scope: !13)
+!23 = !DILocation(line: 89, column: 46, scope: !13)
+!24 = !DILocation(line: 89, column: 63, scope: !13)
+!25 = !DILocation(line: 106, column: 5, scope: !13)
+!26 = !DILocation(line: 106, column: 27, scope: !13)
+!27 = !DILocation(line: 203, column: 31, scope: !13)
+!28 = !DILocation(line: 203, column: 58, scope: !13)
+!29 = !DILocation(line: 204, column: 31, scope: !13)
+!30 = !DILocation(line: 204, column: 58, scope: !13)
+!31 = !DILocation(line: 114, column: 23, scope: !13)
+!32 = !DILocation(line: 92, column: 9, scope: !13)
+!33 = !DILocation(line: 122, column: 24, scope: !13)
+!34 = !DILocation(line: 127, column: 28, scope: !13)
+!35 = !DILocation(line: 156, column: 9, scope: !13)
+!36 = !DILocation(line: 156, column: 34, scope: !13)
+!37 = !DILocation(line: 159, column: 13, scope: !13)
+!38 = !DILocation(line: 168, column: 19, scope: !13)
+!39 = !DILocation(line: 177, column: 15, scope: !13)
+!40 = !DILocation(line: 177, column: 8, scope: !13)
+!41 = !DILocation(line: 177, column: 28, scope: !13)
+!42 = !DILocation(line: 184, column: 15, scope: !13)
+!43 = !DILocation(line: 184, column: 8, scope: !13)
+!44 = !DILocation(line: 184, column: 28, scope: !13)
+!45 = !DILocation(line: 186, column: 11, scope: !13)
+!46 = !DILocation(line: 169, column: 50, scope: !13)
+!47 = !DILocation(line: 201, column: 20, scope: !13)
+!48 = distinct !DISubprogram(name: "lambda_9236741", linkageName: "lambda_9236741", scope: null, file: !49, line: 622, type: !15, scopeLine: 622, flags: DIFlagPrototyped, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !4)
+!49 = !DIFile(filename: "intrinsics_nvvm.impala", directory: "\02\CB;a\E4U\00\00\10\107<\E1U\00\00os/anydsl/runtime/platforms/impala")
+!50 = !DILocation(line: 622, column: 36, scope: !48)
+!51 = !DILocation(line: 198, column: 23, scope: !48)
+!52 = !DILocation(line: 198, column: 42, scope: !48)
+!53 = !DILocation(line: 198, column: 73, scope: !48)
+!54 = !DILocation(line: 199, column: 31, scope: !48)
+!55 = !DILocation(line: 84, column: 40, scope: !48)
+!56 = !DILocation(line: 89, column: 29, scope: !48)
+!57 = !DILocation(line: 89, column: 46, scope: !48)
+!58 = !DILocation(line: 89, column: 63, scope: !48)
+!59 = !DILocation(line: 106, column: 5, scope: !48)
+!60 = !DILocation(line: 106, column: 27, scope: !48)
+!61 = !DILocation(line: 203, column: 31, scope: !48)
+!62 = !DILocation(line: 203, column: 58, scope: !48)
+!63 = !DILocation(line: 204, column: 31, scope: !48)
+!64 = !DILocation(line: 204, column: 58, scope: !48)
+!65 = !DILocation(line: 114, column: 23, scope: !48)
+!66 = !DILocation(line: 92, column: 9, scope: !48)
+!67 = !DILocation(line: 122, column: 24, scope: !48)
+!68 = !DILocation(line: 127, column: 28, scope: !48)
+!69 = !DILocation(line: 156, column: 9, scope: !48)
+!70 = !DILocation(line: 156, column: 34, scope: !48)
+!71 = !DILocation(line: 159, column: 13, scope: !48)
+!72 = !DILocation(line: 168, column: 19, scope: !48)
+!73 = !DILocation(line: 177, column: 15, scope: !48)
+!74 = !DILocation(line: 177, column: 8, scope: !48)
+!75 = !DILocation(line: 177, column: 28, scope: !48)
+!76 = !DILocation(line: 184, column: 15, scope: !48)
+!77 = !DILocation(line: 184, column: 8, scope: !48)
+!78 = !DILocation(line: 184, column: 28, scope: !48)
+!79 = !DILocation(line: 186, column: 11, scope: !48)

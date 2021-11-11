@@ -5,6 +5,7 @@
 #include <cstring>
 #include <chrono>
 #include <cmath>
+#include <fstream>
 
 #ifndef DISABLE_GUI
 #include <SDL.h>
@@ -14,6 +15,14 @@
 #include "float3.h"
 #include "common.h"
 #include "image.h"
+
+
+
+//#define TESTING
+//#define TEST_BRDF_EVAL
+//#define TEST_BRDF_WRITE_READ
+
+//using namespace powitacq_rgb;
 
 #if defined(__x86_64__) || defined(__amd64__) || defined(_M_X64)
 #include <x86intrin.h>
@@ -135,6 +144,36 @@ static void update_texture(uint32_t* buf, SDL_Texture* texture, size_t width, si
 }
 #endif
 
+
+
+static void write_pfm_image(const float* data, int iterations, int width, int height, int numChannels, const char* filename) {
+    std::ofstream out(filename, std::ios_base::binary);
+
+    std::ostringstream str;
+    if (numChannels == 1)
+        str << "Pf\n";
+    else if (numChannels == 3)
+        str << "PF\n";
+    else {
+        std::cerr << "ERROR: .pfm format does not support " << numChannels << " channel images" << std::endl;
+        return;
+    }
+    str << width << " " << height << "\n";
+    str << "-1.0" << "\n";
+    auto header = str.str();
+
+    out << header;
+
+    for (int row = height - 1; row >= 0; --row) {
+        for (int col = 0; col < width; col++) {
+            for (int channel = 0; channel < numChannels; channel++) {
+                float val = data[row * width * numChannels + col * numChannels + channel] / iterations;
+                out.write((const char*)&val, sizeof(float));
+            }
+        }
+    }
+}
+
 static void save_image(const std::string& out_file, size_t width, size_t height, uint32_t iter) {
     ImageRgba32 img;
     img.width = width;
@@ -142,6 +181,14 @@ static void save_image(const std::string& out_file, size_t width, size_t height,
     img.pixels.reset(new uint8_t[width * height * 4]);
 
     auto film = get_pixels();
+
+    std::string pfm_ending = ".pfm";
+    if (out_file.compare(out_file.length() - pfm_ending.length(), pfm_ending.length(), pfm_ending) == 0) {
+        printf("saving as pfm file\n");
+        write_pfm_image(film, iter, width, height, 3, out_file.c_str());
+        return;
+    }
+
     auto inv_iter = 1.0f / iter;
     auto inv_gamma = 1.0f / 2.2f;
     for (size_t y = 0; y < height; ++y) {
@@ -180,6 +227,177 @@ static inline void usage() {
               << "   -o       image.png  Writes the output image to a file" << std::endl;
 }
 
+
+
+#include <unordered_map>
+#include "measured.h"
+std::unordered_map<std::string, BRDFData*> brdf_dict;
+
+extern "C" {
+    void print_uint(unsigned int u) {
+        printf("impala_uint: %u\n", u);
+    }
+
+    void print_int(int i) {
+        printf("impala_int: %d\n", i);
+    }
+
+    void print_float(float f) {
+        printf("impala_float: %f\n", f);
+    }
+
+    void print_pointer(void* p) {
+        printf("impala_pointer: %p\n", p);
+    }
+
+    void print_str(char* s) {
+        printf("%s\n", s);
+    }
+
+    void print_vec2(Vec2* v) {
+        printf("impala_vector: (%f/%f)\n", v->x, v->y);
+    }
+
+    void print_vec3(Vec3* v) {
+        printf("impala_vector: (%f/%f/%f)\n", v->x, v->y, v->z);
+    }
+}
+
+#ifdef TESTING
+int main(int argc, char** argv) {
+    std::unique_ptr<powitacq_rgb::BRDF> brdf = std::unique_ptr<powitacq_rgb::BRDF>( new powitacq_rgb::BRDF("data/acrylic_felt_green_rgb.bsdf") );
+
+    powitacq_rgb::BRDF* _brdf = brdf.get();
+    BRDFData* converted_brdf = convert_brdf(_brdf);
+
+    const Warp* converted_rgb = converted_brdf->rgb;
+    const Warp* converted_luminance = converted_brdf->luminance;
+    const Warp* converted_sigma = converted_brdf->sigma;
+
+    auto data = brdf->m_data.get();
+
+    auto luminance = data->luminance;
+    auto rgb = data->rgb;
+    auto sigma = data->sigma;
+
+    float params[] = {0.3f, 0.1f, 1.0f};
+
+    //float ref = rgb.eval(powitacq_rgb::Vector2f(0,0), (float*)&params);
+    //printf("evaluated reference: %f\n", ref);
+
+    #ifdef TEST_BRDF_EVAL
+    Vec2 pos = Vec2{x : 0, y : 0};
+    Vec3 incoming = Vec3{x : 0, y : 0, z : 0};
+    Vec3 outgoing = Vec3{x : 0, y : 0, z : 0}; 
+    for (int i = 0; i < 10; i++) {
+        pos.x = ((float)rand()) / RAND_MAX;
+        pos.y = ((float)rand()) / RAND_MAX;
+
+        incoming.x = ((float)rand()) / RAND_MAX;
+        incoming.y = ((float)rand()) / RAND_MAX;
+        incoming.z = ((float)rand()) / RAND_MAX;
+
+        outgoing.x = ((float)rand()) / RAND_MAX;
+        outgoing.y = ((float)rand()) / RAND_MAX;
+        outgoing.z = ((float)rand()) / RAND_MAX;
+
+        // warp tests
+        /* printf("(%f/%f) -> reference/impala\n", pos.x, pos.y);
+
+        
+        float ref_rgb = rgb.eval(powitacq_rgb::Vector2f(pos.x, pos.y), (float*)&params);
+        float impala_rgb = eval_warp2D3(converted_rgb, &pos, (float*)&params);
+        printf("-RGB: %f / %f\n", ref_rgb, impala_rgb);
+
+        float ref_luminance = luminance.eval(powitacq_rgb::Vector2f(pos.x, pos.y), (float*)&params);
+        float impala_luminance = eval_warp2D2(converted_luminance, &pos, (float*)&params);
+        printf("-Luminance: %f / %f\n", ref_luminance, impala_luminance);
+
+        float ref_sigma = sigma.eval(powitacq_rgb::Vector2f(pos.x, pos.y), (float*)&params);
+        float impala_sigma = eval_warp2D0(converted_sigma, &pos, (float*)&params);
+        printf("-Sigma: %f / %f\n", ref_sigma, impala_sigma);
+
+        auto ref_inv = luminance.invert(powitacq_rgb::Vector2f(pos.x, pos.y), (float*)&params);
+        InvertResult impala_inv;
+        invert_warp2D2(converted_luminance, &pos, (float*)&params, &impala_inv);
+        printf("-Inversion:\n");
+        printf(" Reference: (%f/%f), %f\n", ref_inv.first.x(), ref_inv.first.y(), ref_inv.second);
+        printf(" Impala: (%f/%f), %f\n", impala_inv.sample.x, impala_inv.sample.y, impala_inv.vndf_pdf);
+
+        auto ref_sample = luminance.sample(powitacq_rgb::Vector2f(pos.x, pos.y), (float*)&params);
+        SampleResult impala_sample;
+        sample_warp2D2(converted_luminance, &pos, (float*)&params, &impala_sample);
+        printf("-Sampling:\n");
+        printf(" Reference: (%f/%f), %f\n", ref_sample.first.x(), ref_sample.first.y(), ref_sample.second);
+        printf(" Impala: (%f/%f), %f\n", impala_sample.sample.x, impala_sample.sample.y, impala_sample.pdf);
+        printf("\n");
+        */
+
+        
+        powitacq_rgb::Vector3f in = powitacq_rgb::Vector3f(incoming.x, incoming.y, incoming.z);
+        powitacq_rgb::Vector3f out = powitacq_rgb::Vector3f(outgoing.x, outgoing.y, outgoing.z);
+        powitacq_rgb::Vector3f ref_res = _brdf->eval(in, out);
+
+        // BRDF tests
+        Vec3* impala_res = new Vec3{x : 0, y : 0, z : 0};
+        test_evaluate_brdf(converted_brdf, &incoming, &outgoing, impala_res);
+        printf("--BRDF Evaluation--\n");
+        printf("Reference: %f/%f/%f\n", ref_res.x(), ref_res.y(), ref_res.z());
+        printf("Impala: %f/%f/%f\n", impala_res->x, impala_res->y, impala_res->z);
+
+        float ref_pdf = _brdf->pdf(in, out);
+        float impala_pdf = 0.0f;
+        test_pdf_brdf(converted_brdf, &incoming, &outgoing, &impala_pdf);
+        printf("--BRDF PDF--\n");
+        printf("Reference: %f\n", ref_pdf);
+        printf("Impala: %f\n", impala_pdf);
+
+        printf("--BRDF Sampling--\n");
+        powitacq_rgb::Vector3f sample_ref_out;
+        float sample_ref_pdf;
+        powitacq_rgb::Vector3f sample_ref = _brdf->sample(powitacq_rgb::Vector2f(pos.x, pos.y), in, &sample_ref_out, &sample_ref_pdf);
+        printf(" Reference: \n");
+        printf("  Sampled: %f/%f/%f\n", sample_ref.x(), sample_ref.y(), sample_ref.z());
+        printf("  Outgoing: %f/%f/%f\n", sample_ref_out.x(), sample_ref_out.y(), sample_ref_out.z());
+        printf("  PDF: %f\n", sample_ref_pdf);
+
+        float* param_mem = new float[3];
+
+        printf(" Impala: \n");
+        MeasuredBRDFSampleData data;
+        test_sample_brdf(converted_brdf, &pos, &incoming, &data);
+        printf("  Sampled: %f/%f/%f\n", data.res.x, data.res.y, data.res.z);
+        printf("  Outgoing: %f/%f/%f\n", data.out.x, data.out.y, data.out.z);
+        printf("  PDF: %f\n", data.pdf);
+        printf("\n");
+    }
+    #endif
+
+    #ifdef TEST_BRDF_WRITE_READ
+    std::vector<float> lin_rgb;
+    std::ofstream out_brdf;
+    out_brdf.open("brdf_out.bin", std::ios::binary);
+    write_brdf_data(out_brdf, converted_brdf);
+    out_brdf.close();
+    std::ifstream in_brdf;
+    in_brdf.open("brdf_out.bin", std::ios::binary);
+    BRDFData* read_brdf = read_brdf_data(in_brdf);
+
+    printf("Comparing reference and loaded:\n");
+    printf("%f,%f / %f,%f\n", converted_brdf->rgb->size.x, converted_brdf->rgb->size.y, read_brdf->rgb->size.x, read_brdf->rgb->size.y);
+    printf("%f,%f / %f,%f\n", converted_brdf->rgb->patch_size.x, converted_brdf->rgb->patch_size.y, read_brdf->rgb->patch_size.x, read_brdf->rgb->patch_size.y);
+    printf("%f,%f / %f,%f\n", converted_brdf->rgb->inv_patch_size.x, converted_brdf->rgb->inv_patch_size.y, read_brdf->rgb->inv_patch_size.x, read_brdf->rgb->inv_patch_size.y);
+    printf("%f / %f\n", converted_brdf->rgb->param_values_offset, read_brdf->rgb->param_values_offset);
+    for (int i = 0; i < converted_brdf->rgb->array_sizes[3]; i++) {
+        if (converted_brdf->rgb->data[i] != read_brdf->rgb->data[i]) printf("found difference : %f/%f", converted_brdf->rgb->data[i], read_brdf->rgb->data[i]);
+    }
+    #endif
+
+    return 0;
+}
+#endif
+
+#ifndef TESTING
 int main(int argc, char** argv) {
     std::string out_file;
     size_t bench_iter = 0;
@@ -187,6 +405,8 @@ int main(int argc, char** argv) {
     size_t height = 720;
     float fov = 60.0f;
     float3 eye(0.0f), dir(0.0f, 0.0f, 1.0f), up(0.0f, 1.0f, 0.0f);
+
+    printf("Test\n");
 
     for (int i = 1; i < argc; ++i) {
         if (argv[i][0] == '-') {
@@ -348,3 +568,4 @@ int main(int argc, char** argv) {
     }
     return 0;
 }
+#endif

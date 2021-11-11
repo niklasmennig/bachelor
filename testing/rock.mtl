@@ -1,0 +1,25 @@
+# Blender MTL File: 'rock.blend'
+# Material Count: 3
+
+newmtl Light
+Ns 9.0000
+Ni 1.0000
+illum 0
+Ka 0.78 0.78 0.78 # White
+Kd 0.78 0.78 0.78
+Ks 0 0 0
+Ke 10 10 10
+
+newmtl Rock
+map_Kd cc_amber_citrine_rgb.bsdf
+illum 11
+
+newmtl Room
+Ns 225.000000
+Ka 0.100000 0.100000 0.100000
+Kd 0.100000 0.100000 0.100000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2

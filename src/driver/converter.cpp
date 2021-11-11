@@ -13,6 +13,8 @@
 #include "obj.h"
 #include "buffer.h"
 
+#include "measured.h"
+
 #ifdef WIN32
 #include <direct.h>
 #define create_directory(d) _mkdir(d)
@@ -408,6 +410,20 @@ static void write_tri_mesh(const obj::TriMesh& tri_mesh, bool enable_padding) {
     write_buffer("data/texcoords.bin",    pad_buffer(tri_mesh.texcoords,    enable_padding, sizeof(float) * 4));
 }
 
+static void write_warp_data(const Warp* warp, std::string path, bool enable_padding) {
+    auto data = linearize_warp(warp);
+    write_buffer(path, pad_buffer(data, enable_padding, sizeof(float) * 4));
+}
+
+static void write_brdf_data(const BRDFData* brdf_data, std::string name, bool enable_padding) {
+    auto path = "data/brdf_" + name;
+    write_warp_data(&brdf_data->ndf, path+"_ndf.bin", enable_padding);
+    write_warp_data(&brdf_data->vndf, path+"_vndf.bin", enable_padding);
+    write_warp_data(&brdf_data->luminance, path+"_luminance.bin", enable_padding);
+    write_warp_data(&brdf_data->rgb, path+"_rgb.bin", enable_padding);
+    write_warp_data(&brdf_data->sigma, path+"_sigma.bin", enable_padding);
+}
+
 
 template <size_t N, size_t M>
 static void build_bvh(const obj::TriMesh& tri_mesh,
@@ -593,12 +609,19 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
     size_t num_mats = obj_file.materials.size();
 
     std::unordered_map<std::string, size_t> images;
+    std::unordered_set<std::string> brdfs;
     bool has_map_ke = false;
     for (auto& pair : mtl_lib) {
         auto & mat = pair.second;
+        if (mat.illum == 11) brdfs.insert(mat.map_kd); continue;
         if (mat.map_kd != "") images.emplace(mat.map_kd, images.size());
         if (mat.map_ks != "") images.emplace(mat.map_kd, images.size());
         if (mat.map_ke != "") images.emplace(mat.map_ke, images.size()), has_map_ke = true;
+    }
+
+    printf("loaded brdfs: \n");
+    for (auto it = brdfs.begin(); it != brdfs.end(); it++) {
+        printf("- %s\n", (*it).c_str());
     }
 
     auto tri_mesh = compute_tri_mesh(obj_file, 0);
@@ -648,6 +671,7 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
     }
 
     os << "    let renderer = make_path_tracing_renderer(" << max_path_len << " /*max_path_len*/, " << spp << " /*spp*/);\n"
+    //os << "    let renderer = make_white_furnace_renderer();\n"
        << "    let math     = device.intrinsics;\n";
 
     // Setup camera
@@ -767,6 +791,22 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
         }
     }
 
+    // Generate BRDFS
+    os << "\n   //BRDFs \n";
+    for (auto it = brdfs.begin(); it != brdfs.end(); it++) {
+        BRDFData* brdf_data = load_brdf_data((*it));
+        write_brdf_data(brdf_data, (*it), enable_padding);
+        os << "    let brdf_" << (*it) << " = BRDFData {\n";
+        os << "        luminance : device.load_warp(\"data/brdf_" << (*it) << "_luminance.bin\"),\n";
+        os << "        sigma : device.load_warp(\"data/brdf_" << (*it) << "_sigma.bin\"),\n";
+        os << "        ndf : device.load_warp(\"data/brdf_" << (*it) << "_ndf.bin\"),\n";
+        os << "        vndf : device.load_warp(\"data/brdf_" << (*it) << "_vndf.bin\"),\n";
+        os << "        rgb : device.load_warp(\"data/brdf_" << (*it) << "_rgb.bin\"),\n";
+        os << "        jacobian : " << (brdf_data->jacobian? "true": "false") << ",\n";
+        os << "        isotropic : " << (brdf_data->isotropic? "true": "false") << ",\n";
+        os << "    };\n";
+    }
+
     // Lights
     std::vector<int> light_ids(tri_mesh.indices.size() / 4, 0);
     os << "\n    // Lights\n";
@@ -859,6 +899,7 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
     info("Generating materials for '", file_name, "'");
     os << "\n    // Shaders\n";
     for (auto& mtl_name : obj_file.materials) {
+        info("Generating material " + mtl_name);
         auto it = mtl_lib.find(mtl_name);
         assert(it != mtl_lib.end());
 
@@ -867,55 +908,64 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
         if (has_simple && is_simple(mat))
             break;
 
+
         bool has_emission = mat.ke != rgb(0.0f) || mat.map_ke != "";
         os << "    let shader_" << make_id(mtl_name) << " : Shader = @ |ray, hit, surf| {\n";
-        if (mat.illum == 5) {
-            os << "        let bsdf = make_mirror_bsdf(math, surf, make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f));\n";
-        } else if (mat.illum == 7) {
-            os << "        let bsdf = make_glass_bsdf(math, surf, 1.0f, " << mat.ni << "f, " << "make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f), make_color(" << mat.tf.x << "f, " << mat.tf.y << "f, " << mat.tf.z << "f));\n";
-        } else {
-            bool has_diffuse  = mat.kd != rgb(0.0f) || mat.map_kd != "";
-            bool has_specular = mat.ks != rgb(0.0f) || mat.map_ks != "";
 
-            if (has_diffuse) {
-                if (mat.map_kd != "") {
-                    os << "        let diffuse_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_kd]]) << ");\n";
-                    os << "        let kd = diffuse_texture(vec4_to_2(surf.attr(0)));\n";
-                } else {
-                    os << "        let kd = make_color(" << mat.kd.x << "f, " << mat.kd.y << "f, " << mat.kd.z << "f);\n";
-                }
-                os << "        let diffuse = make_diffuse_bsdf(math, surf, kd);\n";
-            }
-            if (has_specular) {
-                if (mat.map_ks != "") {
-                    os << "        let specular_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_ks]]) << ");\n";
-                    os << "        let ks = specular_texture(vec4_to_2(surf.attr(0)));\n";
-                } else {
-                    os << "        let ks = make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f);\n";
-                }
-                os << "        let ns = " << mat.ns << "f;\n";
-                os << "        let specular = make_phong_bsdf(math, surf, ks, ns);\n";
-            }
-            os << "        let bsdf = ";
-            if (has_diffuse && has_specular) {
-                os << "{\n"
-                   << "            let lum_ks = color_luminance(ks);\n"
-                   << "            let lum_kd = color_luminance(kd);\n"
-                   << "            let k = select(lum_ks + lum_kd == 0.0f, 0.0f, lum_ks / (lum_ks + lum_kd));\n"
-                   << "            make_mix_bsdf(diffuse, specular, k)\n"
-                   << "        };\n";
-            } else if (has_diffuse || has_specular) {
-                if (has_specular) os << "specular;\n";
-                else              os << "diffuse;\n";
+        // intercept to introduce measured materials
+        if (mat.illum == 11) {
+            has_emission = false;
+            std::string brdf_name = mat.map_kd;
+            info("Generating measured material: " + mtl_name + " with BRDF: " + brdf_name);
+            auto brdf_identifier = "brdf_" + brdf_name;
+            os << "        let bsdf = make_measured_bsdf("<< brdf_identifier <<", math, surf);\n";
+        } else if (mat.illum == 5) {
+                os << "        let bsdf = make_mirror_bsdf(math, surf, make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f));\n";
+            } else if (mat.illum == 7) {
+                os << "        let bsdf = make_glass_bsdf(math, surf, 1.0f, " << mat.ni << "f, " << "make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f), make_color(" << mat.tf.x << "f, " << mat.tf.y << "f, " << mat.tf.z << "f));\n";
             } else {
-                os << "make_black_bsdf();\n";
+                bool has_diffuse  = mat.kd != rgb(0.0f) || mat.map_kd != "";
+                bool has_specular = mat.ks != rgb(0.0f) || mat.map_ks != "";
+
+                if (has_diffuse) {
+                    if (mat.map_kd != "") {
+                        os << "        let diffuse_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_kd]]) << ");\n";
+                        os << "        let kd = diffuse_texture(vec4_to_2(surf.attr(0)));\n";
+                    } else {
+                        os << "        let kd = make_color(" << mat.kd.x << "f, " << mat.kd.y << "f, " << mat.kd.z << "f);\n";
+                    }
+                    os << "        let diffuse = make_diffuse_bsdf(math, surf, kd);\n";
+                }
+                if (has_specular) {
+                    if (mat.map_ks != "") {
+                        os << "        let specular_texture = make_texture(math, make_repeat_border(), make_bilinear_filter(), image_" << make_id(image_names[images[mat.map_ks]]) << ");\n";
+                        os << "        let ks = specular_texture(vec4_to_2(surf.attr(0)));\n";
+                    } else {
+                        os << "        let ks = make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f);\n";
+                    }
+                    os << "        let ns = " << mat.ns << "f;\n";
+                    os << "        let specular = make_phong_bsdf(math, surf, ks, ns);\n";
+                }
+                os << "        let bsdf = ";
+                if (has_diffuse && has_specular) {
+                    os << "{\n"
+                    << "            let lum_ks = color_luminance(ks);\n"
+                    << "            let lum_kd = color_luminance(kd);\n"
+                    << "            let k = select(lum_ks + lum_kd == 0.0f, 0.0f, lum_ks / (lum_ks + lum_kd));\n"
+                    << "            make_mix_bsdf(diffuse, specular, k)\n"
+                    << "        };\n";
+                } else if (has_diffuse || has_specular) {
+                    if (has_specular) os << "specular;\n";
+                    else              os << "diffuse;\n";
+                } else {
+                    os << "make_black_bsdf();\n";
+                }
             }
-        }
-        if (has_emission) {
-            os << "        make_emissive_material(surf, bsdf, lights(light_ids.load_i32(hit.prim_id)))\n";
-        } else {
-            os << "        make_material(bsdf)\n";
-        }
+            if (has_emission) {
+                os << "        make_emissive_material(surf, bsdf, lights(light_ids.load_i32(hit.prim_id)))\n";
+            } else {
+                os << "        make_material(bsdf)\n";
+            }
         os << "    };\n";
     }
 

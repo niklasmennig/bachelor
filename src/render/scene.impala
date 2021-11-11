@@ -20,7 +20,8 @@ struct Device {
     load_buffer: fn (&[u8]) -> DeviceBuffer,
     load_bvh: fn (&[u8]) -> Bvh,
     load_png: fn (&[u8]) -> Image,
-    load_jpg: fn (&[u8]) -> Image
+    load_jpg: fn (&[u8]) -> Image,
+    load_warp: fn(&[u8]) -> Warp,
 }
 
 struct DeviceBuffer {
