@@ -39,3 +39,5 @@ src/driver/interface.h
 *.exe
 *.out
 *.app
+
+.vscode/
