@@ -22,6 +22,7 @@ template <size_t Dimension> Warp convert_warp(powitacq_rgb::Marginal2D<Dimension
     }
 
     float* param_values = new float[param_values_offset * Dimension];
+    memset(param_values, 0, sizeof(float) * param_values_offset * Dimension);
     for (int i = 0; i < Dimension; i++) {
         memcpy(&param_values[i * param_values_offset], 
                 in_warp.m_param_values[i].data(),
@@ -174,17 +175,18 @@ BRDFData* convert_brdf(powitacq_rgb::BRDF* brdf) {
 #include "buffer.h"
 
 std::vector<float> linearize_warp(const Warp* warp) {
+    static_assert(sizeof(float) == sizeof(int));
     std::vector<float> data;
-    for (int i = 0; i < 6; i++) {data.push_back(warp->array_sizes[i]);}
+    for (int i = 0; i < 6; i++) {data.push_back( *reinterpret_cast<const float*>(&warp->array_sizes[i]));}
     
-    data.push_back(warp->size.x);data.push_back(warp->size.y);
+    data.push_back(*reinterpret_cast<const float*>(&warp->size.x));data.push_back(*reinterpret_cast<const float*>(&warp->size.y));
     data.push_back(warp->patch_size.x);data.push_back(warp->patch_size.y);
     data.push_back(warp->inv_patch_size.x);data.push_back(warp->inv_patch_size.y);
-    data.push_back(warp->param_values_offset);
+    data.push_back(*reinterpret_cast<const float*>(&warp->param_values_offset));
 
-    for (int i = 0; i < warp->array_sizes[0]; i++) {data.push_back( (float)warp->param_size[i]);}
+    for (int i = 0; i < warp->array_sizes[0]; i++) {data.push_back( *reinterpret_cast<const float*>(&warp->param_size[i]));}
 
-    for (int i = 0; i < warp->array_sizes[1]; i++) {data.push_back( (float)warp->param_strides[i]);}
+    for (int i = 0; i < warp->array_sizes[1]; i++) {data.push_back( *reinterpret_cast<const float*>(&warp->param_strides[i]));}
 
     for (int i = 0; i < warp->array_sizes[2]; i++) {data.push_back(warp->param_values[i]);}
 
@@ -203,12 +205,12 @@ Warp delinearize_warp(Array& data) {
     unsigned int offset = 0;
     auto sizes = new unsigned int[6];
     for (int i = 0; i < 6; i++) {
-        sizes[i] = (unsigned int)data[i];
+        sizes[i] = *reinterpret_cast<unsigned int*>(&data[i]);
     }
     warp.array_sizes = sizes;
     offset += 6;
 
-    warp.size = Vec2i{ x : (int)data[offset], y: (int)data[offset + 1] };
+    warp.size = Vec2i{ x : *reinterpret_cast<int*>(&data[offset]), y: *reinterpret_cast<int*>(&data[offset + 1]) };
     offset += 2;
 
     warp.patch_size = Vec2{ x : data[offset], y: data[offset + 1] };
@@ -217,16 +219,16 @@ Warp delinearize_warp(Array& data) {
     warp.inv_patch_size = Vec2{ x : data[offset], y: data[offset + 1] };
     offset += 2;
 
-    warp.param_values_offset = (int)data[offset];
+    warp.param_values_offset = *reinterpret_cast<int*>(&data[offset]);
     offset += 1;
 
     auto param_size = new unsigned int[warp.array_sizes[0]];
-    for (int i = 0; i < warp.array_sizes[0]; i++) {param_size[i] = (unsigned int)data[offset + i];}
+    for (int i = 0; i < warp.array_sizes[0]; i++) {param_size[i] = *reinterpret_cast<unsigned int*>(&data[offset + i]);}
     offset += warp.array_sizes[0];
     warp.param_size = param_size;
 
     auto param_strides = new unsigned int[warp.array_sizes[1]];
-    for (int i = 0; i < warp.array_sizes[1]; i++) {param_strides[i] = (unsigned int)data[offset + i];}
+    for (int i = 0; i < warp.array_sizes[1]; i++) {param_strides[i] = *reinterpret_cast<unsigned int*>(&data[offset + i]);}
     offset += warp.array_sizes[1];
     warp.param_strides = param_strides;
 
@@ -275,4 +277,67 @@ BRDFData* read_brdf_data(std::istream& is) {
     brdf_data->isotropic = is.get();
     brdf_data->jacobian = is.get();
     return brdf_data;
+}
+
+bool compare_warp(Warp* w1, Warp* w2) {
+    printf("Comparing warps\n");
+    if (w1->size.x != w2->size.x || w1->size.y != w2->size.y) {
+        printf("sizes don't match\n");
+        printf("(%d/%d) | (%d/%d)\n", w1->size.x, w1->size.y, w2->size.x, w2->size.y);
+        return false;
+    }
+    if (w1->patch_size.x != w2->patch_size.x || w1->patch_size.y != w2->patch_size.y) {
+        printf("patch sizes don't match\n");
+        return false;
+    }
+    if (w1->inv_patch_size.x != w2->inv_patch_size.x || w1->inv_patch_size.y != w2->inv_patch_size.y) {
+        printf("inv. patch sizes don't match\n");
+        return false;
+    }
+    
+    if (int diff = memcmp(w1->array_sizes, w2->array_sizes, sizeof(unsigned int) * 6) != 0) {
+        printf("array sizes don't match\n");
+        printf("diff at %d\n", diff);
+        return false;
+    }
+
+    if (int diff = memcmp(w1->param_size, w2->param_size, sizeof(unsigned int) * w1->array_sizes[0]) != 0) {
+        printf("param sizes don't match\n");
+        printf("diff at %d\n", diff);
+        return false;
+    }
+
+    if (int diff = memcmp(w1->param_strides, w2->param_strides, sizeof(unsigned int) * w1->array_sizes[1]) != 0) {
+        printf("param strides don't match\n");
+        printf("diff at %d\n", diff);
+        return false;
+    }
+
+    if (int diff = memcmp(w1->param_values, w2->param_values, sizeof(float) * w1->array_sizes[2]) != 0) {
+        printf("param values don't match\n");
+        printf("diff at %d\n", diff);
+        for (int i = 0; i < w1->array_sizes[2]; i++) {
+            printf("%f / %f\n", w1->param_values[i], w2->param_values[i]);
+        }
+        return false;
+    }
+
+    if (int diff = memcmp(w1->data, w2->data, sizeof(float) * w1->array_sizes[3]) != 0) {
+        printf("data doesn't match\n");
+        printf("diff at %d\n", diff);
+        return false;
+    }
+
+    if (int diff = memcmp(w1->marginal_cdf, w2->marginal_cdf, sizeof(float) * w1->array_sizes[4]) != 0) {
+        printf("marginal cdf's don't match\n");
+        printf("diff at %d\n", diff);
+        return false;
+    }
+
+    if (int diff = memcmp(w1->conditional_cdf, w2->conditional_cdf, sizeof(float) * w1->array_sizes[5]) != 0) {
+        printf("conditional cdf's don't match\n");
+        printf("diff at %d\n", diff);
+        return false;
+    }
+    
 }

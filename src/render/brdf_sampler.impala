@@ -12,6 +12,22 @@ struct Warp {
     array_sizes : &[u32]
 }
 
+fn @ make_warp() -> Warp {
+    Warp {
+        size : Vec2i {x: 0, y: 0},
+        patch_size : Vec2 {x: 0.0f, y: 0.0f},
+        inv_patch_size : Vec2 {x: 0.0f, y: 0.0f},
+        param_size : 0 as &[u32],
+        param_strides : 0 as &[u32],
+        param_values : 0 as &[f32],
+        param_values_offset : 0,
+        data : 0 as &[f32],
+        marginal_cdf : 0 as &[f32],
+        conditional_cdf : 0 as &[f32],
+        array_sizes : 0 as &[u32]
+    }
+}
+
 struct BRDFData {
     ndf : Warp,
     sigma : Warp,
@@ -32,35 +48,35 @@ struct SampleResult {
     pdf : f32
 }
 
-fn elevation(math : Intrinsics, v : Vec3) -> f32 {
+fn @ elevation(math : Intrinsics, v : Vec3) -> f32 {
     //return 2.f * asin(.5f * std::sqrt(sqr(d.x()) + sqr(d.y()) + sqr(d.z() - 1.f)));
     2.0f * math.asinf(0.5f * math.sqrtf(v.x * v.x + v.y * v.y + (v.z - 1.0f) * (v.z - 1.0f)))
 }
 
-fn theta2u(math : Intrinsics, theta : f32) -> f32 {
+fn @ theta2u(math : Intrinsics, theta : f32) -> f32 {
     math.sqrtf(theta * (2.0f / flt_pi))
 }
 
-fn phi2u(math : Intrinsics, phi : f32) -> f32 {
+fn @ phi2u(math : Intrinsics, phi : f32) -> f32 {
     (phi + flt_pi) / (2.0f * flt_pi)
 }
 
-fn u2theta(math : Intrinsics, u : f32) -> f32 {
+fn @ u2theta(math : Intrinsics, u : f32) -> f32 {
     (u * u) * (flt_pi / 2.0f)
 }
 
-fn u2phi(math : Intrinsics, u : f32) -> f32 {
+fn @ u2phi(math : Intrinsics, u : f32) -> f32 {
     (2.0f * u - 1.0f) * flt_pi
 }
 
-fn vec2_rowmul(v1 : Vec2, v2 : Vec2) -> Vec2 {
+fn @ vec2_rowmul(v1 : Vec2, v2 : Vec2) -> Vec2 {
     Vec2{
         x : v1.x * v2.x,
         y : v1.y * v2.y
     }
 }
 
-fn vec2_rowadd(v1 : Vec2, s : f32) -> Vec2 {
+fn @ vec2_rowadd(v1 : Vec2, s : f32) -> Vec2 {
     Vec2 {
         x : v1.x + s,
         y : v1.y + s
@@ -72,11 +88,11 @@ struct Vec2i {
     y : i32
 }
 
-fn vec2i_to_vec2(v : Vec2i) -> Vec2 {
+fn @ vec2i_to_vec2(v : Vec2i) -> Vec2 {
     make_vec2(v.x as f32, v.y as f32)
 }
 
-fn vec2_to_vec2i(v : Vec2) -> Vec2i {
+fn @ vec2_to_vec2i(v : Vec2) -> Vec2i {
     Vec2i{
         x : v.x as i32,
         y : v.y as i32
@@ -93,7 +109,7 @@ extern "C" {
     fn print_vec3(v : &Vec3) -> ();
 }
 
-fn clamp (val : i32, low : i32, high : i32) -> i32 {
+fn @ clamp (val : i32, low : i32, high : i32) -> i32 {
     if val < low {
         low
     } else if val > high {
@@ -103,7 +119,7 @@ fn clamp (val : i32, low : i32, high : i32) -> i32 {
     }
 }
 
-fn clampf (val : f32, low : f32, high : f32) -> f32 {
+fn @ clampf (val : f32, low : f32, high : f32) -> f32 {
     if val < low {
         low
     } else if val > high {
@@ -113,7 +129,7 @@ fn clampf (val : f32, low : f32, high : f32) -> f32 {
     }
 }
 
-fn maxf(val1 : f32, val2 : f32) -> f32 {
+fn @ maxf(val1 : f32, val2 : f32) -> f32 {
     if val1 > val2 {
         val1
     } else {
@@ -121,7 +137,7 @@ fn maxf(val1 : f32, val2 : f32) -> f32 {
     }
 }
 
-fn absf(val : f32) -> f32 {
+fn @ absf(val : f32) -> f32 {
     if (val < 0.0f) {
         -val
     } else {
@@ -129,18 +145,18 @@ fn absf(val : f32) -> f32 {
     }
 }
 
-fn fma(x : f32, y : f32, z : f32) -> f32 {
+fn @ fma(x : f32, y : f32, z : f32) -> f32 {
     (x * y) + z
 }
 
-fn vec2_floor(math: Intrinsics, v : Vec2) -> Vec2 {
+fn @ vec2_floor(math: Intrinsics, v : Vec2) -> Vec2 {
     Vec2 {
         x : math.floorf(v.x),
         y : math.floorf(v.y)
     }
 }
 
-fn find_interval_eval(warp: &Warp, dim : i32, param_val : f32) -> i32 {
+fn @ find_interval_eval(warp: &Warp, dim : i32, param_val : f32) -> i32 {
     let size_ : i32 = warp.param_size(dim) as i32;
     let mut size : i32 = size_ - 2;
     let mut first : i32 = 1;
@@ -161,7 +177,7 @@ fn find_interval_eval(warp: &Warp, dim : i32, param_val : f32) -> i32 {
     clamp((first-1) as i32, 0, (size_ - 2) as i32)
 }
 
-fn find_interval_sample_row(warp: &Warp, offset : i32, param_weight : &[f32], sample_y : f32) -> i32 {
+fn @ find_interval_sample_row(warp: Warp, offset : i32, param_weight : &[f32], sample_y : f32) -> i32 {
     let size_ : i32 = warp.size.y as i32;
     let mut size : i32 = size_ - 2;
     let mut first : i32 = 1;
@@ -182,7 +198,7 @@ fn find_interval_sample_row(warp: &Warp, offset : i32, param_weight : &[f32], sa
     clamp((first-1) as i32, 0, (size_ - 2) as i32)
 }
 
-fn find_interval_sample_col(warp: &Warp, offset : i32, sample : Vec2, slice_size : i32, param_weight : &[f32]) -> i32 {
+fn @ find_interval_sample_col(warp: Warp, offset : i32, sample : Vec2, slice_size : i32, param_weight : &[f32]) -> i32 {
     let size_ : i32 = warp.size.x as i32;
     let mut size : i32 = size_ - 2;
     let mut first : i32 = 1;
@@ -203,18 +219,18 @@ fn find_interval_sample_col(warp: &Warp, offset : i32, sample : Vec2, slice_size
     clamp((first-1) as i32, 0, (size_ - 2) as i32)
 }
 
-fn fetch_marginal_warp2D2(warp : &Warp, offset : i32, idx : i32, param_weight : &[f32]) -> f32 {
+fn @ fetch_marginal_warp2D2(warp : Warp, offset : i32, idx : i32, param_weight : &[f32]) -> f32 {
     lookup_warp(warp, 2, warp.marginal_cdf, offset + idx, warp.size.y, param_weight)
 }
 
-fn fetch_conditional_warp2D2(warp : &Warp, offset : i32, idx : i32, slice_size : i32, sample : Vec2, param_weight : &[f32]) -> f32 {
+fn @ fetch_conditional_warp2D2(warp : Warp, offset : i32, idx : i32, slice_size : i32, sample : Vec2, param_weight : &[f32]) -> f32 {
     let v0 = lookup_warp(warp, 2, warp.conditional_cdf, offset + idx, slice_size, param_weight);
     let v1 = lookup_warp(warp, 2, &warp.conditional_cdf(warp.size.x) as &[f32], offset + idx, slice_size, param_weight);
 
     (1.0f - sample.y) * v0 + sample.y * v1
 }
 
-fn @lookup_warp(warp : &Warp, dim: i32, data : &[f32], i0 : i32, size : i32, param_weight : &[f32]) -> f32 {
+fn @lookup_warp(warp : Warp, dim: i32, data : &[f32], i0 : i32, size : i32, param_weight : &[f32]) -> f32 {
     if dim == 0 {
         /* print_pointer(data as &());
         print_float(data(i0)); */
@@ -231,7 +247,7 @@ fn @lookup_warp(warp : &Warp, dim: i32, data : &[f32], i0 : i32, size : i32, par
     }
 }
 
-fn eval_warp2D0(math: Intrinsics, warp: &Warp, pos : Vec2) -> f32 {
+fn @ eval_warp2D0(math: Intrinsics, warp: Warp, pos : Vec2) -> f32 {
     let param_weight = [0.0f];
     let slice_offset = 0 as i32;
 
@@ -261,7 +277,7 @@ fn eval_warp2D0(math: Intrinsics, warp: &Warp, pos : Vec2) -> f32 {
     (w0.y * ((w0.x * v00) + (w1.x * v10)) + w1.y * ((w0.x * v01) + (w1.x * v11))) * hprod
 }
 
-fn eval_warp2D2(math: Intrinsics, warp: &Warp, pos : Vec2, phi_i : f32, theta_i : f32) -> f32 {
+fn @ eval_warp2D2(math: Intrinsics, warp: Warp, pos : Vec2, phi_i : f32, theta_i : f32) -> f32 {
     let mut param_weight = [0.0f,0.0f,0.0f,0.0f];
     let mut slice_offset = 0 as i32;
 
@@ -315,7 +331,7 @@ fn eval_warp2D2(math: Intrinsics, warp: &Warp, pos : Vec2, phi_i : f32, theta_i 
     (w0.y * ((w0.x * v00) + (w1.x * v10)) + w1.y * ((w0.x * v01) + (w1.x * v11))) * hprod
 }
 
-fn eval_warp2D3(math: Intrinsics, warp: &Warp, pos : Vec2, phi_i : f32, theta_i : f32, channel : f32) -> f32 {
+fn @ eval_warp2D3(math: Intrinsics, warp: Warp, pos : Vec2, phi_i : f32, theta_i : f32, channel : f32) -> f32 {
     let mut param_weight = [0.0f,0.0f,0.0f,0.0f,0.0f,0.0f];
     let mut slice_offset = 0 as i32;
 
@@ -378,7 +394,7 @@ fn make_invert_result() -> InvertResult {
 }
 
 // only needed for vndf (2 parameter dimensions)
-fn invert_warp2D2(math: Intrinsics, warp: &Warp, sample : Vec2, phi_i : f32, theta_i : f32) -> InvertResult {
+fn @ invert_warp2D2(math: Intrinsics, warp: Warp, sample : Vec2, phi_i : f32, theta_i : f32) -> InvertResult {
     
     let mut param_weight = [0.0f, 0.0f, 0.0f, 0.0f];
     let mut slice_offset = 0 as i32;
@@ -456,14 +472,14 @@ fn invert_warp2D2(math: Intrinsics, warp: &Warp, sample : Vec2, phi_i : f32, the
     }
 }
 
-fn make_sample_result() -> SampleResult {
+fn @ make_sample_result() -> SampleResult {
     SampleResult{
         sample : make_vec2(0.0f,0.0f),
         pdf : 0.0f
     }
 }
 
-fn sample_warp2D2(math: Intrinsics, warp : &Warp, sample : Vec2, phi_i : f32, theta_i : f32) -> SampleResult {
+fn @ sample_warp2D2(math: Intrinsics, warp : Warp, sample : Vec2, phi_i : f32, theta_i : f32) -> SampleResult {
     //TODO: Take care of degeneracies
     let mut n_sample = make_vec2(sample.x, sample.y);
 
@@ -549,7 +565,7 @@ fn sample_warp2D2(math: Intrinsics, warp : &Warp, sample : Vec2, phi_i : f32, th
     }
 }
  
-fn evaluate_brdf(math: Intrinsics, sampler: &BRDFData, incoming : Vec3, outgoing : Vec3) -> Color {
+fn @ evaluate_brdf(math: Intrinsics, sampler: BRDFData, incoming : Vec3, outgoing : Vec3) -> Color {
 
     if (incoming.z <= 0.0f || outgoing.z <= 0.0f) {
         return(make_color(0.0f, 0.0f, 0.0f))
@@ -591,7 +607,7 @@ fn evaluate_brdf(math: Intrinsics, sampler: &BRDFData, incoming : Vec3, outgoing
     make_color(fr.x, fr.y, fr.z)
 }
 
-fn pdf_brdf(math: Intrinsics, sampler: &BRDFData, incoming : Vec3, outgoing : Vec3) -> f32 {
+fn @ pdf_brdf(math: Intrinsics, sampler: BRDFData, incoming : Vec3, outgoing : Vec3) -> f32 {
 
     if (incoming.z <= 0.0f || outgoing.z <= 0.0f) {
         0.0f
@@ -622,10 +638,6 @@ fn pdf_brdf(math: Intrinsics, sampler: &BRDFData, incoming : Vec3, outgoing : Ve
 
         let sin_theta_m = math.sqrtf(wm.x * wm.x + wm.y * wm.y);
         let jacobian = maxf(2.0f * flt_pi * flt_pi * u_wm.x * sin_theta_m, 1e-6f) * 4.0f * vec3_dot(wi, wm);
-        
-        // leave this here, otherwise it won't compile
-        // phi_i = 0.0f;
-        // theta_i = 0.0f;
 
         vndf_pdf * pdf / jacobian
     }
@@ -645,7 +657,7 @@ fn @make_sample_data() -> MeasuredBRDFSampleData {
     }
 }
 
-fn sample_brdf(math: Intrinsics, sampler: &BRDFData, u : Vec2, incoming : Vec3) -> MeasuredBRDFSampleData {
+fn @ sample_brdf(math: Intrinsics, sampler: BRDFData, u : Vec2, incoming : Vec3) -> MeasuredBRDFSampleData {
    
     if (incoming.z <= 0.0f) {
         return (make_sample_data())
@@ -713,7 +725,7 @@ fn sample_brdf(math: Intrinsics, sampler: &BRDFData, u : Vec2, incoming : Vec3) 
     }
 } 
 
-extern fn test_evaluate_brdf(sampler: &BRDFData, incoming : &Vec3, outgoing : &Vec3, result : &mut Vec3) -> () {
+extern fn test_evaluate_brdf(sampler: BRDFData, incoming : &Vec3, outgoing : &Vec3, result : &mut Vec3) -> () {
     let res = evaluate_brdf(cpu_intrinsics, sampler, *incoming, *outgoing);
 
     result.x = res.r;
@@ -721,13 +733,13 @@ extern fn test_evaluate_brdf(sampler: &BRDFData, incoming : &Vec3, outgoing : &V
     result.z = res.b;
 }
 
-extern fn test_pdf_brdf(sampler: &BRDFData, incoming : &Vec3, outgoing : &Vec3, result : &mut f32) -> () {
+extern fn test_pdf_brdf(sampler: BRDFData, incoming : &Vec3, outgoing : &Vec3, result : &mut f32) -> () {
     let res = pdf_brdf(cpu_intrinsics, sampler, *incoming, *outgoing);
 
     *result = res;
 }
 
-extern fn test_sample_brdf(sampler: &BRDFData, u : &Vec2, incoming : &Vec3, result : &mut MeasuredBRDFSampleData) -> () {
+extern fn test_sample_brdf(sampler: BRDFData, u : &Vec2, incoming : &Vec3, result : &mut MeasuredBRDFSampleData) -> () {
     let res = sample_brdf(cpu_intrinsics, sampler, *u, *incoming);
 
     result.res.x = res.res.x;

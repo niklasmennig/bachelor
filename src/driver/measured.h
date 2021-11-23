@@ -12,3 +12,5 @@ void delinearize_warp_in_place(float* data, Warp* warp);
 Warp read_warp(std::istream& is);
 
 BRDFData* load_brdf_data(std::string name);
+
+bool compare_warp(Warp* warp1, Warp* warp2);

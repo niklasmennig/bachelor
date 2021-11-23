@@ -250,13 +250,14 @@ extern "C" {
     //fn print_float(f32) -> ();
 }
 
-fn make_measured_bsdf(brdf: BRDFData, math:Intrinsics, surf: SurfaceElement) -> Bsdf {
+fn @ make_measured_bsdf(brdf_data: BRDFData, math:Intrinsics, surf: SurfaceElement) -> Bsdf {
+    let brdf = brdf_data;
     Bsdf {
         eval:  @|in_dir, out_dir| {
             let n = surf.local.col(2);
             let in_local = world_to_local(math, n, in_dir);
             let out_local = world_to_local(math, n, out_dir);
-            let col = evaluate_brdf(math, &brdf, in_local, out_local);
+            let col = evaluate_brdf(math, brdf, in_local, out_local);
             //let col = make_color(0.0f, 0.0f, 0.0f);
             color_mulf(col, 1.0f)
         },
@@ -264,14 +265,14 @@ fn make_measured_bsdf(brdf: BRDFData, math:Intrinsics, surf: SurfaceElement) -> 
             let n = surf.local.col(2);
             let in_local = world_to_local(math, n, in_dir);
             let out_local = world_to_local(math, n, out_dir);
-            let pdf_val = pdf_brdf(math, &brdf, in_local, out_local);
+            let pdf_val = pdf_brdf(math, brdf, in_local, out_local);
             //let pdf_val = 1.0f;
             pdf_val
         },
         sample:  @|rnd, out_dir, _| {
             let n = surf.local.col(2);
             let out_local = world_to_local(math, n, out_dir);
-            let sample = sample_brdf(math, &brdf, make_vec2(randf(rnd), randf(rnd)), out_local);
+            let sample = sample_brdf(math, brdf, make_vec2(randf(rnd), randf(rnd)), out_local);
             //let sample = make_sample_data();
 
             let in_world = local_to_world(math, n, sample.out);

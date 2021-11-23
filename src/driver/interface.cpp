@@ -348,6 +348,7 @@ struct Interface {
         std::unordered_map<std::string, Bvh8Tri4> bvh8_tri4;
         std::unordered_map<std::string, anydsl::Array<uint8_t>> buffers;
         std::unordered_map<std::string, DeviceImage> images;
+        std::unordered_map<std::string, DeviceWarp> warps;
         anydsl::Array<int32_t> tmp_buffer;
         anydsl::Array<float> first_primary;
         anydsl::Array<float> second_primary;
@@ -509,8 +510,8 @@ struct Interface {
         return images[filename] = std::move(copy_to_device(dev, img));
     }
 
-    std::unordered_map<std::string, DeviceWarp> loaded_warps;
     DeviceWarp& load_warp(int32_t dev, std::string path) {
+        auto& loaded_warps = devices[dev].warps;
         if (loaded_warps.find(path) != loaded_warps.end()) {
             return loaded_warps[path];
         }
@@ -520,37 +521,60 @@ struct Interface {
         read_buffer(is, data);
         //return delinearize_warp(data);
         auto delin = delinearize_warp(data);
-        return loaded_warps[path] = DeviceWarp {
-            size : delin.size,
-            patch_size : delin.patch_size,
-            inv_patch_size : delin.inv_patch_size,
-            param_size : std::move(copy_to_device(dev, delin.param_size, delin.array_sizes[0])),
-            param_strides : std::move(copy_to_device(dev, delin.param_strides, delin.array_sizes[1])),
-            param_values : std::move(copy_to_device(dev, delin.param_values, delin.array_sizes[2])),
-            param_values_offset : delin.param_values_offset,
-            data : std::move(copy_to_device(dev, delin.data, delin.array_sizes[3])),
-            marginal_cdf : std::move(copy_to_device(dev, delin.marginal_cdf, delin.array_sizes[4])),
-            conditional_cdf : std::move(copy_to_device(dev, delin.conditional_cdf, delin.array_sizes[5])),
-            array_sizes : std::move(copy_to_device(dev, delin.array_sizes, 6))
-        };
+
+        printf("Array sizes: \n");
+        for (int i = 0; i < 6; i++) {
+            printf("%d\n", delin.array_sizes[i]);
+        }
+
+        DeviceWarp dw;
+        dw.size = delin.size;
+        dw.patch_size = delin.patch_size;
+        dw.inv_patch_size = delin.inv_patch_size;
+        if (delin.array_sizes[0] > 0) dw.param_size = std::move(copy_to_device(dev, delin.param_size, delin.array_sizes[0]));
+        if (delin.array_sizes[1] > 0) dw.param_strides = std::move(copy_to_device(dev, delin.param_strides, delin.array_sizes[1]));
+        if (delin.array_sizes[2] > 0) dw.param_values = std::move(copy_to_device(dev, delin.param_values, delin.array_sizes[2]));
+        dw.param_values_offset = delin.param_values_offset;
+        if (delin.array_sizes[3] > 0) dw.data = std::move(copy_to_device(dev, delin.data, delin.array_sizes[3]));
+        if (delin.array_sizes[4] > 0) dw.marginal_cdf = std::move(copy_to_device(dev, delin.marginal_cdf, delin.array_sizes[4]));
+        if (delin.array_sizes[5] > 0) dw.conditional_cdf = std::move(copy_to_device(dev, delin.conditional_cdf, delin.array_sizes[5]));
+        dw.array_sizes = std::move(copy_to_device(dev, delin.array_sizes, 6));
+
+        return loaded_warps[path] = std::move(dw);
+        // return loaded_warps[path] = DeviceWarp {
+        //     size : delin.size,
+        //     patch_size : delin.patch_size,
+        //     inv_patch_size : delin.inv_patch_size,
+        //     param_size : std::move(copy_to_device(dev, delin.param_size, delin.array_sizes[0])),
+        //     param_strides : std::move(copy_to_device(dev, delin.param_strides, delin.array_sizes[1])),
+        //     param_values : std::move(copy_to_device(dev, delin.param_values, delin.array_sizes[2])),
+        //     param_values_offset : delin.param_values_offset,
+        //     data : std::move(copy_to_device(dev, delin.data, delin.array_sizes[3])),
+        //     marginal_cdf : std::move(copy_to_device(dev, delin.marginal_cdf, delin.array_sizes[4])),
+        //     conditional_cdf : std::move(copy_to_device(dev, delin.conditional_cdf, delin.array_sizes[5])),
+        //     array_sizes : std::move(copy_to_device(dev, delin.array_sizes, 6))
+        // };
     }
 
-    void fill_warp(int32_t dev, Warp* warp, const std::string file) {
+    void fill_warp(int32_t dev, const std::string file, Warp* warp) {
         DeviceWarp& dw = load_warp(dev, file);
+
         warp->size = dw.size;
         warp->patch_size = dw.patch_size;
         warp->inv_patch_size = dw.inv_patch_size;
+        warp->array_sizes = dw.array_sizes.data();
+        warp->data = dw.data.data();
         warp->param_size = dw.param_size.data();
         warp->param_strides = dw.param_strides.data();
         warp->param_values = dw.param_values.data();
-        warp->data = dw.data.data();
+        warp->param_values_offset = dw.param_values_offset;
         warp->marginal_cdf = dw.marginal_cdf.data();
         warp->conditional_cdf = dw.conditional_cdf.data();
     }
 
     Warp create_warp(int32_t dev, const std::string file) {
         DeviceWarp& dw = load_warp(dev, file);
-        //printf("read warp array sizes for %s: %d %d %d %d %d %d\n", file.c_str(), dw.array_sizes[0], dw.array_sizes[1], dw.array_sizes[2], dw.array_sizes[3], dw.array_sizes[4], dw.array_sizes[5]);
+
         return Warp {
             size : dw.size,
             patch_size : dw.patch_size,
@@ -674,9 +698,20 @@ uint8_t* rodent_load_buffer(int32_t dev, const char* file) {
     return const_cast<uint8_t*>(array.data());
 }
 
-Warp rodent_load_warp(int32_t dev, const char* file) {
-    //interface->fill_warp(dev, warp, file);
-    return interface->create_warp(dev, file);
+void rodent_load_warp(int32_t dev, const char* file, Warp* warp) {
+    interface->fill_warp(dev, file, warp);
+    //return interface->create_warp(dev, file);
+}
+
+bool rodent_compare_brdf(const char* ref_path, BRDFData brdf) {
+    auto ref = load_brdf_data(ref_path);
+    return (
+        compare_warp(&ref->rgb, &brdf.rgb) &&
+        compare_warp(&ref->ndf, &brdf.ndf) &&
+        compare_warp(&ref->vndf, &brdf.vndf) &&
+        compare_warp(&ref->sigma, &brdf.sigma) &&
+        compare_warp(&ref->luminance, &brdf.luminance) 
+    );
 }
 
 void rodent_load_bvh2_tri1(int32_t dev, const char* file, Node2** nodes, Tri1** tris) {

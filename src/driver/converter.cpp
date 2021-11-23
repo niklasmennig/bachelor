@@ -412,7 +412,8 @@ static void write_tri_mesh(const obj::TriMesh& tri_mesh, bool enable_padding) {
 
 static void write_warp_data(const Warp* warp, std::string path, bool enable_padding) {
     auto data = linearize_warp(warp);
-    write_buffer(path, pad_buffer(data, enable_padding, sizeof(float) * 4));
+    //write_buffer(path, pad_buffer(data, enable_padding, sizeof(float)));
+    write_buffer(path, data);
 }
 
 static void write_brdf_data(const BRDFData* brdf_data, std::string name, bool enable_padding) {
@@ -796,6 +797,10 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
     for (auto it = brdfs.begin(); it != brdfs.end(); it++) {
         BRDFData* brdf_data = load_brdf_data((*it));
         write_brdf_data(brdf_data, (*it), enable_padding);
+
+        printf("reference data: \n");
+        printf("%d \n", brdf_data->rgb.size.x);
+
         os << "    let brdf_" << (*it) << " = BRDFData {\n";
         os << "        luminance : device.load_warp(\"data/brdf_" << (*it) << "_luminance.bin\"),\n";
         os << "        sigma : device.load_warp(\"data/brdf_" << (*it) << "_sigma.bin\"),\n";
@@ -805,6 +810,8 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
         os << "        jacobian : " << (brdf_data->jacobian? "true": "false") << ",\n";
         os << "        isotropic : " << (brdf_data->isotropic? "true": "false") << ",\n";
         os << "    };\n";
+
+        // os << "    rodent_compare_brdf(\"" << (*it) << "\", brdf_acrylic_felt_green_rgb); \n";
     }
 
     // Lights
