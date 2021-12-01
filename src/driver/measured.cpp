@@ -341,3 +341,43 @@ bool compare_warp(Warp* w1, Warp* w2) {
     }
     
 }
+
+std::unordered_map<std::string, powitacq_rgb::BRDF*> loaded_c_brdfs;
+powitacq_rgb::BRDF* load_c_brdf(std::string name) {
+    if (loaded_c_brdfs.find(name) != loaded_c_brdfs.end()) {
+        return loaded_c_brdfs[name];
+    } else {
+        printf("Loading new BRDF: %s\n", name.c_str());
+        return loaded_c_brdfs[name] = new powitacq_rgb::BRDF("../testing/" + name);
+    }
+}
+
+extern "C" {
+    void c_evaluate(const char* brdf, Vec3* v_in, Vec3* v_out, Color* col) {
+        powitacq_rgb::Vector3f in = powitacq_rgb::Vector3f(v_in->x, v_in->y, v_in->z);
+        powitacq_rgb::Vector3f out = powitacq_rgb::Vector3f(v_out->x, v_out->y, v_out->z);
+        powitacq_rgb::Vector3f res = load_c_brdf(brdf)->eval(in, out);
+
+        col->r = res.x();
+        col->g = res.y();
+        col->b = res.z();
+    }
+
+    void c_pdf(const char* brdf, Vec3* v_in, Vec3* v_out, float* pdf) {
+        powitacq_rgb::Vector3f in = powitacq_rgb::Vector3f(v_in->x, v_in->y, v_in->z);
+        powitacq_rgb::Vector3f out = powitacq_rgb::Vector3f(v_out->x, v_out->y, v_out->z);
+        *pdf = load_c_brdf(brdf)->pdf(in, out);
+    }
+
+    void c_sample(const char* brdf,Vec2* v_u, Vec3* v_out, MeasuredBRDFSampleData* sample) {
+        powitacq_rgb::Vector3f in = powitacq_rgb::Vector3f(v_out->x, v_out->y, v_out->z);
+        powitacq_rgb::Vector2f u = powitacq_rgb::Vector2f(v_u->x, v_u->y);
+        powitacq_rgb::Vector3f out;
+        float pdf;
+        powitacq_rgb::Vector3f res = load_c_brdf(brdf)->sample(u, in, &out, &pdf);
+
+        sample->out = Vec3 {x : out.x(), y : out.y(), z : out.z()};
+        sample->pdf = pdf;
+        sample->res = Vec3 {x : res.x(), y : res.y(), z : res.z()};
+    }
+}

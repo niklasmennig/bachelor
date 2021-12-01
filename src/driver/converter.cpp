@@ -23,6 +23,8 @@
 #define create_directory(d) { umask(0); mkdir(d, 0777); }
 #endif
 
+// #define MEASURED_MATERIALS_C
+
 enum class Target : uint32_t {
     GENERIC = 0,
     AVX2,
@@ -614,7 +616,7 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
     bool has_map_ke = false;
     for (auto& pair : mtl_lib) {
         auto & mat = pair.second;
-        if (mat.illum == 11) brdfs.insert(mat.map_kd); continue;
+        if (mat.illum == 11) brdfs.insert(mat.map_ka);
         if (mat.map_kd != "") images.emplace(mat.map_kd, images.size());
         if (mat.map_ks != "") images.emplace(mat.map_kd, images.size());
         if (mat.map_ke != "") images.emplace(mat.map_ke, images.size()), has_map_ke = true;
@@ -792,14 +794,12 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
         }
     }
 
+    #ifndef MEASURED_MATERIALS_C 
     // Generate BRDFS
     os << "\n   //BRDFs \n";
     for (auto it = brdfs.begin(); it != brdfs.end(); it++) {
         BRDFData* brdf_data = load_brdf_data((*it));
         write_brdf_data(brdf_data, (*it), enable_padding);
-
-        printf("reference data: \n");
-        printf("%d \n", brdf_data->rgb.size.x);
 
         os << "    let brdf_" << (*it) << " = BRDFData {\n";
         os << "        luminance : device.load_warp(\"data/brdf_" << (*it) << "_luminance.bin\"),\n";
@@ -813,6 +813,7 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
 
         // os << "    rodent_compare_brdf(\"" << (*it) << "\", brdf_acrylic_felt_green_rgb); \n";
     }
+    #endif
 
     // Lights
     std::vector<int> light_ids(tri_mesh.indices.size() / 4, 0);
@@ -922,10 +923,14 @@ static bool convert_obj(const std::string& file_name, Target target, size_t dev,
         // intercept to introduce measured materials
         if (mat.illum == 11) {
             has_emission = false;
-            std::string brdf_name = mat.map_kd;
+            std::string brdf_name = mat.map_ka;
             info("Generating measured material: " + mtl_name + " with BRDF: " + brdf_name);
             auto brdf_identifier = "brdf_" + brdf_name;
+            #ifndef MEASURED_MATERIALS_C
             os << "        let bsdf = make_measured_bsdf("<< brdf_identifier <<", math, surf);\n";
+            #else
+            os << "        let bsdf = make_c_measured_bsdf(\""<< brdf_name <<".bsdf\", math, surf);\n";
+            #endif
         } else if (mat.illum == 5) {
                 os << "        let bsdf = make_mirror_bsdf(math, surf, make_color(" << mat.ks.x << "f, " << mat.ks.y << "f, " << mat.ks.z << "f));\n";
             } else if (mat.illum == 7) {

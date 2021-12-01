@@ -1,0 +1,15 @@
+# Blender MTL File: 'None'
+# Material Count: 2
+
+newmtl Light
+  Ns 9.0000
+  Ni 1.0000
+  illum 0
+  Ka 0.78 0.78 0.78 # White
+  Kd 0.78 0.78 0.78
+  Ks 0 0 0
+  Ke 10 10 10
+
+newmtl Plane
+illum 11
+map_Ka aniso_miro_7_rgb

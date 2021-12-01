@@ -230,7 +230,7 @@ fn @ fetch_conditional_warp2D2(warp : Warp, offset : i32, idx : i32, slice_size 
     (1.0f - sample.y) * v0 + sample.y * v1
 }
 
-fn @lookup_warp(warp : Warp, dim: i32, data : &[f32], i0 : i32, size : i32, param_weight : &[f32]) -> f32 {
+fn @(?dim)lookup_warp(warp : Warp, dim: i32, data : &[f32], i0 : i32, size : i32, param_weight : &[f32]) -> f32 {
     if dim == 0 {
         /* print_pointer(data as &());
         print_float(data(i0)); */
@@ -486,12 +486,12 @@ fn @ sample_warp2D2(math: Intrinsics, warp : Warp, sample : Vec2, phi_i : f32, t
     let mut param_weight = [0.0f, 0.0f, 0.0f, 0.0f];
     let mut slice_offset = 0 as i32;
 
-    let mut dim = 0;
-    while dim < 2 {
+    //let mut dim = 0;
+    for dim in unroll(0,2) {
         if warp.param_size(dim) == 1u {
             param_weight(2 * dim) = 1.0f;
             param_weight(2 * dim + 1) = 0.0f;
-            dim++;
+            //dim++;
             continue()
         }
 
@@ -508,7 +508,7 @@ fn @ sample_warp2D2(math: Intrinsics, warp : Warp, sample : Vec2, phi_i : f32, t
         param_weight(2 * dim + 1) = clampf((dim_param - p0) / (p1 - p0), 0.f, 1.f);
         param_weight(2 * dim) = 1.f - param_weight(2 * dim + 1);
         slice_offset += warp.param_strides(dim) as i32 * param_index;
-        dim++;
+        //dim++;
     }
 
     let mut offset = slice_offset * warp.size.y;
@@ -725,12 +725,12 @@ fn @ sample_brdf(math: Intrinsics, sampler: BRDFData, u : Vec2, incoming : Vec3)
     }
 } 
 
-extern fn test_evaluate_brdf(sampler: BRDFData, incoming : &Vec3, outgoing : &Vec3, result : &mut Vec3) -> () {
+extern fn test_evaluate_brdf(sampler: BRDFData, incoming : &Vec3, outgoing : &Vec3, result : &mut Color) -> () {
     let res = evaluate_brdf(cpu_intrinsics, sampler, *incoming, *outgoing);
 
-    result.x = res.r;
-    result.y = res.g;
-    result.z = res.b;
+    result.r = res.r;
+    result.r = res.g;
+    result.r = res.b;
 }
 
 extern fn test_pdf_brdf(sampler: BRDFData, incoming : &Vec3, outgoing : &Vec3, result : &mut f32) -> () {

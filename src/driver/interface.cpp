@@ -510,10 +510,12 @@ struct Interface {
         return images[filename] = std::move(copy_to_device(dev, img));
     }
 
-    DeviceWarp& load_warp(int32_t dev, std::string path) {
+    DeviceWarp& load_warp(int32_t dev, const std::string& path) {
         auto& loaded_warps = devices[dev].warps;
-        if (loaded_warps.find(path) != loaded_warps.end()) {
-            return loaded_warps[path];
+        auto it = loaded_warps.find(path);
+        if (it != loaded_warps.end()) {
+            //info("Loaded warp found!");
+            return it->second;
         }
         std::vector<float> data;
         std::ifstream is;
@@ -522,10 +524,10 @@ struct Interface {
         //return delinearize_warp(data);
         auto delin = delinearize_warp(data);
 
-        printf("Array sizes: \n");
-        for (int i = 0; i < 6; i++) {
-            printf("%d\n", delin.array_sizes[i]);
-        }
+        //printf("Array sizes: \n");
+        //for (int i = 0; i < 6; i++) {
+        //    printf("%d\n", delin.array_sizes[i]);
+        //}
 
         DeviceWarp dw;
         dw.size = delin.size;
@@ -540,6 +542,7 @@ struct Interface {
         if (delin.array_sizes[5] > 0) dw.conditional_cdf = std::move(copy_to_device(dev, delin.conditional_cdf, delin.array_sizes[5]));
         dw.array_sizes = std::move(copy_to_device(dev, delin.array_sizes, 6));
 
+        info("Loaded Warp ", path);
         return loaded_warps[path] = std::move(dw);
         // return loaded_warps[path] = DeviceWarp {
         //     size : delin.size,
